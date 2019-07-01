@@ -2,7 +2,6 @@ let a = [1, 2, 3]
 let b = [4, 5, 6]
 
 let c = map ^ 2 (a - b)
-let d = [reduce + c]
-let e = map ^ 0.5 d
+let d = map ^0.5 [reduce + c]
 
-export e
+export d
