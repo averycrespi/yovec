@@ -10,7 +10,12 @@ NUMBER: /-?\d+(\./d{1,4})?/
        | expr "dot" expr                -> dot
        | expr "cross" expr              -> cross
 
-line: let?
+program: line*
+line: import | export | let
+
+YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|\$[a-zA-Z0-9]*/
+import: "import" YOLOL_IDENT
+export: "export" variable
 
 ?let: "let" variable "=" vector     -> letvec
     | "let" variable "=" range      -> letran
