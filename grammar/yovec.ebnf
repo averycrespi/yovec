@@ -1,7 +1,7 @@
 %import common.WS
 %ignore WS
 
-IDENT: /\$[a-zA-Z]+/
+IDENT: /[A-Z]+/
 variable: IDENT
 
 NUMBER: /-?\d+(\./d{1,4})?/
