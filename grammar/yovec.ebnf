@@ -1,7 +1,7 @@
 %import common.WS
 %ignore WS
 
-NUMBER: /-?\d+(\./d{1,4})?/
+NUMBER: /-?\d+(\.\d{1,4})?/
 VAR_IDENT: /[A-Z]+/
 YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
 
