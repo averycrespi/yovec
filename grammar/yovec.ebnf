@@ -18,9 +18,9 @@ export: "export" VAR_IDENT
     | "let" VAR_IDENT "=" repeat     -> letrep
     | "let" VAR_IDENT "=" vexpr      -> letvexpr
 
-vector: "[" (number ",")* number ("," number)* "]"
-range: "range" "(" (number ",")? number (number ",")? ")"
-repeat: "repeat" "(" vector count ")"
+vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
+range: "range" "(" (nexpr ",")? nexpr (nexpr ",")? ")"
+repeat: "repeat" "(" vector nexpr ")"
 
 // Numbers
 
@@ -53,11 +53,11 @@ repeat: "repeat" "(" vector count ")"
            | "=="   -> eq
            | "!="   -> ne
 
-?vexpr: "map" num_binary_op number vexpr    -> premap
-     | "map" number num_binary_op vexpr     -> postmap
-     | "filter" logical_op number vexpr     -> filter
-     | "concat" vexpr vexpr                 -> concat
-     | vec_unary_op vexpr                   -> vunary
-     | vexpr vec_binary_op vexpr            -> vbinary
-     | VAR_IDENT                            -> variable
-     | "(" vexpr ")"
+?vexpr: "map" num_binary_op nexpr vexpr     -> premap
+      | "map" nexpr num_binary_op vexpr     -> postmap
+      | "filter" logical_op nexpr vexpr     -> filter
+      | "concat" vexpr vexpr                -> concat
+      | vec_unary_op vexpr                  -> vunary
+      | vexpr vec_binary_op vexpr           -> vbinary
+      | VAR_IDENT                           -> variable
+      | "(" vexpr ")"
