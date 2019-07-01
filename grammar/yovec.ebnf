@@ -1,40 +1,47 @@
 %import common.WS
 %ignore WS
 
-IDENT: /[A-Z]+/
-variable: IDENT
-
 NUMBER: /-?\d+(\./d{1,4})?/
-?number: NUMBER                         -> number
-       | "{" YOLOL_IDENT "}"            -> external
-       | "reduce" num_binary_op expr    -> reduce
-       | expr "dot" expr                -> dot
-       | expr "cross" expr              -> cross
+VAR_IDENT: /[A-Z]+/
+YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|\$[a-zA-Z0-9]*/
+
+// Statements
 
 program: line*
 line: import | export | let
 
-YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|\$[a-zA-Z0-9]*/
 import: "import" YOLOL_IDENT
-export: "export" variable
+export: "export" VAR_IDENT
 
-?let: "let" variable "=" vector     -> letvec
-    | "let" variable "=" range      -> letran
-    | "let" variable "=" repeat     -> letrep
-    | "let" variable "=" expr       -> letexpr
+?let: "let" VAR_IDENT "=" vector     -> letvec
+    | "let" VAR_IDENT "=" range      -> letran
+    | "let" VAR_IDENT "=" repeat     -> letrep
+    | "let" VAR_IDENT "=" vexpr      -> letvexpr
 
 vector: "[" (number ",")* number ("," number)* "]"
 range: "range" "(" (number ",")? number (number ",")? ")"
 repeat: "repeat" "(" vector count ")"
 
-?vec_unary_op: "-"  -> neg
+// Numbers
 
-?num_binary_op: "+"     -> add
-              | "-"     -> sub
-              | "*"     -> mul
-              | "/"     -> div
-              | "%"     -> mod
-              | "^"     -> exp
+?num_binary_op: "+"     -> nadd
+              | "-"     -> nsub
+              | "*"     -> nmul
+              | "/"     -> ndiv
+              | "%"     -> nmod
+              | "^"     -> nexp
+
+?nexpr: nexpr num_binary_op nexpr       -> nbinary
+      | "reduce" num_binary_op vexpr    -> reduce
+      | vexpr "dot" vexpr               -> dot
+      | vexpr "cross" vexpr             -> cross
+      | "$" YOLOL_IDENT                 -> external
+      | NUMBER                          -> number
+      | "(" nexpr ")"
+
+// Vectors
+
+?vec_unary_op: "-"  -> vneg
 
 ?vec_binary_op: "+"     -> vadd
               | "-"     -> vsub
@@ -46,11 +53,11 @@ repeat: "repeat" "(" vector count ")"
            | "=="   -> eq
            | "!="   -> ne
 
-?expr: "map" num_binary_op number expr  -> premap
-     | "map" number num_binary_op expr  -> postmap
-     | "filter" logical_op number expr  -> filter
-     | "concat" expr expr               -> concat
-     | vec_unary_op expr                -> unary
-     | expr vec_binary_op expr          -> binary
-     | "(" expr ")"
-     | variable
+?vexpr: "map" num_binary_op number vexpr    -> premap
+     | "map" number num_binary_op vexpr     -> postmap
+     | "filter" logical_op number vexpr     -> filter
+     | "concat" vexpr vexpr                 -> concat
+     | vec_unary_op vexpr                   -> vunary
+     | vexpr vec_binary_op vexpr            -> vbinary
+     | VAR_IDENT                            -> variable
+     | "(" vexpr ")"
