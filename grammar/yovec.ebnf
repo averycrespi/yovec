@@ -40,7 +40,8 @@ repeat: "repeat" "(" vector count ")"
            | "=="   -> eq
            | "!="   -> ne
 
-?expr: "map" num_binary_op number expr  -> map
+?expr: "map" num_binary_op number expr  -> premap
+     | "map" number num_binary_op expr  -> postmap
      | "filter" logical_op number expr  -> filter
      | "concat" expr expr               -> concat
      | vec_unary_op expr                -> unary
