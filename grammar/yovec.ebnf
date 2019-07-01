@@ -24,17 +24,28 @@ repeat: "repeat" "(" vector nexpr ")"
 
 // Numbers
 
-?num_binary_op: "+"     -> nadd
-              | "-"     -> nsub
-              | "*"     -> nmul
-              | "/"     -> ndiv
-              | "%"     -> nmod
-              | "^"     -> nexp
+?num_unary_op: "abs"        -> abs
+             | "sqrt"       -> sqrt
+             | "sin"        -> sin
+             | "cos"        -> cos
+             | "tan"        -> tan
+             | "arcsin"     -> arcsin
+             | "arccos"     -> arccos
+             | "arctan"     -> arctan
 
-?nexpr: nexpr num_binary_op nexpr       -> nbinary
+?num_binary_op: "+"     -> add
+              | "-"     -> sub
+              | "*"     -> mul
+              | "/"     -> div
+              | "%"     -> mod
+              | "^"     -> exp
+
+?nexpr: num_unary_op nexpr              -> unary
+      | nexpr num_binary_op nexpr       -> binary
       | "reduce" num_binary_op vexpr    -> reduce
       | vexpr "dot" vexpr               -> dot
       | vexpr "cross" vexpr             -> cross
+      | "len" vexpr                     -> len
       | "$" YOLOL_IDENT                 -> external
       | NUMBER                          -> number
       | "(" nexpr ")"
