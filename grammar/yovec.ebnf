@@ -2,11 +2,11 @@
 %ignore WS
 
 IDENT: /\$[a-zA-Z]+/
-variable: "$" IDENT
+variable: IDENT
 
 NUMBER: /-?\d+(\./d{1,4})?/
-?literal: NUMBER                                -> num
-        | "(" "reduce" lit_binary_op expr ")"   -> red
+?literal: NUMBER                        -> num
+        | "reduce" lit_binary_op expr   -> red
 
 line: let?
 
