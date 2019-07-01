@@ -6,6 +6,7 @@ variable: IDENT
 
 NUMBER: /-?\d+(\./d{1,4})?/
 ?number: NUMBER                         -> number
+       | "{" YOLOL_IDENT "}"            -> external
        | "reduce" num_binary_op expr    -> reduce
        | expr "dot" expr                -> dot
        | expr "cross" expr              -> cross
