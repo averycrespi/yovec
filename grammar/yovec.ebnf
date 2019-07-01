@@ -1,8 +1,12 @@
 %import common.WS
 %ignore WS
 
-number: /-?\d+(\./d{1,4})?/
-variable: /\$[a-zA-Z]+/
+IDENT: /\$[a-zA-Z]+/
+variable: "$" IDENT
+
+NUMBER: /-?\d+(\./d{1,4})?/
+?literal: NUMBER                                -> num
+        | "(" "reduce" lit_binary_op expr ")"   -> red
 
 line: let?
 
@@ -11,13 +15,13 @@ line: let?
     | "let" variable "=" repeat     -> letrep
     | "let" variable "=" expr       -> letexpr
 
-vector: "[" (number ",")* number ("," number)* "]"
-range: "range" "(" (number ",")? number (number ",")? ")"
+vector: "[" (literal ",")* literal ("," literal)* "]"
+range: "range" "(" (literal ",")? literal (literal ",")? ")"
 repeat: "repeat" "(" vector count ")"
 
 ?vec_unary_op: "-"  -> neg
 
-?num_binary_op: "+"     -> add
+?lit_binary_op: "+"     -> add
               | "-"     -> sub
               | "*"     -> mul
               | "/"     -> div
@@ -36,11 +40,11 @@ repeat: "repeat" "(" vector count ")"
            | "=="   -> eq
            | "!="   -> ne
 
-?expr: "map" num_binary_op number expr  -> map
-     | "filter" logical_op number expr  -> filter
-     | "concat" expr expr               -> concat
-     | vec_unary_op expr                -> unary
-     | expr vec_binary_op expr          -> binary
-     | expr logical_op expr             -> logical
+?expr: "map" lit_binary_op literal expr     -> map
+     | "filter" logical_op literal expr     -> filter
+     | "concat" expr expr                   -> concat
+     | vec_unary_op expr                    -> unary
+     | expr vec_binary_op expr              -> binary
+     | expr logical_op expr                 -> logical
      | "(" expr ")"
      | variable
