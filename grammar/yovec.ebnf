@@ -15,7 +15,7 @@ vector: "[" (number ",")* number ("," number)* "]"
 range: "range" "(" (number ",")? number (number ",")? ")"
 repeat: "repeat" "(" vector count ")"
 
-?unary_op: "-"  -> neg
+?vec_unary_op: "-"  -> neg
 
 ?num_binary_op: "+"     -> add
               | "-"     -> sub
@@ -39,7 +39,7 @@ repeat: "repeat" "(" vector count ")"
 ?expr: "map" num_binary_op number expr  -> map
      | "filter" logical_op number expr  -> filter
      | "concat" expr expr               -> concat
-     | unary_op expr                    -> unary
+     | vec_unary_op expr                -> unary
      | expr vec_binary_op expr          -> binary
      | expr logical_op expr             -> logical
      | "(" expr ")"
