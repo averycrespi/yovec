@@ -45,6 +45,5 @@ repeat: "repeat" "(" vector count ")"
      | "concat" expr expr                   -> concat
      | vec_unary_op expr                    -> unary
      | expr vec_binary_op expr              -> binary
-     | expr logical_op expr                 -> logical
      | "(" expr ")"
      | variable
