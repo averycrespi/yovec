@@ -19,13 +19,9 @@ import: "import" external
 export: "export" variable "as" YOLOL_IDENT
 
 ?let: "let" variable "=" vector     -> letvec
-    | "let" variable "=" range      -> letran
-    | "let" variable "=" repeat     -> letrep
     | "let" variable "=" vexpr      -> letvexpr
 
 vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
-range: "range" "(" (nexpr ",")? nexpr (nexpr ",")? ")"
-repeat: "repeat" "(" vector nexpr ")"
 
 // Numbers
 
