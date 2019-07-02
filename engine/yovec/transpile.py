@@ -61,11 +61,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
         env, sn = _transpile_nexpr(env, vexpr.children[0])
         op = vexpr.children[1].kind
         env, sv = _transpile_vexpr(env, vexpr.children[2])
-        return env, sv.postmap(op, sn)
-    elif vexpr.kind == 'concat':
-        env, svl = _transpile_vexpr(env, vexpr.children[0])
-        env, svr = _transpile_vexpr(env, vexpr.children[1])
-        return env, svl.concat(svr)
+        return env, sv.postmap(sn, op)
     elif vexpr.kind == 'vecunary':
         op = vexpr.children[0].kind
         env, sv = _transpile_vexpr(env, vexpr.children[1])

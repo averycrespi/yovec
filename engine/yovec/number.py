@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Union
 
 from engine.node import Node
@@ -7,14 +8,19 @@ class SimpleNumber:
     """Represents a number or external."""
     def __init__(self, n: Union[int, str]):
         self.n = n
-        self.queue = []
+        self.opqueue = []
 
-    # Enqueues
+    def unary(self, op: str) -> 'SimpleNumber':
+        """Apply a unary operation to a simple number."""
+        result = deepcopy(self)
+        result.opqueue.append((op,))
+        return result
 
-    def unary(self, op: str): self.queue.append((op,))
-    def binary(self, op:str, sn: 'SimpleNumber'): self.queue.append((op, sn))
-
-    # Resolutions
+    def binary(self, op: str, sn: 'SimpleNumber') -> 'SimpleNumber':
+        """Apply a binary operation to a simple number."""
+        result = deepcopy(self)
+        result.opqueue.append((op, sn))
+        return result
 
     def evaluate(self) -> Node:
         """Generate a YOLOL expression."""
