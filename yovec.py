@@ -14,6 +14,5 @@ with open('sample/dist.yovec') as f:
 program = parser.parse(raw_program)
 program = Node.from_tree(program)
 program = prune(program)
-validate(program)
 
 print(program.pretty())
