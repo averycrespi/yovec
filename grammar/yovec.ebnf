@@ -16,7 +16,7 @@ program: line*
 line: import | export | let
 
 import: "import" external
-export: "export" variable
+export: "export" variable "as" YOLOL_IDENT
 
 ?let: "let" variable "=" vector     -> letvec
     | "let" variable "=" range      -> letran

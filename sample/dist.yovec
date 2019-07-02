@@ -6,4 +6,4 @@ let C = map ^2 (A - B)
 let D = [reduce + C]
 let E = map ^0.5 D
 
-export E
+export E as dist
