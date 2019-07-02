@@ -14,10 +14,10 @@ class Env:
     def __getitem__(self, k: str) -> Any:
         return self.state[k]
 
-    def update(self, k: str, v: Any) -> Env:
+    def update(self, k: str, v: Any) -> 'Env':
         """Update the environment."""
         if not self.overwrite and k in self.state.keys():
             raise KeyError('cannot overwrite existing key: {}'.format(k))
-        dupe = deepcopy(self)
+        new = deepcopy(self)
         new.state[k] = v
         return new
