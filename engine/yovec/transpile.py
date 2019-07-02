@@ -2,12 +2,14 @@ from typing import Tuple
 
 from engine.env import Env
 from engine.node import Node
-from engine.yovec.vector import BaseVector
+from engine.yovec.vector import SimpleVector
+from engine.yovec.number import SimpleNumber
 
 
 def transpile(program: Node) -> Node:
     """Transpile a Yovec program to YOLOL."""
     env = Env(overwrite=False)
+    index = 0
     children = []
     for line in program.children:
         child = line.children[0]
@@ -16,8 +18,10 @@ def transpile(program: Node) -> Node:
         elif child.kind == 'export':
             _transpile_export(env, child)
         elif child.kind == 'let':
-            env, out_line = _transpile_let(env, child)
+            env, index, out_line = _transpile_let(env, index, child)
             children.append(out_line)
+        else:
+            pass #TODO: raise error
     return Node(kind='program', children=children)
 
 
@@ -35,30 +39,80 @@ def _transpile_export(env: Env, export: Node):
     _ = env[ident]
 
 
-def _transpile_let(env: Env, let: Node) -> Tuple[Env, Node]:
+def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a let statement to a line."""
     assert let.kind == 'let'
     ident = let.children[0].children[0].value
-    env, vector = _transpile_vexpr(env, let.children[1])
-    simple = SimpleVector(vector)
-    env = env.update(ident, simple)
-    line = Node(kind='line', children=simple.assign())
-    return env, line
+    env, sv = _transpile_vexpr(env, let.children[1])
+    env = env.update(ident, (index, sv))
+    multi = Node(kind='multi', children=sv.assign(index))
+    line = Node(kind='line', children=[multi])
+    return env, index+1, line
 
 
-def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Node]:
-    """Transpile a vexpr to a vector."""
+def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
+    """Transpile a vexpr to a simple vector."""
     if vexpr.kind == 'premap':
-        #TODO
+        op = vexpr.children[0].kind
+        env, sn = _transpile_nexpr(env, vexpr.children[1])
+        env, sv = _transpile_vexpr(env, vexpr.children[2])
+        return env, sv.premap(op, sn)
     elif vexpr.kind == 'postmap':
-        #TODO
+        env, sn = _transpile_nexpr(env, vexpr.children[0])
+        op = vexpr.children[1].kind
+        env, sv = _transpile_vexpr(env, vexpr.children[2])
+        return env, sv.postmap(op, sn)
     elif vexpr.kind == 'concat':
-        #TODO
+        env, svl = _transpile_vexpr(env, vexpr.children[0])
+        env, svr = _transpile_vexpr(env, vexpr.children[1])
+        return env, svl.concat(svr)
     elif vexpr.kind == 'vecunary':
-        #TODO
+        op = vexpr.children[0].kind
+        env, sv = _transpile_vexpr(env, vexpr.children[1])
+        return env, sv.vecunary(op)
     elif vexpr.kind == 'vecbinary':
-        #TODO
+        env, svl = _transpile_vexpr(env, vexpr.children[0])
+        op = vexpr.children[1].kind
+        env, svr = _transpile_vexpr(env, vexpr.children[2])
+        return env, svl.vecbinary(op, svr)
     elif vexpr.kind == 'variable':
-        #TODO
+        ident = vexpr.children[0].value
+        _, sv = env[ident]
+        return env, sv
     elif vexpr.kind == 'vector':
-        #TODO
+        snums = []
+        for nexpr in vexpr.children:
+            env, sn = _transpile_nexpr(env, nexpr)
+        return env, SimpleVector(snums)
+    else:
+        pass #TODO: raise error
+
+
+def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
+    """Transpile a nexpr to a simple number."""
+    if nexpr.kind == 'unary':
+        op = nexpr.children[0].kind
+        env, sn = _transpile_nexpr(env, nexpr.children[1])
+        return env, sn.unary(op)
+    elif nexpr.kind == 'binary':
+        env, snl = _transpile_nexpr(env, nexpr.children[0])
+        op = nexpr.children[1].kind
+        env, snr = _transpile_nexpr(env, nexpr.children[2])
+        return env, snl.binary(op, snr)
+    elif nexpr.kind == 'reduce':
+        op = nexpr.children[0].kind
+        env, sv = _transpile_vexpr(env, nexpr.children[1])
+        return env, sv.reduce(op)
+    elif nexpr.kind == 'dot':
+        env, sv = _transpile_vexpr(env, nexpr.children[0])
+        return sv.dot()
+    elif nexpr.kind == 'cross':
+        env, sv = _transpile_vexpr(env, nexpr.children[0])
+        return sv.cross()
+    elif nexpr.kind == 'len':
+        env, sv = _transpile_vexpr(env, nexpr.children[0])
+        return sv.len()
+    elif nexpr.kind in ('external', 'number'):
+        return env, SimpleNumber(nexpr.children[0].value)
+    else:
+        pass #TODO: raise error
