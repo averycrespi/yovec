@@ -44,8 +44,8 @@ let: "let" variable "=" vexpr
       | vexpr "dot" vexpr               -> dot
       | vexpr "cross" vexpr             -> cross
       | "len" vexpr                     -> len
-      | "$" external
       | "(" nexpr ")"
+      | "$" external
       | number
 
 // Vectors
