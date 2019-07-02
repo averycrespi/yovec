@@ -1,4 +1,9 @@
-def prune(program):
+from typing import Dict, Set
+
+from engine.node import Node
+
+
+def prune(program: Node) -> Node:
     """Prune unused dependencies from a program."""
     assert program.kind == 'program'
     graph = _graph_deps(program)
@@ -16,7 +21,7 @@ def prune(program):
     return program
 
 
-def _graph_deps(program):
+def _graph_deps(program: Node) -> Dict[str, Set[str]]:
     """Graph the dependencies of a program."""
     assert program.kind == 'program'
     graph = {}
@@ -28,7 +33,7 @@ def _graph_deps(program):
     return graph
 
 
-def _find_deps(node):
+def _find_deps(node: Node) -> Set[str]:
     """Find the dependencies of a node."""
     if node.kind == 'variable':
         return set(node.children[0].value)
@@ -40,7 +45,7 @@ def _find_deps(node):
     return deps
 
 
-def _find_exported(program):
+def _find_exported(program: Node) -> Set[str]:
     """Find the exported dependencies of a program."""
     assert program.kind == 'program'
     exported = set()
@@ -49,4 +54,3 @@ def _find_exported(program):
         if child.kind == 'export':
             exported.add(child.children[0].children[0].value)
     return exported
-
