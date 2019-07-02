@@ -7,7 +7,7 @@ number: NUMBER
 VAR_IDENT: /[A-Z]+/
 variable: VAR_IDENT
 
-YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
+YOLOL_IDENT: /[a-z][a-z0-9]*|:[a-z0-9]+/
 external: YOLOL_IDENT
 
 // Statements
