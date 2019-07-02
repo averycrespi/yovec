@@ -10,18 +10,15 @@ variable: VAR_IDENT
 YOLOL_IDENT: /[a-z][a-z0-9]*|:[a-z0-9]+/
 external: YOLOL_IDENT
 
+vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
+
 // Statements
 
 program: line*
 line: import | export | let
-
 import: "import" external
 export: "export" variable "as" external
-
-?let: "let" variable "=" vector     -> letvec
-    | "let" variable "=" vexpr      -> letvexpr
-
-vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
+let: "let" variable "=" vexpr
 
 // Numbers
 
@@ -72,3 +69,4 @@ vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
       | vexpr vec_binary_op vexpr           -> vecbinary
       | "(" vexpr ")"
       | variable
+      | vector

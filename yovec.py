@@ -2,7 +2,6 @@ from lark import Lark
 
 from engine.node import Node
 from engine.yovec.prune import prune
-from engine.yovec.validate import validate
 
 
 with open('grammar/yovec.ebnf') as f:
