@@ -55,13 +55,6 @@ let: "let" variable "=" vexpr
 ?vec_binary_op: "+"     -> vadd
               | "-"     -> vsub
 
-?logical_op: "<"    -> lt
-           | "<="   -> le
-           | ">"    -> gt
-           | ">="   -> ge
-           | "=="   -> eq
-           | "!="   -> ne
-
 ?vexpr: "map" num_binary_op nexpr vexpr     -> premap
       | "map" nexpr num_binary_op vexpr     -> postmap
       | "concat" vexpr vexpr                -> concat
