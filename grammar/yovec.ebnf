@@ -71,7 +71,6 @@ repeat: "repeat" "(" vector nexpr ")"
 
 ?vexpr: "map" num_binary_op nexpr vexpr     -> premap
       | "map" nexpr num_binary_op vexpr     -> postmap
-      | "filter" logical_op nexpr vexpr     -> filter
       | "concat" vexpr vexpr                -> concat
       | vec_unary_op vexpr                  -> vecunary
       | vexpr vec_binary_op vexpr           -> vecbinary
