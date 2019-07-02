@@ -1,7 +1,7 @@
 from lark import Lark
 
 from engine.node import Node
-from engine.yovec.dep import graph
+from engine.yovec.prune import prune
 
 
 with open('grammar/yovec.ebnf') as f:
@@ -10,7 +10,8 @@ parser = Lark(grammar, start='program')
 
 with open('example/dist.yovec') as f:
     raw_program = f.read()
-program = Node.from_tree(parser.parse(raw_program))
+program = parser.parse(raw_program)
+program = Node.from_tree(program)
+program = prune(program)
 
 print(program.pretty())
-print(graph(program))
