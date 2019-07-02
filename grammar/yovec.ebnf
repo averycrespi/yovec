@@ -2,6 +2,7 @@
 %ignore WS
 
 NUMBER: /-?\d+(\.\d{1,4})?/
+number: NUMBER
 
 VAR_IDENT: /[A-Z]+/
 variable: VAR_IDENT
@@ -50,9 +51,9 @@ repeat: "repeat" "(" vector nexpr ")"
       | vexpr "dot" vexpr               -> dot
       | vexpr "cross" vexpr             -> cross
       | "len" vexpr                     -> len
-      | NUMBER                          -> number
       | "$" external
       | "(" nexpr ")"
+      | number
 
 // Vectors
 
@@ -74,5 +75,5 @@ repeat: "repeat" "(" vector nexpr ")"
       | "concat" vexpr vexpr                -> concat
       | vec_unary_op vexpr                  -> vecunary
       | vexpr vec_binary_op vexpr           -> vecbinary
-      | variable
       | "(" vexpr ")"
+      | variable
