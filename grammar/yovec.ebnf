@@ -2,21 +2,25 @@
 %ignore WS
 
 NUMBER: /-?\d+(\.\d{1,4})?/
+
 VAR_IDENT: /[A-Z]+/
+variable: VAR_IDENT
+
 YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
+external: YOLOL_IDENT
 
 // Statements
 
 program: line*
 line: import | export | let
 
-import: "import" YOLOL_IDENT
-export: "export" VAR_IDENT
+import: "import" external
+export: "export" variable
 
-?let: "let" VAR_IDENT "=" vector     -> letvec
-    | "let" VAR_IDENT "=" range      -> letran
-    | "let" VAR_IDENT "=" repeat     -> letrep
-    | "let" VAR_IDENT "=" vexpr      -> letvexpr
+?let: "let" variable "=" vector     -> letvec
+    | "let" variable "=" range      -> letran
+    | "let" variable "=" repeat     -> letrep
+    | "let" variable "=" vexpr      -> letvexpr
 
 vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
 range: "range" "(" (nexpr ",")? nexpr (nexpr ",")? ")"
@@ -46,8 +50,8 @@ repeat: "repeat" "(" vector nexpr ")"
       | vexpr "dot" vexpr               -> dot
       | vexpr "cross" vexpr             -> cross
       | "len" vexpr                     -> len
-      | "$" YOLOL_IDENT                 -> external
       | NUMBER                          -> number
+      | "$" external
       | "(" nexpr ")"
 
 // Vectors
@@ -70,5 +74,5 @@ repeat: "repeat" "(" vector nexpr ")"
       | "concat" vexpr vexpr                -> concat
       | vec_unary_op vexpr                  -> vecunary
       | vexpr vec_binary_op vexpr           -> vecbinary
-      | VAR_IDENT                           -> variable
+      | variable
       | "(" vexpr ")"
