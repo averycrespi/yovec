@@ -4,7 +4,7 @@ from engine.node import Node
 
 
 def prune(program: Node) -> Node:
-    """Prune unused dependencies from a program."""
+    """Prune unused dependencies from a Yovec program."""
     assert program.kind == 'program'
     graph = _graph_deps(program)
     used = _find_exported(program)
