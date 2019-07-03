@@ -8,7 +8,7 @@ from engine.yovec.number import SimpleNumber
 class SimpleVector:
     """Represents a list of simple numbers."""
     def __init__(self, snums: List[SimpleNumber]):
-        self.snums = snums
+        self.initial = snums
         self.opqueue = []
 
     def vecunary(self, op: str) -> 'SimpleVector':
@@ -35,13 +35,14 @@ class SimpleVector:
         result.opqueue.append(('postmap', sn, op))
         return result
 
-    def dot(self) -> SimpleNumber:
-        """Calculate the dot product of the simple vector."""
-        pass #TODO: implement
-
-    def cross(self) -> SimpleNumber:
-        """Calculate the cross product of the simple vector."""
-        pass #TODO: implement
+    def dot(self, sv: 'SimpleVector') -> SimpleNumber:
+        """Calculate the dot product of two simple vectors."""
+        lsnums = None #TODO: apply ops element-wise
+        rsnums = None #TODO: apply ops element-wise
+        result = SimpleNumber(0)
+        for lsn, rsn in zip(left_snums, right_snums):
+            result = result.add(lsn.mul(rsn))
+        return result
 
     def len(self) -> SimpleNumber:
         """Return the length of the simple vector."""
@@ -49,7 +50,11 @@ class SimpleVector:
 
     def reduce(self, op: str) -> SimpleNumber:
         """Reduce the simple vector to a simple number."""
-        pass #TODO: implement
+        snums = None #TODO: apply ops element-wise
+        result = snums[0]
+        for sn in snums[1:]:
+            result = result.binary(op, sn)
+        return result
 
     def assign(self, index: int) -> List[Node]:
         """Generate YOLOL assignment statements."""

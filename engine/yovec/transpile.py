@@ -67,10 +67,10 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
         env, sv = _transpile_vexpr(env, vexpr.children[1])
         return env, sv.vecunary(op)
     elif vexpr.kind == 'vecbinary':
-        env, svl = _transpile_vexpr(env, vexpr.children[0])
+        env, lsv = _transpile_vexpr(env, vexpr.children[0])
         op = vexpr.children[1].kind
-        env, svr = _transpile_vexpr(env, vexpr.children[2])
-        return env, svl.vecbinary(op, svr)
+        env, rsv = _transpile_vexpr(env, vexpr.children[2])
+        return env, lsv.vecbinary(op, rsv)
     elif vexpr.kind == 'variable':
         ident = vexpr.children[0].value
         _, sv = env[ident]
@@ -91,20 +91,18 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
         env, sn = _transpile_nexpr(env, nexpr.children[1])
         return env, sn.unary(op)
     elif nexpr.kind == 'binary':
-        env, snl = _transpile_nexpr(env, nexpr.children[0])
+        env, lsn = _transpile_nexpr(env, nexpr.children[0])
         op = nexpr.children[1].kind
-        env, snr = _transpile_nexpr(env, nexpr.children[2])
-        return env, snl.binary(op, snr)
+        env, rsn = _transpile_nexpr(env, nexpr.children[2])
+        return env, lsn.binary(op, rsn)
     elif nexpr.kind == 'reduce':
         op = nexpr.children[0].kind
         env, sv = _transpile_vexpr(env, nexpr.children[1])
         return env, sv.reduce(op)
     elif nexpr.kind == 'dot':
-        env, sv = _transpile_vexpr(env, nexpr.children[0])
-        return sv.dot()
-    elif nexpr.kind == 'cross':
-        env, sv = _transpile_vexpr(env, nexpr.children[0])
-        return sv.cross()
+        env, lsv = _transpile_vexpr(env, nexpr.children[0])
+        env, rsv = _transpile_vexpr(env, nexpr.children[1])
+        return lsv.dot(rsv)
     elif nexpr.kind == 'len':
         env, sv = _transpile_vexpr(env, nexpr.children[0])
         return sv.len()

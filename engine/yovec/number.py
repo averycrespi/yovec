@@ -7,7 +7,7 @@ from engine.node import Node
 class SimpleNumber:
     """Represents a number or external."""
     def __init__(self, n: Union[int, str]):
-        self.n = n
+        self.initial = n
         self.opqueue = []
 
     def unary(self, op: str) -> 'SimpleNumber':
