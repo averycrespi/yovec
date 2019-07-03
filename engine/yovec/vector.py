@@ -31,7 +31,7 @@ class SimpleVector:
         result.opqueue.append(('premap', op, sn))
         return result
 
-    def postmap(self, sn: SimpleNumber, op: str): -> 'SimpleVector':
+    def postmap(self, sn: SimpleNumber, op: str) -> 'SimpleVector':
         """Postmap an operation to a simple vector."""
         result = deepcopy(self)
         result.opqueue.append(('postmap', sn, op))
