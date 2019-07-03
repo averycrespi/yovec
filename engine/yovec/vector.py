@@ -9,6 +9,7 @@ class SimpleVector:
     """Represents a list of simple numbers."""
     def __init__(self, snums: List[SimpleNumber]):
         self.initial = snums
+        self.length = len(self.initial)
         self.queue = []
 
     # Operations
@@ -21,8 +22,8 @@ class SimpleVector:
 
     def vecbinary(self, op: str, sv: 'SimpleVector') -> 'SimpleVector':
         """Apply a binary operation to two simple vectors."""
-        if len(self.initial) != len(sv.initial):
-            raise ValueError('cannot apply operation to vectors of different lengths: {}'.format(op))
+        if self.length != sv.length:
+            raise ValueError('cannot apply operation {} to vectors of different lengths'.format(op))
         result = deepcopy(self)
         result.queue.append((op, sv))
         return result
@@ -58,7 +59,7 @@ class SimpleVector:
 
     def len(self) -> SimpleNumber:
         """Return the length of the simple vector."""
-        return SimpleNumber(len(self.initial))
+        return SimpleNumber(self.length)
 
     def reduce(self, op: str) -> SimpleNumber:
         """Reduce the simple vector to a simple number."""
@@ -82,9 +83,9 @@ class SimpleVector:
                 elif op == 'postmap':
                     sn = args[0].binary(args[1], sn)
                 elif len(args) == 0:
-                    sn = sn.unary(op.strip('v'))
+                    sn = sn.unary(op.strip('vec'))
                 elif len(args) == 1:
-                    sn = sn.binary(op.strip('v'), args[0].resolve()[i])
+                    sn = sn.binary(op.strip('vec'), args[0].resolve()[i])
                 else:
                     raise ValueError('unrecognized item in queue: {}, {}'.format(op, args))
             results.append(sn)

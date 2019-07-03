@@ -34,7 +34,7 @@ def transpile(program: Node) -> Node:
         elif child.kind == 'comment':
             pass
         else:
-            raise ValueError('unknown kind for child of line: {}'.format(child.kind))
+            raise ValueError('unknown kind for child: {}'.format(child.kind))
     yolol_program = Node(kind='program', children=children)
     #TODO: deepcopy program & not inplace?
     _rename_exports(env, yolol_program, exported)
