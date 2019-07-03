@@ -2,7 +2,7 @@
 
 `yodsl` is a collection of DSLs (domain-specific languages) that transpile to [YOLOL](https://wiki.starbasegame.com/index.php/YOLOL).
 
-#### Requirements:
+#### Requirements
 
 - Python 3.7 (or greater)
 - Lark parser (`pip3 install lark-parser`)
