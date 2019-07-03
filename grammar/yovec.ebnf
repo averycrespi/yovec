@@ -42,6 +42,7 @@ let: "let" variable "=" vexpr
       | nexpr num_binary_op nexpr       -> binary
       | "reduce" num_binary_op vexpr    -> reduce
       | vexpr "dot" vexpr               -> dot
+      | vexpr "cross" vexpr             -> cross
       | "len" vexpr                     -> len
       | "(" nexpr ")"
       | "$" external
@@ -58,6 +59,7 @@ let: "let" variable "=" vexpr
       | "map" nexpr num_binary_op vexpr     -> postmap
       | vec_unary_op vexpr                  -> vecunary
       | vexpr vec_binary_op vexpr           -> vecbinary
+      | "concat" vexpr vexpr                -> concat
       | "(" vexpr ")"
       | variable
       | vector
