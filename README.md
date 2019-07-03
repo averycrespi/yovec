@@ -4,7 +4,7 @@
 
 ## yovec
 
-`yovec` is a functional, vector-based DSL that transpile to YOLOL.
+`yovec` is a functional, vector-based DSL that transpiles to YOLOL.
 
 Example input:
 
