@@ -84,5 +84,5 @@ class SimpleVector:
             #TODO: add subnode to variable?
             var = Node(kind='variable', value='v{}e{}'.format(index, i))
             asn = Node(kind='assignment', children=[var, expr])
-            assignments.append(a)
+            assignments.append(asn)
         return assignments

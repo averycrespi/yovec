@@ -35,7 +35,7 @@ def _transpile_import(env: Env, import_: Node) -> Env:
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
-    ident = import_.children[0].children[0].value
+    ident = export.children[0].children[0].value
     _ = env[ident]
 
 
@@ -79,6 +79,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
         snums = []
         for nexpr in vexpr.children:
             env, sn = _transpile_nexpr(env, nexpr)
+            snums.append(sn)
         return env, SimpleVector(snums)
     else:
         raise ValueError('unknown kind for vexpr: {}'.format(vexpr.kind))

@@ -28,4 +28,5 @@ class SimpleNumber:
 
     def evaluate(self) -> Node:
         """Generate a YOLOL expression."""
-        pass #TODO: implement
+        #TODO: implement
+        return Node(kind='expression', children=[])
