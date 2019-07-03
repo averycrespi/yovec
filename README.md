@@ -4,9 +4,13 @@
 
 ## yovec
 
+#### What?
+
 `yovec` is a functional, vector-based DSL that transpiles to YOLOL.
 
-Example:
+#### Why?
+
+Would you rather write this ...
 
 ```
 // Calculate the Euclidean distance between two vectors.
@@ -22,7 +26,7 @@ let E = map ^0.5 D
 export E as dist
 ```
 
-Output:
+... or this?
 
 ```
 v0e0=1 v0e1=2 v0e2=3
@@ -31,3 +35,7 @@ v2e0=(v0e0-v1e0)^2 v2e1=(v0e1-v1e1)^2 v2e2=(v0e2-v1e2)^2
 v3e0=v2e0+v2e1+v2e2
 dist0=v3e0^0.5
 ```
+
+#### How?
+
+Clone this repo, then run `python3 yovec.py source > out`
