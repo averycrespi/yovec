@@ -24,7 +24,8 @@ let: "let" variable "=" vexpr
 
 // Numbers
 
-?num_unary_op: "abs"        -> abs
+?num_unary_op: "-"          -> neg
+             | "abs"        -> abs
              | "sqrt"       -> sqrt
              | "sin"        -> sin
              | "cos"        -> cos
@@ -57,7 +58,8 @@ let: "let" variable "=" vexpr
 ?vec_binary_op: "+"     -> vadd
               | "-"     -> vsub
 
-?vexpr: "map" num_binary_op nexpr vexpr     -> premap
+?vexpr: "map" num_unary_op vexpr            -> map
+      | "map" num_binary_op nexpr vexpr     -> premap
       | "map" nexpr num_binary_op vexpr     -> postmap
       | "concat" vexpr+                     -> concat
       | (vec_unary_op)+ vexpr               -> vecunary

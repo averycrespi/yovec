@@ -27,6 +27,11 @@ class SimpleVector:
         result.queue.append((op, sv))
         return result
 
+    def map(self, op: str) -> 'SimpleVector':
+        result = deepcopy(self)
+        result.queue.append(('map', op))
+        return result
+
     def premap(self, op: str, sn: SimpleNumber) -> 'SimpleVector':
         """Premap an operation to a simple vector."""
         result = deepcopy(self)
@@ -70,7 +75,9 @@ class SimpleVector:
         results = []
         for i, sn in enumerate(self.initial):
             for op, *args in self.queue:
-                if op == 'premap':
+                if op == 'map':
+                    sn = sn.unary(args[0])
+                elif op == 'premap':
                     sn = sn.binary(args[0], args[1])
                 elif op == 'postmap':
                     sn = args[0].binary(args[1], sn)

@@ -85,7 +85,11 @@ def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
 
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
     """Transpile a vexpr to a simple vector."""
-    if vexpr.kind == 'premap':
+    if vexpr.kind == 'map':
+        op = vexpr.children[0]
+        env, sv = _transpile_vexpr(env, vexpr.children[1])
+        return env, sv.map(op.kind)
+    elif vexpr.kind == 'premap':
         op = vexpr.children[0]
         env, sn = _transpile_nexpr(env, vexpr.children[1])
         env, sv = _transpile_vexpr(env, vexpr.children[2])
