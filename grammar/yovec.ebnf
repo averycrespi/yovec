@@ -38,8 +38,8 @@ let: "let" variable "=" vexpr
               | "%"     -> mod
               | "^"     -> exp
 
-?nexpr: num_unary_op nexpr              -> unary
-      | nexpr num_binary_op nexpr       -> binary
+?nexpr: (num_unary_op)+ nexpr           -> unary
+      | nexpr (num_binary_op nexpr)+    -> binary
       | "reduce" num_binary_op vexpr    -> reduce
       | vexpr "dot" vexpr               -> dot
       | vexpr "cross" vexpr             -> cross
@@ -57,8 +57,8 @@ let: "let" variable "=" vexpr
 
 ?vexpr: "map" num_binary_op nexpr vexpr     -> premap
       | "map" nexpr num_binary_op vexpr     -> postmap
-      | vec_unary_op vexpr                  -> vecunary
-      | vexpr vec_binary_op vexpr           -> vecbinary
+      | (vec_unary_op)+ vexpr               -> vecunary
+      | vexpr (vec_binary_op vexpr)+        -> vecbinary
       | "concat" vexpr vexpr                -> concat
       | "(" vexpr ")"
       | variable

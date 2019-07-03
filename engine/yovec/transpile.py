@@ -54,24 +54,28 @@ def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
     """Transpile a vexpr to a simple vector."""
     if vexpr.kind == 'premap':
-        op = vexpr.children[0].kind
+        op = vexpr.children[0]
         env, sn = _transpile_nexpr(env, vexpr.children[1])
         env, sv = _transpile_vexpr(env, vexpr.children[2])
-        return env, sv.premap(op, sn)
+        return env, sv.premap(op.kind, sn)
     elif vexpr.kind == 'postmap':
         env, sn = _transpile_nexpr(env, vexpr.children[0])
-        op = vexpr.children[1].kind
+        op = vexpr.children[1]
         env, sv = _transpile_vexpr(env, vexpr.children[2])
-        return env, sv.postmap(sn, op)
+        return env, sv.postmap(sn, op.kind)
     elif vexpr.kind == 'vecunary':
-        op = vexpr.children[0].kind
         env, sv = _transpile_vexpr(env, vexpr.children[1])
-        return env, sv.vecunary(op)
+        for op in vexpr.children[:-1]:
+            sv = sv.vecunary(op.kind)
+        return env, sv
     elif vexpr.kind == 'vecbinary':
         env, lsv = _transpile_vexpr(env, vexpr.children[0])
-        op = vexpr.children[1].kind
-        env, rsv = _transpile_vexpr(env, vexpr.children[2])
-        return env, lsv.vecbinary(op, rsv)
+        ops = vexpr.children[1::2]
+        rsvs = vexpr.children[2::2]
+        for op, rsv in zip(ops, rsvs):
+            env, rsv = _transpile_vexpr(env, rsv)
+            lsv = lsv.vecbinary(op.kind, rsv)
+        return env, lsv
     elif vexpr.kind == 'variable':
         ident = vexpr.children[0].value
         _, sv = env[ident]
@@ -89,18 +93,22 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     """Transpile a nexpr to a simple number."""
     if nexpr.kind == 'unary':
-        op = nexpr.children[0].kind
         env, sn = _transpile_nexpr(env, nexpr.children[1])
-        return env, sn.unary(op)
+        for op in nexpr.children[:-1]:
+            sn = sn.unary(op.kind)
+        return env, sn
     elif nexpr.kind == 'binary':
         env, lsn = _transpile_nexpr(env, nexpr.children[0])
-        op = nexpr.children[1].kind
-        env, rsn = _transpile_nexpr(env, nexpr.children[2])
-        return env, lsn.binary(op, rsn)
+        ops = nexpr.children[1::2]
+        rsns = nexpr.children[2::2]
+        for op, rsn in zip(ops, rsns):
+            env, rsn = _transpile_nexpr(env, rsn)
+            lsn = lsn.binary(op.kind, rsn)
+        return env, lsn
     elif nexpr.kind == 'reduce':
-        op = nexpr.children[0].kind
+        op = nexpr.children[0]
         env, sv = _transpile_vexpr(env, nexpr.children[1])
-        return env, sv.reduce(op)
+        return env, sv.reduce(op.kind)
     elif nexpr.kind == 'dot':
         env, lsv = _transpile_vexpr(env, nexpr.children[0])
         env, rsv = _transpile_vexpr(env, nexpr.children[1])
