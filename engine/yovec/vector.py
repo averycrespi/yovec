@@ -9,32 +9,32 @@ class SimpleVector:
     """Represents a list of simple numbers."""
     def __init__(self, snums: List[SimpleNumber]):
         self.initial = snums
-        self.opqueue = []
+        self.queue = []
 
     # Operations
 
     def vecunary(self, op: str) -> 'SimpleVector':
         """Apply a unary operation to a simple vector."""
         result = deepcopy(self)
-        result.opqueue.append((op,))
+        result.queue.append((op,))
         return result
 
     def vecbinary(self, op: str, sv: 'SimpleVector') -> 'SimpleVector':
         """Apply a binary operation to two simple vectors."""
         result = deepcopy(self)
-        result.opqueue.append((op, sv))
+        result.queue.append((op, sv))
         return result
 
     def premap(self, op: str, sn: SimpleNumber) -> 'SimpleVector':
         """Premap an operation to a simple vector."""
         result = deepcopy(self)
-        result.opqueue.append(('premap', op, sn))
+        result.queue.append(('premap', op, sn))
         return result
 
     def postmap(self, sn: SimpleNumber, op: str) -> 'SimpleVector':
         """Postmap an operation to a simple vector."""
         result = deepcopy(self)
-        result.opqueue.append(('postmap', sn, op))
+        result.queue.append(('postmap', sn, op))
         return result
 
     def dot(self, sv: 'SimpleVector') -> SimpleNumber:
@@ -61,16 +61,16 @@ class SimpleVector:
     def resolve(self) -> List[SimpleNumber]:
         """Resolve operations for each simple number."""
         results = []
-        for sn in self.initial:
-            for event in self.opqueue:
+        for i, sn in enumerate(self.initial):
+            for event in self.queue:
                 if event[0] == 'premap':
                     sn = sn.binary(event[1], event[2])
                 elif event[0] == 'postmap':
                     sn = event[1].binary(event[2], sn)
                 elif len(event) == 1:
-                    sn = sn.unary(event[0])
+                    sn = sn.unary(event[0].strip('v'))
                 elif len(event) == 2:
-                    sn = sn.binary(event[0], event[1])
+                    sn = sn.binary(event[0].strip('v'), event[1].resolve()[i])
                 else:
                     raise ValueError('unrecognized event: {}'.format(event))
             results.append(sn)
@@ -81,7 +81,6 @@ class SimpleVector:
         assignments = []
         expressions = [sn.evaluate() for sn in self.resolve()]
         for i, expr in enumerate(expressions):
-            #TODO: add subnode to variable?
             var = Node(kind='variable', value='v{}e{}'.format(index, i))
             asn = Node(kind='assignment', children=[var, expr])
             assignments.append(asn)

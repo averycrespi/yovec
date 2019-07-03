@@ -1,0 +1,14 @@
+number
+variable
+
+line: multi?
+multi: statement+
+statement: assignment
+
+assignment: variable "=" expr
+
+?expr: unary_op expr
+     | expr binary_op expr
+     | "(" expr ")"
+     | number
+     | variable

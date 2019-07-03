@@ -1,27 +1,27 @@
 from copy import deepcopy
-from typing import Union
+from typing import Union, Any
 
 from engine.node import Node
 
 
 class SimpleNumber:
     """Represents a number or external."""
-    def __init__(self, n: Union[int, str]):
+    def __init__(self, n: Union[int, float, str]):
         self.initial = n
-        self.opqueue = []
+        self.queue = []
 
     # Operations
 
     def unary(self, op: str) -> 'SimpleNumber':
         """Apply a unary operation to a simple number."""
         result = deepcopy(self)
-        result.opqueue.append((op,))
+        result.queue.append((op,))
         return result
 
     def binary(self, op: str, sn: 'SimpleNumber') -> 'SimpleNumber':
         """Apply a binary operation to a simple number."""
         result = deepcopy(self)
-        result.opqueue.append((op, sn))
+        result.queue.append((op, sn))
         return result
 
     # Resolutions
@@ -29,4 +29,4 @@ class SimpleNumber:
     def evaluate(self) -> Node:
         """Generate a YOLOL expression."""
         #TODO: implement
-        return Node(kind='expression', children=[])
+        return Node(kind='TODO', value=self.queue)

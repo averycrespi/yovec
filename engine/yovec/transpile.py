@@ -107,7 +107,12 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     elif nexpr.kind == 'len':
         env, sv = _transpile_vexpr(env, nexpr.children[0])
         return sv.len()
-    elif nexpr.kind in ('external', 'number'):
+    elif nexpr.kind == 'external':
         return env, SimpleNumber(nexpr.children[0].value)
+    elif nexpr.kind == 'number':
+        try:
+            return env, SimpleNumber(int(nexpr.children[0].value))
+        except ValueError:
+            return env, SimpleNumber(float(nexpr.children[0].value))
     else:
         raise ValueError('unknown kind for nexpr: {}'.format(vexpr.kind))
