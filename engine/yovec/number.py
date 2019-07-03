@@ -28,5 +28,15 @@ class SimpleNumber:
 
     def evaluate(self) -> Node:
         """Generate a YOLOL expression."""
-        #TODO: implement
-        return Node(kind='TODO', value=self.queue)
+        if type(self.initial) == str:
+            node = Node(kind='variable', value=self.initial)
+        else:
+            node = Node(kind='number', value=self.initial)
+        for op, *args in self.queue:
+            if len(args) == 0:
+                node = Node(kind=op, children=[node])
+            elif len(args) == 1:
+                node = Node(kind=op, children=[node, args[0].evaluate()])
+            else:
+                raise ValueError('unrecognized item in queue: {}, {}'.format(op, args))
+        return node

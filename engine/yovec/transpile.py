@@ -44,8 +44,9 @@ def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
     assert let.kind == 'let'
     ident = let.children[0].children[0].value
     env, sv = _transpile_vexpr(env, let.children[1])
+    assignments, sv = sv.assign(index)
     env = env.update(ident, (index, sv))
-    multi = Node(kind='multi', children=sv.assign(index))
+    multi = Node(kind='multi', children=assignments)
     line = Node(kind='line', children=[multi])
     return env, index+1, line
 

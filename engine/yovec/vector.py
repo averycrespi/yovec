@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import List
+from typing import List, Tuple
 
 from engine.node import Node
 from engine.yovec.number import SimpleNumber
@@ -62,26 +62,29 @@ class SimpleVector:
         """Resolve operations for each simple number."""
         results = []
         for i, sn in enumerate(self.initial):
-            for event in self.queue:
-                if event[0] == 'premap':
-                    sn = sn.binary(event[1], event[2])
-                elif event[0] == 'postmap':
-                    sn = event[1].binary(event[2], sn)
-                elif len(event) == 1:
-                    sn = sn.unary(event[0].strip('v'))
-                elif len(event) == 2:
-                    sn = sn.binary(event[0].strip('v'), event[1].resolve()[i])
+            for op, *args in self.queue:
+                if op == 'premap':
+                    sn = sn.binary(args[0], args[1])
+                elif op == 'postmap':
+                    sn = args[0].binary(args[1], sn)
+                elif len(args) == 0:
+                    sn = sn.unary(op.strip('v'))
+                elif len(args) == 1:
+                    sn = sn.binary(op.strip('v'), args[0].resolve()[i])
                 else:
-                    raise ValueError('unrecognized event: {}'.format(event))
+                    raise ValueError('unrecognized item in queue: {}, {}'.format(op, args))
             results.append(sn)
         return results
 
-    def assign(self, index: int) -> List[Node]:
+    def assign(self, index: int) -> Tuple[List[Node], 'SimpleVector']:
         """Generate YOLOL assignment statements."""
         assignments = []
+        snums = []
         expressions = [sn.evaluate() for sn in self.resolve()]
         for i, expr in enumerate(expressions):
-            var = Node(kind='variable', value='v{}e{}'.format(index, i))
+            ident = 'v{}e{}'.format(index, i)
+            var = Node(kind='variable', value=ident)
             asn = Node(kind='assignment', children=[var, expr])
             assignments.append(asn)
-        return assignments
+            snums.append(SimpleNumber(ident))
+        return assignments, SimpleVector(snums)
