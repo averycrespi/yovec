@@ -6,12 +6,16 @@ from engine.yovec.vector import SimpleVector
 from engine.yovec.number import SimpleNumber
 
 
+EXPORT_PREFIX = '#exported:'
+
+
 def transpile(program: Node) -> Node:
     """Transpile a Yovec program to YOLOL.
 
     The environment holds multiple types of values:
         variable -> (index, SimpleVector)
         external -> True
+        exported -> True
     """
     env = Env(overwrite=False)
     index = 0
@@ -22,12 +26,13 @@ def transpile(program: Node) -> Node:
         if child.kind == 'import':
             env = _transpile_import(env, child)
         elif child.kind == 'export':
-            exported.append(_transpile_export(env, child))
+            env, (before, after) = _transpile_export(env, child)
+            exported.append((before, after))
         elif child.kind == 'let':
             env, index, out_line = _transpile_let(env, index, child)
             children.append(out_line)
         elif child.kind == 'comment':
-            pass # Do nothing
+            pass
         else:
             raise ValueError('unknown kind for child of line: {}'.format(child.kind))
     yolol_program = Node(kind='program', children=children)
@@ -56,13 +61,14 @@ def _transpile_import(env: Env, import_: Node) -> Env:
     return env.update(ident, True)
 
 
-def _transpile_export(env: Env, export: Node) -> Tuple[str, str]:
+def _transpile_export(env: Env, export: Node) -> Tuple[Env, Tuple[str, str]]:
     """Transpile an export statement."""
     assert export.kind == 'export'
     before = export.children[0].children[0].value
     after = export.children[1].children[0].value
     _ = env[before]
-    return (before, after)
+    env = env.update('{}{}'.format(EXPORT_PREFIX, before), True)
+    return env, (before, after)
 
 
 def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:

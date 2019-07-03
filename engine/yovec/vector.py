@@ -21,6 +21,8 @@ class SimpleVector:
 
     def vecbinary(self, op: str, sv: 'SimpleVector') -> 'SimpleVector':
         """Apply a binary operation to two simple vectors."""
+        if len(self.initial) != len(sv.initial):
+            raise ValueError('cannot apply operation to vectors of different lengths: {}'.format(op))
         result = deepcopy(self)
         result.queue.append((op, sv))
         return result
@@ -46,7 +48,7 @@ class SimpleVector:
 
     def len(self) -> SimpleNumber:
         """Return the length of the simple vector."""
-        return SimpleNumber(len(self.snums))
+        return SimpleNumber(len(self.initial))
 
     def reduce(self, op: str) -> SimpleNumber:
         """Reduce the simple vector to a simple number."""
