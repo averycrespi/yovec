@@ -11,6 +11,8 @@ class SimpleVector:
         self.initial = snums
         self.opqueue = []
 
+    # Operations
+
     def vecunary(self, op: str) -> 'SimpleVector':
         """Apply a unary operation to a simple vector."""
         result = deepcopy(self)
@@ -37,24 +39,42 @@ class SimpleVector:
 
     def dot(self, sv: 'SimpleVector') -> SimpleNumber:
         """Calculate the dot product of two simple vectors."""
-        lsnums = None #TODO: apply ops element-wise
-        rsnums = None #TODO: apply ops element-wise
         result = SimpleNumber(0)
-        for lsn, rsn in zip(left_snums, right_snums):
+        for lsn, rsn in zip(self.resolve(), sv.resolve()):
             result = result.add(lsn.mul(rsn))
         return result
 
     def len(self) -> SimpleNumber:
         """Return the length of the simple vector."""
-        return len(self.snums)
+        return SimpleNumber(len(self.snums))
 
     def reduce(self, op: str) -> SimpleNumber:
         """Reduce the simple vector to a simple number."""
-        snums = None #TODO: apply ops element-wise
+        snums = self.resolve()
         result = snums[0]
         for sn in snums[1:]:
             result = result.binary(op, sn)
         return result
+
+    # Resolutions
+
+    def resolve(self) -> List[SimpleNumber]:
+        """Resolve operations for each simple number."""
+        results = []
+        for sn in self.initial:
+            for event in self.opqueue:
+                if event[0] == 'premap':
+                    sn = sn.binary(event[1], event[2])
+                elif event[0] == 'postmap':
+                    sn = event[1].binary(event[2], sn)
+                elif len(event) == 1:
+                    sn = sn.unary(event[0])
+                elif len(event) == 2:
+                    sn = sn.binary(event[0], event[1])
+                else:
+                    pass #TODO: raise error
+            results.append(sn)
+        return results
 
     def assign(self, index: int) -> List[Node]:
         """Generate YOLOL assignment statements."""

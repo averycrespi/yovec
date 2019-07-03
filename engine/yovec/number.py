@@ -10,6 +10,8 @@ class SimpleNumber:
         self.initial = n
         self.opqueue = []
 
+    # Operations
+
     def unary(self, op: str) -> 'SimpleNumber':
         """Apply a unary operation to a simple number."""
         result = deepcopy(self)
@@ -21,6 +23,8 @@ class SimpleNumber:
         result = deepcopy(self)
         result.opqueue.append((op, sn))
         return result
+
+    # Resolutions
 
     def evaluate(self) -> Node:
         """Generate a YOLOL expression."""
