@@ -78,4 +78,12 @@ class SimpleVector:
 
     def assign(self, index: int) -> List[Node]:
         """Generate YOLOL assignment statements."""
-        pass #TODO: implement
+        assignments = []
+        expressions = [sn.evaluate() for sn in self.resolve()]
+        for i, expr in enumerate(expressions):
+            #TODO: add subnode to variable?
+            var = Node(kind='variable', value='v{}e{}'.format(index, i))
+            asn = Node(kind='assignment', children=[var, expr])
+            assignments.append(a)
+        return assignments
+
