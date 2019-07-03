@@ -72,7 +72,7 @@ class SimpleVector:
                 elif len(event) == 2:
                     sn = sn.binary(event[0], event[1])
                 else:
-                    pass #TODO: raise error
+                    raise ValueError('unrecognized event: {}'.format(event))
             results.append(sn)
         return results
 

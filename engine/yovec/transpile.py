@@ -21,7 +21,7 @@ def transpile(program: Node) -> Node:
             env, index, out_line = _transpile_let(env, index, child)
             children.append(out_line)
         else:
-            pass #TODO: raise error
+            raise ValueError('unknown kind for child of line: {}'.format(child.kind))
     return Node(kind='program', children=children)
 
 
@@ -81,7 +81,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
             env, sn = _transpile_nexpr(env, nexpr)
         return env, SimpleVector(snums)
     else:
-        pass #TODO: raise error
+        raise ValueError('unknown kind for vexpr: {}'.format(vexpr.kind))
 
 
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
@@ -109,4 +109,4 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     elif nexpr.kind in ('external', 'number'):
         return env, SimpleNumber(nexpr.children[0].value)
     else:
-        pass #TODO: raise error
+        raise ValueError('unknown kind for nexpr: {}'.format(vexpr.kind))
