@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 
 from engine.env import Env
 from engine.node import Node
@@ -16,18 +16,35 @@ def transpile(program: Node) -> Node:
     env = Env(overwrite=False)
     index = 0
     children = []
+    exported = []
     for line in program.children:
         child = line.children[0]
         if child.kind == 'import':
             env = _transpile_import(env, child)
         elif child.kind == 'export':
-            _transpile_export(env, child)
+            exported.append(_transpile_export(env, child))
         elif child.kind == 'let':
             env, index, out_line = _transpile_let(env, index, child)
             children.append(out_line)
         else:
             raise ValueError('unknown kind for child of line: {}'.format(child.kind))
-    return Node(kind='program', children=children)
+    yolol_program = Node(kind='program', children=children)
+    #TODO: deepcopy program & not inplace?
+    _rename_exports(env, yolol_program, exported)
+    return yolol_program
+
+
+def _rename_exports(env: Env, node: Node, exported: List[Tuple[str, str]]):
+    """Rename the exported variables (in-place) in a YOLOL program."""
+    if node.kind == 'variable':
+        for before, after in exported:
+            prefix = 'v{}e'.format(env[before][0])
+            if node.value.startswith(prefix):
+                node.value = node.value.replace(prefix, after)
+                return
+    elif node.children is not None:
+        for c in node.children:
+            _rename_exports(env, c, exported)
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
@@ -37,11 +54,13 @@ def _transpile_import(env: Env, import_: Node) -> Env:
     return env.update(ident, True)
 
 
-def _transpile_export(env: Env, export: Node):
+def _transpile_export(env: Env, export: Node) -> Tuple[str, str]:
     """Transpile an export statement."""
     assert export.kind == 'export'
-    ident = export.children[0].children[0].value
-    _ = env[ident]
+    before = export.children[0].children[0].value
+    after = export.children[1].children[0].value
+    _ = env[before]
+    return (before, after)
 
 
 def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
