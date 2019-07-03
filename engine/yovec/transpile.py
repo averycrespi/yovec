@@ -7,7 +7,12 @@ from engine.yovec.number import SimpleNumber
 
 
 def transpile(program: Node) -> Node:
-    """Transpile a Yovec program to YOLOL."""
+    """Transpile a Yovec program to YOLOL.
+
+    The environment holds multiple types of values:
+        variable -> (index, SimpleVector)
+        external -> True
+    """
     env = Env(overwrite=False)
     index = 0
     children = []
