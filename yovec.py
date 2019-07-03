@@ -1,6 +1,7 @@
 from lark import Lark
 
 from engine.node import Node
+from engine.yolol.format import format
 from engine.yovec.transpile import transpile
 
 
@@ -13,4 +14,4 @@ with open('sample/dist.yovec') as f:
 yovec_program = Node.from_tree(parser.parse(raw_program))
 yolol_program = transpile(yovec_program)
 
-print(yolol_program.pretty())
+print(format(yolol_program))

@@ -1,9 +1,9 @@
 number
 variable
 
-line: multi?
+line: multi
 multi: statement+
-statement: assignment
+?statement: assignment
 
 assignment: variable "=" expr
 
