@@ -5,7 +5,7 @@ from engine.node import Node
 
 
 class SimpleNumber:
-    """Represents a number or external."""
+    """Represents a number, variable, or external."""
     def __init__(self, n: Union[int, float, str]):
         self.initial = n
         self.queue = []
