@@ -10,10 +10,11 @@ from engine.yovec.transpile import transpile
 def parse_args():
     parser = ArgumentParser(description='Transpile Yovec to YOLOL')
     parser.add_argument('srcfile', type=str, help='Yovec source file')
+    parser.add_argument('--ast', action='store_true', help='Output YOLOL AST')
     return parser.parse_args()
 
 
-def main(srcfile):
+def main(srcfile, ast=False):
     with open('grammar/yovec.ebnf') as f:
         grammar = f.read()
     parser = Lark(grammar, start='program')
@@ -21,9 +22,12 @@ def main(srcfile):
         raw_program = f.read()
     yovec_program = Node.from_tree(parser.parse(raw_program))
     yolol_program = transpile(yovec_program)
-    print(format(yolol_program))
+    if ast:
+        print(yolol_program.pretty())
+    else:
+        print(format(yolol_program))
 
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args.srcfile)
+    main(args.srcfile, ast=args.ast)
