@@ -1,3 +1,5 @@
+// Calculate the Euclidean distance between two vectors.
+
 import n
 
 let A = [1, 2, 3]

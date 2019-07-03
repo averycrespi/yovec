@@ -10,12 +10,14 @@ variable: VAR_IDENT
 YOLOL_IDENT: /[a-z][a-z0-9]*|:[a-z0-9]+/
 external: YOLOL_IDENT
 
+comment: /\/\/[^\n]*/
+
 vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
 
 // Statements
 
 program: line*
-line: import | export | let
+line: import | export | let | comment
 import: "import" external
 export: "export" variable "as" external
 let: "let" variable "=" vexpr

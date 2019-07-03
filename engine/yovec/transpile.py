@@ -26,6 +26,8 @@ def transpile(program: Node) -> Node:
         elif child.kind == 'let':
             env, index, out_line = _transpile_let(env, index, child)
             children.append(out_line)
+        elif child.kind == 'comment':
+            pass # Do nothing
         else:
             raise ValueError('unknown kind for child of line: {}'.format(child.kind))
     yolol_program = Node(kind='program', children=children)

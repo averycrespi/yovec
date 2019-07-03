@@ -6,9 +6,11 @@
 
 `yovec` is a functional, vector-based DSL that transpiles to YOLOL.
 
-Example input:
+Example:
 
 ```
+// Calculate the Euclidean distance between two vectors.
+
 import n
 
 let A = [1, 2, 3]
