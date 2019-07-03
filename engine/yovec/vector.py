@@ -86,4 +86,3 @@ class SimpleVector:
             asn = Node(kind='assignment', children=[var, expr])
             assignments.append(a)
         return assignments
-
