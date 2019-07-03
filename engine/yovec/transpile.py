@@ -97,7 +97,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
         return env, sv.postmap(sn, op.kind)
     elif vexpr.kind == 'vecunary':
         env, sv = _transpile_vexpr(env, vexpr.children[-1])
-        for op in vexpr.children[:-1]:
+        for op in reversed(vexpr.children[:-1]):
             sv = sv.vecunary(op.kind)
         return env, sv
     elif vexpr.kind == 'vecbinary':
@@ -126,7 +126,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     """Transpile a nexpr to a simple number."""
     if nexpr.kind == 'unary':
         env, sn = _transpile_nexpr(env, nexpr.children[-1])
-        for op in nexpr.children[:-1]:
+        for op in reversed(nexpr.children[:-1]):
             sn = sn.unary(op.kind)
         return env, sn
     elif nexpr.kind == 'binary':
