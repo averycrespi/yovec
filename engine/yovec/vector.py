@@ -29,18 +29,19 @@ class SimpleVector:
         return result
 
     def map(self, op: str) -> 'SimpleVector':
+        """Map a unary operation to a simple vector."""
         result = deepcopy(self)
         result.queue.append(('map', op))
         return result
 
     def premap(self, op: str, sn: SimpleNumber) -> 'SimpleVector':
-        """Premap an operation to a simple vector."""
+        """Premap a binary operation to a simple vector."""
         result = deepcopy(self)
         result.queue.append(('premap', op, sn))
         return result
 
     def postmap(self, sn: SimpleNumber, op: str) -> 'SimpleVector':
-        """Postmap an operation to a simple vector."""
+        """Postmap a binary operation to a simple vector."""
         result = deepcopy(self)
         result.queue.append(('postmap', sn, op))
         return result
@@ -54,7 +55,7 @@ class SimpleVector:
         """Calculate the dot product of two simple vectors."""
         result = SimpleNumber(0)
         for lsn, rsn in zip(self.resolve(), sv.resolve()):
-            result = result.add(lsn.mul(rsn))
+            result = result.binary('add', lsn.binary('mul', rsn))
         return result
 
     def len(self) -> SimpleNumber:

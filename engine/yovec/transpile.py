@@ -154,10 +154,10 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     elif nexpr.kind == 'dot':
         env, lsv = _transpile_vexpr(env, nexpr.children[0])
         env, rsv = _transpile_vexpr(env, nexpr.children[1])
-        return lsv.dot(rsv)
+        return env, lsv.dot(rsv)
     elif nexpr.kind == 'len':
         env, sv = _transpile_vexpr(env, nexpr.children[0])
-        return sv.len()
+        return env, sv.len()
     elif nexpr.kind == 'external':
         return env, SimpleNumber(nexpr.children[0].value)
     elif nexpr.kind == 'number':
