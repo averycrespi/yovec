@@ -39,6 +39,11 @@ class SimpleVector:
         result.queue.append(('postmap', sn, op))
         return result
 
+    def concat(self, sv: 'SimpleVector') -> 'SimpleVector':
+        """Concatenate two simple vectors."""
+        initial = [*self.resolve(), *sv.resolve()]
+        return SimpleVector(initial)
+
     def dot(self, sv: 'SimpleVector') -> SimpleNumber:
         """Calculate the dot product of two simple vectors."""
         result = SimpleNumber(0)
