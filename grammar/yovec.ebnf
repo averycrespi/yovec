@@ -52,10 +52,10 @@ let: "let" variable "=" vexpr
 
 // Vectors
 
-?vec_unary_op: "-"  -> vneg
+?vec_unary_op: "-"  -> vecneg
 
-?vec_binary_op: "+"     -> vadd
-              | "-"     -> vsub
+?vec_binary_op: "+"     -> vecadd
+              | "-"     -> vecsub
 
 ?vexpr: "map" num_unary_op vexpr            -> map
       | "map" num_binary_op nexpr vexpr     -> premap
