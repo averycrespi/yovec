@@ -13,14 +13,14 @@ OPERATORS = {
     'div': Op('/', 2),
     'mod': Op('%', 2),
     'exp': Op('^', 3),
-    'abs': Op('abs', 4),
-    'sqrt': Op('sqrt', 4),
-    'sin': Op('sin', 4),
-    'cos': Op('cos', 4),
-    'tan': Op('tan', 4),
-    'arcsin': Op('arcsin', 4),
-    'arccos': Op('arccos', 4),
-    'arctan': Op('arctan', 4)
+    'abs': Op('abs ', 4),
+    'sqrt': Op('sqrt ', 4),
+    'sin': Op('sin ', 4),
+    'cos': Op('cos ', 4),
+    'tan': Op('tan ', 4),
+    'arcsin': Op('arcsin ', 4),
+    'arccos': Op('arccos ', 4),
+    'arctan': Op('arctan ', 4)
 }
 
 
