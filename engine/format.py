@@ -75,4 +75,4 @@ def _format_expr(expr: Node, parent_prec: int=0) -> str:
             rparen= ')' if parent_prec > prec else ''
         )
     else:
-        raise ValueError('unrecognized expr: {}'.format(expr))
+        raise AssertionError('unrecognized expr: {}'.format(expr))

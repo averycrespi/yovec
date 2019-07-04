@@ -1,8 +1,10 @@
 from copy import deepcopy
 from typing import List, Tuple
 
+from engine.errors import YovecError
 from engine.node import Node
 from engine.number import SimpleNumber
+
 
 
 class SimpleVector:
@@ -23,7 +25,7 @@ class SimpleVector:
     def vecbinary(self, op: str, sv: 'SimpleVector') -> 'SimpleVector':
         """Apply a binary operation to two simple vectors."""
         if self.length != sv.length:
-            raise ValueError('cannot apply operation {} to vectors of different lengths'.format(op))
+            raise YovecError('cannot apply operation "{}" to vectors of different lengths'.format(op))
         result = deepcopy(self)
         result.queue.append((op, sv))
         return result
@@ -83,9 +85,9 @@ class SimpleVector:
                     sn = sn.binary(args[0], args[1])
                 elif op == 'vec_postmap':
                     sn = args[0].binary(args[1], sn)
-                elif len(args) == 0: # unary
+                elif len(args) == 0: # vec_unary
                     sn = sn.unary(op.strip('vec_'))
-                elif len(args) == 1: # binary
+                elif len(args) == 1: # vec_binary
                     sn = sn.binary(op.strip('vec_'), args[0].resolve()[i])
                 else:
                     raise ValueError('unrecognized item in queue: {}, {}'.format(op, args))

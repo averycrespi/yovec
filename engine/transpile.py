@@ -1,9 +1,10 @@
 from typing import Tuple, List
 
 from engine.env import Env
+from engine.errors import YovecError
 from engine.node import Node
-from engine.vector import SimpleVector
 from engine.number import SimpleNumber
+from engine.vector import SimpleVector
 
 
 EXPORT_PREFIX = '#exported:'
@@ -34,15 +35,15 @@ def transpile(program: Node) -> Node:
         elif child.kind == 'comment':
             pass
         else:
-            raise ValueError('unknown kind for child: {}'.format(child.kind))
+            raise AssertionError('unknown kind for child: {}'.format(child.kind))
     yolol_program = Node(kind='program', children=children)
-    #TODO: deepcopy program & not inplace?
     _rename_exports(env, yolol_program, exported)
     return yolol_program
 
 
 def _rename_exports(env: Env, node: Node, exported: List[Tuple[str, str]]):
     """Rename the exported variables (in-place) in a YOLOL program."""
+    #TODO: deepcopy program & not inplace?
     if node.kind == 'variable':
         for before, after in exported:
             prefix = 'v{}e'.format(env[before][0])
@@ -58,7 +59,10 @@ def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
     ident = import_.children[0].children[0].value
-    return env.update(ident, True)
+    try:
+        return env.update(ident, True)
+    except KeyError as e:
+        raise YovecError('failed to import variable') from e
 
 
 def _transpile_export(env: Env, export: Node) -> Tuple[Env, Tuple[str, str]]:
@@ -66,8 +70,14 @@ def _transpile_export(env: Env, export: Node) -> Tuple[Env, Tuple[str, str]]:
     assert export.kind == 'export'
     before = export.children[0].children[0].value
     after = export.children[1].children[0].value
-    _ = env[before]
-    env = env.update('{}{}'.format(EXPORT_PREFIX, before), True)
+    try:
+        _ = env[before]
+    except KeyError:
+        raise YovecError('failed to export variable: variable not found: {}'.format(before))
+    try:
+        env = env.update('{}{}'.format(EXPORT_PREFIX, before), True)
+    except KeyError as e:
+        raise YovecError('failed to export variable') from e
     return env, (before, after)
 
 
@@ -77,7 +87,10 @@ def _transpile_vec_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]
     ident = let.children[0].children[0].value
     env, sv = _transpile_vexpr(env, let.children[1])
     assignments, sv = sv.assign(index)
-    env = env.update(ident, (index, sv))
+    try:
+        env = env.update(ident, (index, sv))
+    except KeyError as e:
+        raise YovecError('failed to assign variable') from e
     multi = Node(kind='multi', children=assignments)
     line = Node(kind='line', children=[multi])
     return env, index+1, line
@@ -129,7 +142,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
             snums.append(sn)
         return env, SimpleVector(snums)
     else:
-        raise ValueError('unknown kind for vexpr: {}'.format(vexpr.kind))
+        raise AssertionError('unknown kind for vexpr: {}'.format(vexpr.kind))
 
 
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
@@ -166,4 +179,4 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
         except ValueError:
             return env, SimpleNumber(float(nexpr.children[0].value))
     else:
-        raise ValueError('unknown kind for nexpr: {}'.format(vexpr.kind))
+        raise AssertionError('unknown kind for nexpr: {}'.format(vexpr.kind))

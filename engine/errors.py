@@ -1,0 +1,2 @@
+class YovecError(Exception):
+    pass

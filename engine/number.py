@@ -38,5 +38,5 @@ class SimpleNumber:
             elif len(args) == 1:
                 node = Node(kind=op, children=[node, args[0].evaluate()])
             else:
-                raise ValueError('unrecognized item in queue: {}, {}'.format(op, args))
+                raise AssertionError('unrecognized item in queue: {}, {}'.format(op, args))
         return node
