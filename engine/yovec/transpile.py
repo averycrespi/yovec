@@ -28,8 +28,8 @@ def transpile(program: Node) -> Node:
         elif child.kind == 'export':
             env, (before, after) = _transpile_export(env, child)
             exported.append((before, after))
-        elif child.kind == 'let':
-            env, index, out_line = _transpile_let(env, index, child)
+        elif child.kind == 'vec_let':
+            env, index, out_line = _transpile_vec_let(env, index, child)
             children.append(out_line)
         elif child.kind == 'comment':
             pass
@@ -71,9 +71,9 @@ def _transpile_export(env: Env, export: Node) -> Tuple[Env, Tuple[str, str]]:
     return env, (before, after)
 
 
-def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
-    """Transpile a let statement to a line."""
-    assert let.kind == 'let'
+def _transpile_vec_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
+    """Transpile a vector let statement to a line."""
+    assert let.kind == 'vec_let'
     ident = let.children[0].children[0].value
     env, sv = _transpile_vexpr(env, let.children[1])
     assignments, sv = sv.assign(index)
@@ -85,16 +85,16 @@ def _transpile_let(env: Env, index: int, let: Node) -> Tuple[Env, int, Node]:
 
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
     """Transpile a vexpr to a simple vector."""
-    if vexpr.kind == 'map':
+    if vexpr.kind == 'vec_map':
         op = vexpr.children[0]
         env, sv = _transpile_vexpr(env, vexpr.children[1])
         return env, sv.map(op.kind)
-    elif vexpr.kind == 'premap':
+    elif vexpr.kind == 'vec_premap':
         op = vexpr.children[0]
         env, sn = _transpile_nexpr(env, vexpr.children[1])
         env, sv = _transpile_vexpr(env, vexpr.children[2])
         return env, sv.premap(op.kind, sn)
-    elif vexpr.kind == 'postmap':
+    elif vexpr.kind == 'vec_postmap':
         env, sn = _transpile_nexpr(env, vexpr.children[0])
         op = vexpr.children[1]
         env, sv = _transpile_vexpr(env, vexpr.children[2])
@@ -105,12 +105,12 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
             env, rsv = _transpile_vexpr(env, rsv)
             lsv = lsv.concat(rsv)
         return env, lsv
-    elif vexpr.kind == 'vecunary':
+    elif vexpr.kind == 'vec_unary':
         env, sv = _transpile_vexpr(env, vexpr.children[-1])
         for op in reversed(vexpr.children[:-1]):
             sv = sv.vecunary(op.kind)
         return env, sv
-    elif vexpr.kind == 'vecbinary':
+    elif vexpr.kind == 'vec_binary':
         env, lsv = _transpile_vexpr(env, vexpr.children[0])
         ops = vexpr.children[1::2]
         rsvs = vexpr.children[2::2]
@@ -134,12 +134,12 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
 
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     """Transpile a nexpr to a simple number."""
-    if nexpr.kind == 'unary':
+    if nexpr.kind == 'num_unary':
         env, sn = _transpile_nexpr(env, nexpr.children[-1])
         for op in reversed(nexpr.children[:-1]):
             sn = sn.unary(op.kind)
         return env, sn
-    elif nexpr.kind == 'binary':
+    elif nexpr.kind == 'num_binary':
         env, lsn = _transpile_nexpr(env, nexpr.children[0])
         ops = nexpr.children[1::2]
         rsns = nexpr.children[2::2]

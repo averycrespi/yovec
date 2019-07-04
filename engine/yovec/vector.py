@@ -31,19 +31,19 @@ class SimpleVector:
     def map(self, op: str) -> 'SimpleVector':
         """Map a unary operation to a simple vector."""
         result = deepcopy(self)
-        result.queue.append(('map', op))
+        result.queue.append(('vec_map', op))
         return result
 
     def premap(self, op: str, sn: SimpleNumber) -> 'SimpleVector':
         """Premap a binary operation to a simple vector."""
         result = deepcopy(self)
-        result.queue.append(('premap', op, sn))
+        result.queue.append(('vec_premap', op, sn))
         return result
 
     def postmap(self, sn: SimpleNumber, op: str) -> 'SimpleVector':
         """Postmap a binary operation to a simple vector."""
         result = deepcopy(self)
-        result.queue.append(('postmap', sn, op))
+        result.queue.append(('vec_postmap', sn, op))
         return result
 
     def concat(self, sv: 'SimpleVector') -> 'SimpleVector':
@@ -77,16 +77,16 @@ class SimpleVector:
         results = []
         for i, sn in enumerate(self.initial):
             for op, *args in self.queue:
-                if op == 'map':
+                if op == 'vec_map':
                     sn = sn.unary(args[0])
-                elif op == 'premap':
+                elif op == 'vec_premap':
                     sn = sn.binary(args[0], args[1])
-                elif op == 'postmap':
+                elif op == 'vec_postmap':
                     sn = args[0].binary(args[1], sn)
-                elif len(args) == 0:
-                    sn = sn.unary(op.strip('vec'))
-                elif len(args) == 1:
-                    sn = sn.binary(op.strip('vec'), args[0].resolve()[i])
+                elif len(args) == 0: # unary
+                    sn = sn.unary(op.strip('vec_'))
+                elif len(args) == 1: # binary
+                    sn = sn.binary(op.strip('vec_'), args[0].resolve()[i])
                 else:
                     raise ValueError('unrecognized item in queue: {}, {}'.format(op, args))
             results.append(sn)
