@@ -2,9 +2,9 @@ from argparse import ArgumentParser
 
 from lark import Lark
 
-from engine.format import format
+from engine.format import format_yolol
 from engine.node import Node
-from engine.transpile import transpile
+from engine.transpile import transpile_yovec
 
 
 def parse_args():
@@ -21,11 +21,11 @@ def main(srcfile, ast=False):
     with open(srcfile) as f:
         raw_program = f.read()
     yovec_program = Node.from_tree(parser.parse(raw_program))
-    yolol_program = transpile(yovec_program)
+    yolol_program = transpile_yovec(yovec_program)
     if ast:
         print(yolol_program.pretty())
     else:
-        print(format(yolol_program))
+        print(format_yolol(yolol_program))
 
 
 if __name__ == '__main__':

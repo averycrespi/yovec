@@ -10,7 +10,7 @@ from engine.vector import SimpleVector
 EXPORT_PREFIX = '#exported:'
 
 
-def transpile(program: Node) -> Node:
+def transpile_yovec(program: Node) -> Node:
     """Transpile a Yovec program to YOLOL.
 
     The environment holds multiple types of values:
