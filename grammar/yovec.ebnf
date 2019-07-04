@@ -70,7 +70,7 @@ export: "export" variable "as" external
 
 ?vexpr: "map" num_unary_op vexpr            -> vec_map
       | "map" num_binary_op nexpr vexpr     -> vec_premap
-      | "map" nexpr num_binary_op vexpr     -> postmap
+      | "map" nexpr num_binary_op vexpr     -> vec_postmap
       | "concat" vexpr+                     -> concat
       | (vec_unary_op)+ vexpr               -> vec_unary
       | vexpr (vec_binary_op vexpr)+        -> vec_binary
