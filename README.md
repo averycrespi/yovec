@@ -2,7 +2,7 @@
 
 `yovec` is a functional, vector-based language that transpiles to [YOLOL](https://wiki.starbasegame.com/index.php/YOLOL).
 
-Note: `yovec` is currently in development, so the language may change **without warning**. Stay tuned for the v1.0 release!
+`yovec` is currently in development, so the language may change **without warning**. Stay tuned for the v1.0 release!
 
 ## Requirements
 
