@@ -21,13 +21,14 @@ matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
 
 program: line*
 
-line: import | export | vec_let | mat_let | comment
+line: import | export | let | comment
 
 import: "import" external
 export: "export" variable "as" external
 
-vec_let.2: "let" variable "=" vexpr
-mat_let.1: "let" variable "=" mexpr
+?let: "let" "number" variable "=" nexpr     -> num_let
+    | "let" "vector" variable "=" vexpr     -> vec_let
+    | "let" "matrix" variable "=" mexpr     -> mat_let
 
 // Numbers
 
@@ -57,6 +58,7 @@ mat_let.1: "let" variable "=" mexpr
       | "cols" mexpr                    -> cols
       | "(" nexpr ")"
       | "$" external
+      | variable
       | number
 
 // Vectors
