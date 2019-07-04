@@ -6,7 +6,7 @@
 NUMBER: /-?\d+(\.\d{1,4})?/
 number: NUMBER
 
-VAR_IDENT: /[A-Z]+/
+VAR_IDENT: /[A-Z_]+/
 variable: VAR_IDENT
 
 YOLOL_IDENT: /[a-z][a-z0-9]*|:[a-z0-9]+/

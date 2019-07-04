@@ -8,6 +8,6 @@ let number M = abs sqrt sin cos tan arcsin arccos arctan 0
 let vector V = [$n + 1]
 let vector W = map abs (map +1 (map 1+ V))
 let vector X = concat V V
-let number A = V dot V + len V + (reduce + V)
+let number V_A = V dot V + len V + (reduce + V)
 
 export V as vector
