@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import List, Tuple
 
 from engine.node import Node
-from engine.yovec.number import SimpleNumber
+from engine.number import SimpleNumber
 
 
 class SimpleVector:

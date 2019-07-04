@@ -2,8 +2,8 @@ from typing import Tuple, List
 
 from engine.env import Env
 from engine.node import Node
-from engine.yovec.vector import SimpleVector
-from engine.yovec.number import SimpleNumber
+from engine.vector import SimpleVector
+from engine.number import SimpleNumber
 
 
 EXPORT_PREFIX = '#exported:'

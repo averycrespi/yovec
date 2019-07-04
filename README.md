@@ -1,19 +1,13 @@
-# yodsl
+# yovec
 
-`yodsl` is a collection of DSLs (domain-specific languages) that transpile to [YOLOL](https://wiki.starbasegame.com/index.php/YOLOL).
+`yovec` is a functional, vector-based language that transpiles to [YOLOL](https://wiki.starbasegame.com/index.php/YOLOL).
 
-#### Requirements
+## Requirements
 
 - Python 3.7 (or greater)
 - Lark parser (`pip3 install lark-parser`)
 
-## yovec
-
-#### What?
-
-`yovec` is a functional, vector-based DSL that transpiles to YOLOL.
-
-#### Why?
+## Why?
 
 Would you rather write this ...
 
