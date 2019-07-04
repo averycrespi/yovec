@@ -44,8 +44,8 @@ class SimpleVector:
     def dot(self, other: 'SimpleVector') -> SimpleNumber:
         """Calculate the dot product of two simple vectors."""
         sn = SimpleNumber(0)
-        for lsn, rsn in zip(self.snums, other.nums):
-            sn = result.binary('add', lsn.binary('mul', rsn))
+        for lsn, rsn in zip(self.snums, other.snums):
+            sn = sn.binary('add', lsn.binary('mul', rsn))
         return sn
 
     def len(self) -> SimpleNumber:
