@@ -2,9 +2,9 @@ from argparse import ArgumentParser
 
 from lark import Lark
 
+from engine.format import format
 from engine.node import Node
 from engine.transpile import transpile
-from engine.yolol.format import format
 
 
 def parse_args():
