@@ -48,6 +48,12 @@ export: "export" variable "as" external
               | "/"     -> div
               | "%"     -> mod
               | "^"     -> exp
+              | "<"     -> lt
+              | "<="    -> le
+              | ">"     -> gt
+              | ">="    -> ge
+              | "=="    -> eq
+              | "!="    -> ne
 
 ?nexpr: (num_unary_op)+ nexpr           -> num_unary
       | nexpr (num_binary_op nexpr)+    -> num_binary

@@ -3,24 +3,31 @@ from collections import namedtuple
 from engine.node import Node
 
 
+# Higher precedence is evaluated first
 Op = namedtuple('Op', ('symbol', 'precedence'))
 
 OPERATORS = {
-    'neg': Op('-', 5),
-    'add': Op('+', 1),
-    'sub': Op('-', 1),
-    'mul': Op('*', 2),
-    'div': Op('/', 2),
-    'mod': Op('%', 2),
-    'exp': Op('^', 3),
-    'abs': Op('abs ', 4),
-    'sqrt': Op('sqrt ', 4),
-    'sin': Op('sin ', 4),
-    'cos': Op('cos ', 4),
-    'tan': Op('tan ', 4),
-    'arcsin': Op('arcsin ', 4),
-    'arccos': Op('arccos ', 4),
-    'arctan': Op('arctan ', 4)
+    'neg': Op('-', 100),
+    'abs': Op('abs ', 90),
+    'sqrt': Op('sqrt ', 90),
+    'sin': Op('sin ', 90),
+    'cos': Op('cos ', 90),
+    'tan': Op('tan ', 90),
+    'arcsin': Op('arcsin ', 90),
+    'arccos': Op('arccos ', 90),
+    'arctan': Op('arctan ', 90),
+    'exp': Op('^', 80),
+    'mul': Op('*', 70),
+    'div': Op('/', 70),
+    'mod': Op('%', 70),
+    'add': Op('+', 60),
+    'sub': Op('-', 60),
+    'lt': Op('<', 50),
+    'le': Op('<=', 50),
+    'gt': Op('>', 50),
+    'ge': Op('>=', 50),
+    'eq': Op('==', 40),
+    'ne': Op('!=', 40)
 }
 
 
