@@ -18,11 +18,11 @@ Would you rather write this ...
 
 import n
 
-let A = [1, 2, 3]
-let B = [$n + 1, $n + 2, $n + 3]
-let C = map ^2 (A - B)
-let D = [reduce + C]
-let E = map ^0.5 D
+let vector A = [1, 2, 3]
+let vector B = [$n + 1, $n + 2, $n + 3]
+let vector C = map ^2 (A - B)
+let vector D = [reduce + C]
+let vector E = map ^0.5 D
 
 export E as dist
 ```
