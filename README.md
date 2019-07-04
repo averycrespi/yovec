@@ -35,6 +35,6 @@ v3e0=v2e0+v2e1+v2e2
 dist0=v3e0^0.5
 ```
 
-#### How?
+## How?
 
 Clone this repo, then run `python3 yovec.py source > out`
