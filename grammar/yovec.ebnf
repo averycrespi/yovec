@@ -32,8 +32,7 @@ export: "export" variable "as" external
 
 // Numbers
 
-?num_unary_op: "-"          -> neg
-             | "abs"        -> abs
+?num_unary_op: "abs"        -> abs
              | "sqrt"       -> sqrt
              | "sin"        -> sin
              | "cos"        -> cos
