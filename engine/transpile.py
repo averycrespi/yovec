@@ -7,24 +7,31 @@ from engine.number import SimpleNumber
 from engine.vector import SimpleVector
 
 
+IMPORT_PREFIX = '.IMPORT='
+EXPORT_PREFIX = '.EXPORT='
+
+
 def transpile_yovec(program: Node) -> Node:
     """Transpile a Yovec program to YOLOL.
 
-    The environment holds multiple types of values:
-        variable -> (index, SimpleVector)
-        external -> True
-        exported -> True
+    The environment contains:
+        variable: (num_index, SimpleNumber)
+        variable: (vec_index, SimpleVector)
+        variable: (mat_index, SimpleMatrix)
+        import before: True
+        export before: after
     """
     env = Env(overwrite=False)
     num_index = 0
     vec_index = 0
+    mat_index = 0
     yolol_lines = []
     for line in program.children:
         child = line.children[0]
         if child.kind == 'import':
             env = _transpile_import(env, child)
         elif child.kind == 'export':
-            _transpile_export(env, child)
+            env = _transpile_export(env, child)
         elif child.kind == 'num_let':
             env, num_index, yolol_line = _transpile_num_let(env, num_index, child)
             yolol_lines.append(yolol_line)
@@ -41,9 +48,9 @@ def transpile_yovec(program: Node) -> Node:
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
-    ident = import_.children[0].children[0].value
+    before = import_.children[0].children[0].value
     try:
-        return env.update(ident, True)
+        return env.update(IMPORT_PREFIX + before, True)
     except KeyError as e:
         raise YovecError('failed to import variable') from e
 
@@ -51,7 +58,17 @@ def _transpile_import(env: Env, import_: Node) -> Env:
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
-    #TODO: reimplement
+    before = export.children[0].children[0].value
+    after = export.children[1].children[0].value
+    try:
+        _ = env[before]
+    except KeyError as e:
+        raise YovecError('failed to export variable') from e
+    try:
+        env = env.update(EXPORT_PREFIX + before, after)
+    except KeyError as e:
+        raise YovecError('failed to export variable') from e
+    return env
 
 
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
@@ -111,7 +128,12 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
         env, sv = _transpile_vexpr(env, nexpr.children[0])
         return env, sv.len()
     elif nexpr.kind == 'external':
-        return env, SimpleNumber(nexpr.children[0].value)
+        before = nexpr.children[0].value
+        try:
+            _ = env[IMPORT_PREFIX + before]
+            return env, SimpleNumber(before)
+        except KeyError as e:
+            raise YovecError('undefined external: {}'.format(before)) from e
     elif nexpr.kind == 'variable':
         ident = nexpr.children[0].value
         _, sn = env[ident]
