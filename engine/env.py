@@ -14,6 +14,9 @@ class Env:
     def __getitem__(self, k: str) -> Any:
         return self.state[k]
 
+    def items(self):
+        return self.state.items()
+
     def update(self, k: str, v: Any) -> 'Env':
         """Update the environment."""
         if not self.overwrite and k in self.state.keys():
