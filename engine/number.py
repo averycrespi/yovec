@@ -40,3 +40,11 @@ class SimpleNumber:
             else:
                 raise AssertionError('unrecognized item in queue: {}, {}'.format(op, args))
         return node
+
+    def assign(self, num_index: int) -> Tuple[Node, 'SimpleNumber']:
+        """Generate a YOLOL assignment statement."""
+        ident = 'n{}'.format(num_index)
+        var = Node(kind='variable', value=ident)
+        expr = self.evaluate()
+        asn = Node(kind='assignment', children=[var, expr])
+        return asn, SimpleNumber(ident)
