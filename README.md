@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- Python 3.7 (or greater)
+- Python 3.5 (or greater)
 - Lark parser (`pip3 install lark-parser`)
 
 ## Why?
