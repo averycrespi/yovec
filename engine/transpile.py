@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Tuple, List
 
 from engine.env import Env, NumVar, VecVar
@@ -30,7 +31,24 @@ def transpile_yovec(program: Node) -> Node:
             pass
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
-    return Node(kind='program', children=yolol_lines)
+    yolol_program = Node(kind='program', children=yolol_lines)
+    return _resolve_aliases(env, yolol_program)
+
+
+def _resolve_aliases(env: Env, node: Node) -> Node:
+    """Resolve aliases to their targets."""
+    if node.kind == 'variable':
+        for alias, target in env.aliases.items():
+            if node.value == alias:
+                return Node(kind=node.kind, value=target)
+            #TODO: resolve export aliases
+        return node
+    elif node.children is None:
+        return node
+    else:
+        clone = deepcopy(node)
+        clone.children = [_resolve_aliases(env, c) for c in clone.children]
+        return clone
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
