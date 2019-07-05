@@ -23,7 +23,7 @@ program: line*
 
 line: import | export | let | comment
 
-import: "import" external ("as external")?
+import: "import" external ("as" external)?
 export: "export" variable "as" external
 
 ?let: "let" "number" variable "=" nexpr     -> num_let
