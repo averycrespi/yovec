@@ -1,26 +1,54 @@
+from collections import namedtuple
 from copy import deepcopy
-from typing import Any
+from typing import Any, Union
+
+from engine.errors import YovecError
+from engine.number import SimpleNumber
+from engine.vector import SimpleVector
+
+
+NumVar = namedtuple('NumVar', ('index', 'sn'))
+VecVar = namedtuple('VecVar', ('index', 'sv'))
 
 
 class Env:
     """Represents a program environment."""
-    def __init__(self, overwrite: bool=True):
-        self.state = {}
-        self.overwrite = overwrite
+    def __init__(self):
+        self.variables = {}
+        self.aliases = {}
 
-    def __str__(self) -> str:
-        return '\n'.join('{} = {}'.format(k, str(v)) for k, v in self.state.items())
+    def var(self, ident: str, expect: Any=None) -> Union[NumVar, VecVar]:
+        try:
+            v = self.variables[ident]
+        except KeyError:
+            raise YovecError('undefined variable: {}'.format(ident))
+        if expect is not None and type(v) != expect:
+            raise YovecError('expected variable to have type {}, but got {}'.format(expect, type(v)))
+        return v
 
-    def __getitem__(self, k: str) -> Any:
-        return self.state[k]
+    def set_num(self, ident: str, num_index: int, sn: SimpleNumber) -> 'Env':
+        if ident in self.variables:
+            raise YovecError('cannot redefine existing variable: {}'.format(ident))
+        clone = deepcopy(self)
+        clone.variables[ident] = NumVar(index=num_index, sn=sn)
+        return clone
 
-    def items(self):
-        return self.state.items()
+    def set_vec(self, ident: str, vec_index: int, sv: SimpleVector) -> 'Env':
+        if ident in self.variables:
+            raise YovecError('cannot redefine existing variable: {}'.format(ident))
+        clone = deepcopy(self)
+        clone.variables[ident] = VecVar(index=vec_index, sv=sv)
+        return clone
 
-    def update(self, k: str, v: Any) -> 'Env':
-        """Update the environment."""
-        if not self.overwrite and k in self.state.keys():
-            raise KeyError('cannot overwrite existing key: {}'.format(k))
-        new = deepcopy(self)
-        new.state[k] = v
-        return new
+    def alias(self, ident: str) -> str:
+        try:
+            return self.aliases[ident]
+        except KeyError:
+            raise YovecError('undefined alias: {}'.format(ident))
+
+    def set_alias(self, k: str, v: str) -> 'Env':
+        if k in self.aliases:
+            raise YovecError('cannot redefine existing alias: {}'.format(k))
+        clone = deepcopy(self)
+        clone.aliases[k] = v
+        return clone
