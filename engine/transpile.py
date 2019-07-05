@@ -171,11 +171,6 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
             env, rsv = _transpile_vexpr(env, rsv)
             lsv = lsv.concat(rsv)
         return env, lsv
-    elif vexpr.kind == 'vec_unary':
-        env, sv = _transpile_vexpr(env, vexpr.children[-1])
-        for op in reversed(vexpr.children[:-1]):
-            sv = sv.vecunary(op.kind)
-        return env, sv
     elif vexpr.kind == 'vec_binary':
         env, lsv = _transpile_vexpr(env, vexpr.children[0])
         ops = vexpr.children[1::2]

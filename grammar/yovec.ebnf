@@ -32,7 +32,8 @@ export: "export" variable "as" external
 
 // Numbers
 
-?num_unary_op: "abs"        -> abs
+?num_unary_op: "neg"        -> neg
+             | "abs"        -> abs
              | "sqrt"       -> sqrt
              | "sin"        -> sin
              | "cos"        -> cos
@@ -68,8 +69,6 @@ export: "export" variable "as" external
 
 // Vectors
 
-?vec_unary_op: "-"  -> vec_neg
-
 ?vec_binary_op: "+"     -> vec_add
               | "-"     -> vec_sub
 
@@ -77,15 +76,12 @@ export: "export" variable "as" external
       | "map" num_binary_op nexpr vexpr     -> vec_premap
       | "map" nexpr num_binary_op vexpr     -> vec_postmap
       | "concat" vexpr+                     -> concat
-      | (vec_unary_op)+ vexpr               -> vec_unary
       | vexpr (vec_binary_op vexpr)+        -> vec_binary
       | "(" vexpr ")"
       | variable
       | vector
 
 // Matrices
-
-?mat_unary_op: "-"  -> mat_neg
 
 ?mat_binary_op: "+"     -> mat_add
               | "-"     -> mat_sub
@@ -95,7 +91,6 @@ export: "export" variable "as" external
       | "map" nexpr num_binary_op mexpr     -> mat_postmap
       | "transpose" mexpr                   -> transpose
       | "rotate" mexpr                      -> rotate
-      | (mat_unary_op)+ mexpr               -> mat_unary
       | mexpr (mat_binary_op mexpr)+        -> mat_binary
       | vexpr "*" mexpr                     -> vm_mul
       | mexpr "*" vexpr                     -> mv_mul

@@ -15,10 +15,6 @@ class SimpleVector:
 
     # Operations
 
-    def vecunary(self, op: str) -> 'SimpleVector':
-        """Apply a unary operation to a simple vector."""
-        return SimpleVector([sn.unary(op.strip('vec_')) for sn in self.snums])
-
     def vecbinary(self, op: str, other: 'SimpleVector') -> 'SimpleVector':
         """Apply a binary operation to two simple vectors."""
         if self.length != other.length:
