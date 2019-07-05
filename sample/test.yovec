@@ -1,6 +1,7 @@
 // Test program.
 
 import n
+import longname as o
 
 let number N = 1 + 2 - 3 * 4 / 5 % 6 ^ 7
 let number M = neg abs sqrt sin cos tan arcsin arccos arctan 0
