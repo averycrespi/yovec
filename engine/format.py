@@ -7,7 +7,7 @@ from engine.node import Node
 Op = namedtuple('Op', ('symbol', 'precedence'))
 
 OPERATORS = {
-    'neg': Op('neg', 100),
+    'neg': Op('-', 100),
     'abs': Op('abs ', 90),
     'sqrt': Op('sqrt ', 90),
     'sin': Op('sin ', 90),
