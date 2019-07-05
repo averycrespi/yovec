@@ -1,5 +1,6 @@
 from collections import namedtuple
 from copy import deepcopy
+from string import ascii_uppercase
 from typing import Union, Dict, Any
 
 from engine.errors import YovecError
@@ -58,12 +59,14 @@ class Env:
         """Get all identifiers and aliases from the environment."""
         return dict(self.aliases)
 
-    def set_alias(self, k: str, v: str) -> 'Env':
+    def set_alias(self, alias: str, target: str) -> 'Env':
         """Set an alias."""
-        if k in self.aliases:
-            raise YovecError('cannot redefine existing alias: {}'.format(k))
-        if v in self.aliases.values():
-            raise YovecError('conflicting alias target: {}'.format(v))
+        if alias in self.aliases:
+            raise YovecError('cannot redefine existing alias: {}'.format(alias))
+        if target in self.aliases.values():
+            raise YovecError('conflicting alias target: {}'.format(target))
+        if set(alias) in set(ascii_uppercase + '_') and alias not in self.variables:
+            raise YovecError('cannot export undefined variable: {}'.format(alias))
         clone = deepcopy(self)
-        clone.aliases[k] = v
+        clone.aliases[alias] = target
         return clone
