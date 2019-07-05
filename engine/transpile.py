@@ -36,24 +36,24 @@ def transpile_yovec(program: Node) -> Node:
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
-    before = import_.children[0].children[0].value
+    target = import_.children[0].children[0].value
     if len(import_.children) == 2:
-        after = import_.children[1].children[0].value
+        alias = import_.children[1].children[0].value
     else:
-        after = before
-    return env.set_alias(after, before)
+        alias = target
+    return env.set_alias(alias, target)
 
 
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
-    before = export.children[0].children[0].value
-    after = export.children[1].children[0].value
+    alias = export.children[0].children[0].value
+    target = export.children[1].children[0].value
     try:
-        _ = env.var(before)
+        _ = env.var(alias)
     except YovecError as e:
         raise YovecError('cannot export undefined variable') from e
-    return env.set_alias(before, after)
+    return env.set_alias(alias, target)
 
 
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
