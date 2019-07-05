@@ -41,7 +41,20 @@ def _resolve_aliases(env: Env, node: Node) -> Node:
         for alias, target in env.aliases.items():
             if node.value == alias:
                 return Node(kind=node.kind, value=target)
-            #TODO: resolve export aliases
+            try:
+                num_index, _ = env.var(alias, expect=NumVar)
+                prefix = 'n{}'.format(num_index)
+                if node.value.startswith(prefix):
+                    return Node(kind=node.kind, value=node.value.replace(prefix, target))
+            except YovecError:
+                pass
+            try:
+                vec_index, _ = env.var(alias, expect=VecVar)
+                prefix = 'v{}e'.format(vec_index)
+                if node.value.startswith(prefix):
+                    return Node(kind=node.kind, value=node.value.replace(prefix, target))
+            except YovecError:
+                pass
         return node
     elif node.children is None:
         return node
