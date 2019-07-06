@@ -268,7 +268,7 @@ Type errors (e.g. adding a vector and a number) will halt compilation and print 
 let vector V = 0 + [1, 2, 3]
 ```
 
-If no errors are raised during compilation, Yovec will always generated syntactically-valid YOLOL.
+If no errors are raised during compilation, Yovec will always generate syntactically-valid YOLOL.
 
 #### Runtime
 
