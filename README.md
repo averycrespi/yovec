@@ -10,9 +10,7 @@
 
 <p align="center">
     <a href="#features">Features</a> •
-    <a href="#example">Example</a> •
-    <a href="#docs">Docs</a> •
-    <a href="#how-to-use">How to Use</a> •
+    <a href="#gettings-started">Getting Started</a> •
 	<a href="#license">License</a>
 </p>
 
@@ -22,7 +20,7 @@
 - Supports numbers, vectors, and matrices
 - Interoperable with YOLOL (via imports and exports)
 
-## Example
+Example program:
 
 ```
 // Calculate the Euclidean distance between two vectors.
@@ -38,11 +36,7 @@ let vector E = map sqrt D
 export E as dist
 ```
 
-## Docs
-
-Check out [example programs](programs/), or read the full [language spec](docs/spec.md).
-
-## How to Use
+## Getting Started
 
 To clone and run Yovec, you'll need [Git](https://git-scm.com/) and [Python 3.5 (or newer)](https://www.python.org/).
 
@@ -56,6 +50,8 @@ pip3 install lark-parser
 # Run Yovec
 python3 yovec.py in.yovec > out.yolol
 ```
+
+To learn the Yovec language, check out some [example programs](programs/) or read the full [language spec](docs/spec.md).
 
 ## License
 
