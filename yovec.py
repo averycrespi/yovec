@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+import sys
 
 from lark import Lark
 
@@ -16,7 +17,7 @@ def parse_args():
     parser.add_argument('-o', action='store', default='', help='YOLOL output file (if unset, prints to stdout)')
     parser.add_argument('--ast', action='store_true', help='Output YOLOL AST')
     parser.add_argument('--version', action='store_true', help='Print version info')
-    return parser.parse_args()
+    return parser, parser.parse_args()
 
 
 def main(infile, outfile, ast=False):
@@ -39,8 +40,10 @@ def main(infile, outfile, ast=False):
 
 
 if __name__ == '__main__':
-    args = parse_args()
+    parser, args = parse_args()
     if args.version:
         print(__version__)
+    elif args.i == '':
+        parser.print_help(sys.stderr)
     else:
         main(args.i, args.o, ast=args.ast)
