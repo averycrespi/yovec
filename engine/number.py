@@ -16,6 +16,18 @@ class SimpleNumber:
         """Apply a unary operation to a simple number."""
         if op == 'ln':
             return self._ln()
+        elif op == 'csc':
+            return SimpleNumber(1).binary('div', self.unary('sin'))
+        elif op == 'sec':
+            return SimpleNumber(1).binary('div', self.unary('cos'))
+        elif op == 'cot':
+            return SimpleNumber(1).binary('div', self.unary('tan'))
+        elif op == 'arccsc':
+            return SimpleNumber(1).binary('div', self.unary('arcsin'))
+        elif op == 'arcsec':
+            return SimpleNumber(1).binary('div', self.unary('arccos'))
+        elif op == 'arccot':
+            return SimpleNumber(1).binary('div', self.unary('arctan'))
         else:
             clone = deepcopy(self)
             clone.queue.append((op,))

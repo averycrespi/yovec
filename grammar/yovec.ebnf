@@ -42,6 +42,12 @@ export: "export" variable "as" external
              | "arccos"     -> arccos
              | "arctan"     -> arctan
              | "ln"         -> ln
+             | "csc"        -> csc
+             | "sec"        -> sec
+             | "cot"        -> cot
+             | "arccsc"     -> arccsc
+             | "arcsec"     -> arcsec
+             | "arccot"     -> arccot
 
 ?num_binary_op: "+"     -> add
               | "-"     -> sub
