@@ -10,13 +10,32 @@
 
 <p align="center">
     <a href="#features">Features</a> •
+    <a href="#example">Example</a> •
     <a href="#how-to-use">How to Use</a> •
 	<a href="#license">License</a>
 </p>
 
 ## Features
 
-TODO
+- Simple, unambiguous syntax
+- Supports numbers, vectors, and matrices
+- Interoperable with YOLOL (via imports and exports)
+
+## Example
+
+```
+// Calculate the Euclidean distance between two vectors.
+
+import n
+
+let vector A = [1, 2, 3]
+let vector B = [$n + 1, $n + 2, $n + 3]
+let vector C = map ^2 (A - B)
+let vector D = [reduce + C]
+let vector E = map sqrt D
+
+export E as dist
+```
 
 ## How to Use
 
@@ -29,8 +48,8 @@ git clone https://github.com/averycrespi/yovec.git
 # Install dependencies
 pip3 install lark-parser
 
-# Run the program
-python3 yovec.py program > out
+# Run Yovec
+python3 yovec.py in.yovec > out.yolol
 ```
 
 ## License
