@@ -1,12 +1,12 @@
 <h1 align="center">
     <br>
-    <img src="https://raw.githubusercontent.com/averycrespi/yovec/master/images/logo_full.png"</img>
+    <img src="https://raw.githubusercontent.com/averycrespi/yovec/master/images/logo_full.png" width="200"</img>
     <br>
     Yovec
     <br>
 </h1>
 
-<h4 align="center">A functional, vector-based language that transpiles to [YOLOL](https://wiki.starbasegame.com/index.php/YOLOL).</h4>
+<h4 align="center">A functional, vector-based language that transpiles to <a href="https://wiki.starbasegame.com/index.php/YOLOL">YOLOL</a>.</h4>
 
 <p align="center">
     <a href="#features">Features</a> •
