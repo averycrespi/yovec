@@ -24,7 +24,7 @@ $n
 
 Unary operations are evaluated right-to-left.
 
-- Functions: `neg`, `abs`, `sqrt`, `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`
+- Functions: `neg`, `abs`, `sqrt`, `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, `ln`
 
 ```
 // Evaluates as sin(cos(0))

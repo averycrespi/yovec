@@ -14,15 +14,35 @@ class SimpleNumber:
 
     def unary(self, op: str) -> 'SimpleNumber':
         """Apply a unary operation to a simple number."""
-        result = deepcopy(self)
-        result.queue.append((op,))
-        return result
+        if op == 'ln':
+            return self._ln()
+        else:
+            clone = deepcopy(self)
+            clone.queue.append((op,))
+            return clone
 
     def binary(self, op: str, sn: 'SimpleNumber') -> 'SimpleNumber':
         """Apply a binary operation to a simple number."""
-        result = deepcopy(self)
-        result.queue.append((op, sn))
-        return result
+        clone = deepcopy(self)
+        clone.queue.append((op, sn))
+        return clone
+
+    def _ln(self) -> 'SimpleNumber':
+        """Estimate the natural logarithm of a simple number."""
+        sn = SimpleNumber(0)
+        for k in range(0, 4):
+            # 2k + 1
+            common = SimpleNumber(k).binary('mul', SimpleNumber(2)).binary('add', SimpleNumber(1))
+            # 1 / (2k + 1)
+            lsn = SimpleNumber(1).binary('div', common)
+            # ((z - 1) / (z + 1))^(2k + 1)
+            num = self.binary('sub', SimpleNumber(1))
+            denom = self.binary('add', SimpleNumber(1))
+            rsn = num.binary('div', denom).binary('exp', common)
+            # add product of terms
+            sn = sn.binary('add', lsn.binary('mul', rsn))
+        sn = sn.binary('mul', SimpleNumber(2))
+        return sn
 
     # Resolutions
 

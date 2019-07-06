@@ -41,6 +41,7 @@ export: "export" variable "as" external
              | "arcsin"     -> arcsin
              | "arccos"     -> arccos
              | "arctan"     -> arctan
+             | "ln"         -> ln
 
 ?num_binary_op: "+"     -> add
               | "-"     -> sub
