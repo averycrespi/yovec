@@ -1,8 +1,9 @@
 from copy import deepcopy
 from typing import Tuple, List
 
-from engine.env import Env, NumVar, VecVar
+from engine.env import Env, NumVar, VecVar, MatVar
 from engine.errors import YovecError
+from engine.matrix import SimpleMatrix
 from engine.node import Node
 from engine.number import SimpleNumber
 from engine.vector import SimpleVector
@@ -27,6 +28,9 @@ def transpile_yovec(program: Node) -> Node:
         elif child.kind == 'vec_let':
             env, vec_index, yolol_line = _transpile_vec_let(env, vec_index, child)
             yolol_lines.append(yolol_line)
+        elif child.kind == 'mat_let':
+            env, mat_index, yolol_line = _transpile_mat_let(env, mat_index, child)
+            yolol_lines.append(yolol_line)
         elif child.kind == 'comment':
             pass
         else:
@@ -50,9 +54,16 @@ def _resolve_aliases(env: Env, node: Node) -> Node:
                 pass
             try:
                 vec_index, _ = env.var(alias, expect=VecVar)
-                prefix = 'v{}e'.format(vec_index)
+                prefix = 'v{}'.format(vec_index)
                 if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target))
+                    return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
+            except YovecError:
+                pass
+            try:
+                mat_index, _ = env.var(alias, expect=MatVar)
+                prefix = 'm{}'.format(mat_index)
+                if node.value.startswith(prefix):
+                    return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
             except YovecError:
                 pass
         return node
@@ -111,6 +122,18 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
     return env, vec_index+1, line
 
 
+def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
+    """Transpile a matrix let statement to a line."""
+    assert let.kind == 'mat_let'
+    ident = let.children[0].children[0].value
+    env, sm = _transpile_mexpr(env, let.children[1])
+    assignments, sm = sm.assign(mat_index)
+    env = env.set_mat(ident, mat_index, sm)
+    multi = Node(kind='multi', children=assignments)
+    line = Node(kind='line', children=[multi])
+    return env, mat_index+1, line
+
+
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     """Transpile a nexpr to a simple number."""
     if nexpr.kind == 'num_unary':
@@ -141,6 +164,14 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
     elif nexpr.kind == 'len':
         env, sv = _transpile_vexpr(env, nexpr.children[0])
         return env, sv.len()
+
+    elif nexpr.kind == 'rows':
+        env, sm = _transpile_mexpr(env, nexpr.children[0])
+        return env, sm.rows()
+
+    elif nexpr.kind == 'cols':
+        env, sm = _transpile_mexpr(env, nexpr.children[0])
+        return env, sm.cols()
 
     elif nexpr.kind == 'external':
         ident = nexpr.children[0].value
@@ -211,3 +242,58 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
 
     else:
         raise AssertionError('unknown kind for vexpr: {}'.format(vexpr.kind))
+
+
+def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, SimpleMatrix]:
+    """Transpile a mexpr to a simple matrix."""
+    if mexpr.kind == 'mat_map':
+        op = mexpr.children[0]
+        env, sm = _transpile_mexpr(env, mexpr.children[1])
+        return env, sm.map(op.kind)
+
+    elif mexpr.kind == 'mat_premap':
+        op = mexpr.children[0]
+        env, sn = _transpile_nexpr(env, mexpr.children[1])
+        env, sm = _transpile_mexpr(env, mexpr.children[2])
+        return env, sm.premap(op.kind, sn)
+
+    elif mexpr.kind == 'mat_postmap':
+        env, sn = _transpile_nexpr(env, mexpr.children[0])
+        op = mexpr.children[1]
+        env, sm = _transpile_mexpr(env, mexpr.children[2])
+        return env, sm.postmap(sn, op.kind)
+
+    elif mexpr.kind == 'transpose':
+        env, sm = _transpile_mexpr(env, mexpr.children[0])
+        return env, sm.transpose()
+
+    elif mexpr.kind == 'mat_mul':
+        env, lsm = _transpile_mexpr(env, mexpr.children[0])
+        for rsm in mexpr.children[1:]:
+            env, rsm = _transpile_mexpr(env, rsm)
+            lsm = lsm.matmul(rsm)
+        return env, lsm
+
+    elif mexpr.kind == 'mat_binary':
+        env, lsm = _transpile_mexpr(env, mexpr.children[0])
+        ops = mexpr.children[1::2]
+        rsms = mexpr.children[2::2]
+        for op, rsm in zip(ops, rsms):
+            env, rsm = _transpile_mexpr(env, rsm)
+            lsm = lsm.matbinary(op.kind, rsm)
+        return env, lsm
+
+    elif mexpr.kind == 'variable':
+        ident = mexpr.children[0].value
+        _, sm = env.var(ident, expect=MatVar)
+        return env, sm
+
+    elif mexpr.kind == 'matrix':
+        svecs = []
+        for vexpr in mexpr.children:
+            env, sv = _transpile_vexpr(env, vexpr)
+            svecs.append(sv)
+        return env, SimpleMatrix(svecs)
+
+    else:
+        raise AssertionError('unknown kind for mexpr: {}'.format(vexpr.kind))

@@ -4,12 +4,14 @@ from string import ascii_uppercase
 from typing import Union, Dict, Any
 
 from engine.errors import YovecError
+from engine.matrix import SimpleMatrix
 from engine.number import SimpleNumber
 from engine.vector import SimpleVector
 
 
 NumVar = namedtuple('NumVar', ('index', 'sn'))
 VecVar = namedtuple('VecVar', ('index', 'sv'))
+MatVar = namedtuple('MatVar', ('index', 'sm'))
 
 
 class Env:
@@ -28,7 +30,7 @@ class Env:
             raise YovecError('expected variable to have type {}, but got {}'.format(expect, type(v)))
         return v
 
-    def vars(self) -> Dict[str, Union[NumVar, VecVar]]:
+    def vars(self) -> Dict[str, Union[NumVar, VecVar, MatVar]]:
         """Get all identifiers and variables from the environment."""
         return dict(self.variables)
 
@@ -46,6 +48,14 @@ class Env:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
         clone = deepcopy(self)
         clone.variables[ident] = VecVar(index=vec_index, sv=sv)
+        return clone
+
+    def set_mat(self, ident: str, mat_index: int, sm: SimpleMatrix) -> 'Env':
+        """Set a matrix variable."""
+        if ident in self.variables:
+            raise YovecError('cannot redefine existing variable: {}'.format(ident))
+        clone = deepcopy(self)
+        clone.variables[ident] = MatVar(index=mat_index, sm=sm)
         return clone
 
     def alias(self, ident: str) -> str:

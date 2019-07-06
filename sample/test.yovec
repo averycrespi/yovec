@@ -3,14 +3,20 @@
 import n
 import longname as o
 
-let number N = 1 + 2 - 3 * 4 / 5 % 6 ^ 7
-let number M = neg abs sqrt sin cos tan arcsin arccos arctan 0
-let number O = 1 < 2 <= 3 > 4 >= 5 == 6 != 7
+let number A = 1 + 2 - 3 * 4 / 5 % 6 ^ 7
+let number B = neg abs sqrt sin cos tan arcsin arccos arctan 0
+let number C = 1 < 2 <= 3 > 4 >= 5 == 6 != 7
 
 let vector V = [$n, $o]
 let vector W = map abs (map +1 (map 1+ V))
-let vector X = concat V V
+let vector X = concat V (V + V - V)
 let number V_A = V dot V + len V + (reduce + V)
 
-export V as foo
-export N as bar
+let matrix M = [[1, 2, 3], [4, 5, 6]]
+let matrix N = map abs (map +1 (map 1+ M))
+let matrix O = M * (transpose M)
+let number M_A = rows M + cols M
+
+export A as foo
+export V as bar
+export M as baz

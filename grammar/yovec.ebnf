@@ -90,12 +90,8 @@ export: "export" variable "as" external
       | "map" num_binary_op nexpr mexpr     -> mat_premap
       | "map" nexpr num_binary_op mexpr     -> mat_postmap
       | "transpose" mexpr                   -> transpose
-      | "rotate" mexpr                      -> rotate
       | mexpr (mat_binary_op mexpr)+        -> mat_binary
-      | vexpr "*" mexpr                     -> vm_mul
-      | mexpr "*" vexpr                     -> mv_mul
-      | mexpr "*" mexpr                     -> mm_mul
-      | "(" vexpr ")"
+      | mexpr ("*" mexpr)+                  -> mat_mul
       | "(" mexpr ")"
       | variable
       | matrix
