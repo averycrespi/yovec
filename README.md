@@ -11,6 +11,7 @@
 <p align="center">
     <a href="#features">Features</a> •
     <a href="#example">Example</a> •
+    <a href="#docs">Docs</a> •
     <a href="#how-to-use">How to Use</a> •
 	<a href="#license">License</a>
 </p>
@@ -29,13 +30,17 @@
 import n
 
 let vector A = [1, 2, 3]
-let vector B = [$n + 1, $n + 2, $n + 3]
+let vector B = [$n, $n, $n]
 let vector C = map ^2 (A - B)
 let vector D = [reduce + C]
 let vector E = map sqrt D
 
 export E as dist
 ```
+
+## Docs
+
+Check out [example programs](programs/), or read the full [language spec](docs/spec.md).
 
 ## How to Use
 
