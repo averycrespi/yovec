@@ -48,7 +48,7 @@ git clone https://github.com/averycrespi/yovec.git
 pip3 install lark-parser
 
 # Run Yovec
-python3 yovec.py in.yovec > out.yolol
+python3 yovec.py -i in.yovec -o out.yolol
 ```
 
 To learn the Yovec language, check out some [example programs](programs/) or read the full [language spec](docs/spec.md).
