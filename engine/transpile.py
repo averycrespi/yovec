@@ -54,7 +54,7 @@ def _resolve_aliases(env: Env, node: Node) -> Node:
                 pass
             try:
                 vec_index, _ = env.var(alias, expect=VecVar)
-                prefix = 'v{}'.format(vec_index)
+                prefix = 'v{}e'.format(vec_index)
                 if node.value.startswith(prefix):
                     return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
             except YovecError:
