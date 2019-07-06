@@ -44,6 +44,7 @@ Logical operations return `0` (if false) or `1` (if true).
 7 < 3
 A + 1
 3 % $n
+```
 
 ```
 // Bad: missing second operand
