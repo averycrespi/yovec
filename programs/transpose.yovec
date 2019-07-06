@@ -1,3 +1,7 @@
+// Calculate AA^T
+
+import n
+
 let matrix A = [
     [n, 1, 2],
     [3, 4, 5],
@@ -5,3 +9,5 @@ let matrix A = [
 ]
 let matrix B = transpose A
 let matrix C = A * B
+
+export C as product

@@ -1,9 +1,0 @@
-// Calculate the Manhattan distance between two vectors.
-
-import n
-
-let vector A = [1, 2, 3]
-let vector B = [$n + 1, $n + 2, $n + 3]
-let vector C = map abs (A - B)
-
-export C as dist
