@@ -8,7 +8,7 @@ from engine.node import Node
 from engine.transpile import transpile_yovec
 
 
-__version__ = 'v1.0'
+__version__ = 'v1.1'
 
 
 def parse_args():
