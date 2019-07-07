@@ -227,6 +227,10 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
             lvec = lvec.concat(rvec)
         return env, lvec
 
+    elif vexpr.kind == 'reverse':
+        env, vec = _transpile_vexpr(env, vexpr.children[0])
+        return env, vec.reverse()
+
     elif vexpr.kind == 'vec_binary':
         env, lvec = _transpile_vexpr(env, vexpr.children[0])
         ops = vexpr.children[1::2]

@@ -84,6 +84,7 @@ export: "export" variable "as" external
       | "map" nexpr num_binary_op vexpr     -> vec_postmap
       | "apply" num_binary_op vexpr+        -> vec_apply
       | "concat" vexpr+                     -> concat
+      | "reverse" vexpr                     -> reverse
       | vexpr (vec_binary_op vexpr)+        -> vec_binary
       | "(" vexpr ")"
       | variable

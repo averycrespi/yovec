@@ -90,6 +90,12 @@ The `concat` function concatenates vectors.
 concat V W X
 ```
 
+The `reverse` function reverses a vector.
+
+```
+reverse V
+```
+
 The `reduce` function reduces a vector to a number.
 
 ```

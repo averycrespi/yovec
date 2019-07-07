@@ -43,6 +43,10 @@ class Vector:
         """Concatenate two vectors."""
         return Vector([*self.nums, *other.nums])
 
+    def reverse(self) -> 'Vector':
+        """Reverse a vector."""
+        return Vector(list(self.nums[::-1]))
+
     def dot(self, other: 'Vector') -> Number:
         """Calculate the dot product of two vectors."""
         n = Number(0)
