@@ -9,12 +9,12 @@ let number C = 1 < 2 <= 3 > 4 >= 5 == 6 != 7
 let number D = csc sec cot arccsc arcsec arccot 0
 
 let vector V = [$n, $o]
-let vector W = map abs (map +1 (map 1+ (apply + V V)))
+let vector W = map abs (map +1 (map 1+ (apply + V V V)))
 let vector X = concat V (V + V - V)
 let number V_A = V dot V + len V + (reduce + V)
 
 let matrix M = [[1, 2, 3], [4, 5, 6]]
-let matrix N = map abs (map +1 (map 1+ (apply + M M)))
+let matrix N = map abs (map +1 (map 1+ (apply + M M M)))
 let matrix O = M * (transpose M)
 let number M_A = rows M + cols M
 
