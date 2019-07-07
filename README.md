@@ -51,7 +51,7 @@ pip3 install lark-parser
 python3 yovec.py -i in.yovec -o out.yolol
 ```
 
-To learn the Yovec language, check out some [example programs](programs/) or read the full [language spec](docs/spec.md).
+To learn the Yovec language, check out some [example programs](programs/) or read the [language guide](docs/guide.md).
 
 ## License
 
