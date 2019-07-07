@@ -3,94 +3,93 @@ from typing import List, Tuple
 
 from engine.errors import YovecError
 from engine.node import Node
-from engine.number import SimpleNumber
-from engine.vector import SimpleVector
+from engine.number import Number
+from engine.vector import Vector
 
 
 
-class SimpleMatrix:
-    """Represents a list of simple vectors."""
-    def __init__(self, svecs: List[SimpleVector]):
-        assert len(svecs) > 0
-        if len(svecs) > 1:
-            n = svecs[0].length
-            for sv in svecs[1:]:
-                if sv.length != n:
+class Matrix:
+    """Represents a list of vectors."""
+    def __init__(self, vecs: List[Vector]):
+        assert len(vecs) > 0
+        if len(vecs) > 1:
+            for v in vecs[1:]:
+                if v.length != vecs[0].length:
                     raise YovecError('all vectors in a matrix must have the same length')
-        self.svecs = svecs
-        self._rows = len(self.svecs)
-        self._cols = self.svecs[0].length
+        self.vecs = vecs
+        self._rows = len(self.vecs)
+        self._cols = self.vecs[0].length
 
     # Operations
 
-    def matbinary(self, op: str, other: 'SimpleMatrix') -> 'SimpleMatrix':
-        """Apply a binary operation to two simple matrices."""
+    def matbinary(self, op: str, other: 'Matrix') -> 'Matrix':
+        """Apply a binary operation to two matrices."""
         if self._rows != other._rows or self._cols != other._cols:
             raise YovecError('cannot apply operation "{}" to matrices of different sizes'.format(op))
-        return SimpleMatrix([sv.vecbinary(op.replace('mat_', 'vec_'), other.svecs[i]) for i, sv in enumerate(self.svecs)])
+        return Matrix([v.vecbinary(op.replace('mat_', 'vec_'), other.vecs[i]) for i, v in enumerate(self.vecs)])
 
-    def map(self, op: str) -> 'SimpleMatrix':
-        """Map a unary operation to a simple matrix."""
-        return SimpleMatrix([sv.map(op) for sv in self.svecs])
+    def map(self, op: str) -> 'Matrix':
+        """Map a unary operation to a matrix."""
+        return Matrix([v.map(op) for v in self.vecs])
 
-    def premap(self, op: str, other: SimpleNumber) -> 'SimpleMatrix':
-        """Premap a binary operation to a simple matrix."""
-        svecs = []
-        for sv in self.svecs:
-            svecs.append(SimpleVector([sn.binary(op, other) for sn in sv.snums]))
-        return SimpleMatrix(svecs)
+    def premap(self, op: str, other: Number) -> 'Matrix':
+        """Premap a binary operation to a matrix."""
+        vecs = []
+        for v in self.vecs:
+            vecs.append(Vector([n.binary(op, other) for n in v.nums]))
+        return Matrix(vecs)
 
-    def postmap(self, other: SimpleNumber, op: str) -> 'SimpleMatrix':
-        """Postmap a binary operation to a simple matrix."""
-        svecs = []
-        for sv in self.svecs:
-            svecs.append(SimpleVector([other.binary(op, sn) for sn in sv.snums]))
-        return SimpleMatrix(svecs)
+    def postmap(self, other: Number, op: str) -> 'Matrix':
+        """Postmap a binary operation to a matrix."""
+        vecs = []
+        for v in self.vecs:
+            vecs.append(Vector([other.binary(op, n) for n in v.nums]))
+        return Matrix(vecs)
 
-    def transpose(self) -> 'SimpleMatrix':
-        """Return the transpose of the simple matrix."""
-        svecs = []
+    def transpose(self) -> 'Matrix':
+        """Return the transpose of the matrix."""
+        vecs = []
         for i in range(self._cols):
-            svecs.append(SimpleVector([sv.snums[i] for sv in self.svecs]))
-        return SimpleMatrix(svecs)
+            vecs.append(Vector([v.nums[i] for v in self.vecs]))
+        return Matrix(vecs)
 
-    def matmul(self, other: 'SimpleMatrix') -> 'SimpleMatrix':
-        """Multiply two simple matrices."""
+    def matmul(self, other: 'Matrix') -> 'Matrix':
+        """Multiply two matrices."""
         if self._cols != other._rows:
             raise YovecError('cannot mulitply matrices with mismatching sizes')
-        svecs = []
+        vecs = []
         for i in range(self._rows):
-            snums = []
+            nums = []
             for j in range(other._cols):
-                sn = SimpleNumber(0)
+                n = Number(0)
                 for k in range(other._rows):
-                    sn = sn.binary('add', self.svecs[i].snums[k].binary('mul', other.svecs[k].snums[j]))
-                snums.append(sn)
-            svecs.append(SimpleVector(snums))
-        return SimpleMatrix(svecs)
+                    n = n.binary('add', self.vecs[i].nums[k].binary('mul', other.vecs[k].nums[j]))
+                nums.append(n)
+            vecs.append(Vector(nums))
+        return Matrix(vecs)
 
-    def rows(self) -> SimpleNumber:
-        """Return the number of rows in the simple matrix."""
-        return SimpleNumber(self._rows)
+    def rows(self) -> Number:
+        """Return the number of rows in the matrix."""
+        return Number(self._rows)
 
-    def cols(self) -> SimpleNumber:
-        """Return the number of columns in the simple matrix."""
-        return SimpleNumber(self._cols)
+    def cols(self) -> Number:
+        """Return the number of columns in the matrix."""
+        return Number(self._cols)
 
     # Resolutions
 
-    def assign(self, mat_index: int) -> Tuple[List[Node], 'SimpleMatrix']:
+    def assign(self, index: int) -> Tuple[List[Node], 'Matrix']:
         """Generate YOLOL assignment statements."""
         assignments = []
-        svecs = []
-        for i, sv in enumerate(self.svecs):
-            snums = []
-            for j, sn in enumerate(sv.snums):
-                expr = sn.evaluate()
-                ident = 'm{}r{}c{}'.format(mat_index, i, j)
+        vecs = []
+        for i, v in enumerate(self.vecs):
+            nums = []
+            for j, n in enumerate(v.nums):
+                expr = n.evaluate()
+                ident = 'm{}r{}c{}'.format(index, i, j)
                 var = Node(kind='variable', value=ident)
                 asn = Node(kind='assignment', children=[var, expr])
                 assignments.append(asn)
-                snums.append(SimpleNumber(ident))
-            svecs.append(SimpleVector(snums))
-        return assignments, SimpleMatrix(svecs)
+                nums.append(Number(ident))
+            vecs.append(Vector(nums))
+        return assignments, Matrix(vecs)

@@ -3,69 +3,69 @@ from typing import List, Tuple
 
 from engine.errors import YovecError
 from engine.node import Node
-from engine.number import SimpleNumber
+from engine.number import Number
 
 
 
-class SimpleVector:
-    """Represents a list of simple numbers."""
-    def __init__(self, snums: List[SimpleNumber]):
-        self.snums = snums
-        self.length = len(snums)
+class Vector:
+    """Represents a list of numbers."""
+    def __init__(self, nums: List[Number]):
+        self.nums = nums
+        self.length = len(nums)
 
     # Operations
 
-    def vecbinary(self, op: str, other: 'SimpleVector') -> 'SimpleVector':
-        """Apply a binary operation to two simple vectors."""
+    def vecbinary(self, op: str, other: 'Vector') -> 'Vector':
+        """Apply a binary operation to two vectors."""
         if self.length != other.length:
             raise YovecError('cannot apply operation "{}" to vectors of different lengths'.format(op))
-        return SimpleVector([sn.binary(op.strip('vec_'), other.snums[i]) for i, sn in enumerate(self.snums)])
+        return Vector([n.binary(op.strip('vec_'), other.nums[i]) for i, n in enumerate(self.nums)])
 
-    def map(self, op: str) -> 'SimpleVector':
-        """Map a unary operation to a simple vector."""
-        return SimpleVector([sn.unary(op) for sn in self.snums])
+    def map(self, op: str) -> 'Vector':
+        """Map a unary operation to a vector."""
+        return Vector([n.unary(op) for n in self.nums])
 
-    def premap(self, op: str, other: SimpleNumber) -> 'SimpleVector':
-        """Premap a binary operation to a simple vector."""
-        return SimpleVector([sn.binary(op, other) for sn in self.snums])
+    def premap(self, op: str, other: Number) -> 'Vector':
+        """Premap a binary operation to a vector."""
+        return Vector([n.binary(op, other) for n in self.nums])
 
-    def postmap(self, other: SimpleNumber, op: str) -> 'SimpleVector':
-        """Postmap a binary operation to a simple vector."""
-        return SimpleVector([other.binary(op, sn) for sn in self.snums])
+    def postmap(self, other: Number, op: str) -> 'Vector':
+        """Postmap a binary operation to a vector."""
+        return Vector([other.binary(op, n) for n in self.nums])
 
-    def concat(self, other: 'SimpleVector') -> 'SimpleVector':
-        """Concatenate two simple vectors."""
-        return SimpleVector([*self.snums, *other.snums])
+    def concat(self, other: 'Vector') -> 'Vector':
+        """Concatenate two vectors."""
+        return Vector([*self.nums, *other.nums])
 
-    def dot(self, other: 'SimpleVector') -> SimpleNumber:
-        """Calculate the dot product of two simple vectors."""
-        sn = SimpleNumber(0)
-        for lsn, rsn in zip(self.snums, other.snums):
-            sn = sn.binary('add', lsn.binary('mul', rsn))
-        return sn
+    def dot(self, other: 'Vector') -> Number:
+        """Calculate the dot product of two vectors."""
+        n = Number(0)
+        for ln, rn in zip(self.nums, other.nums):
+            n = n.binary('add', ln.binary('mul', rn))
+        return n
 
-    def len(self) -> SimpleNumber:
-        """Return the length of the simple vector."""
-        return SimpleNumber(self.length)
+    def len(self) -> Number:
+        """Return the length of the vector."""
+        return Number(self.length)
 
-    def reduce(self, op: str) -> SimpleNumber:
-        """Reduce the simple vector to a simple number."""
-        lsn = self.snums[0]
-        for rsn in self.snums[1:]:
-            lsn = lsn.binary(op, rsn)
-        return lsn
+    def reduce(self, op: str) -> Number:
+        """Reduce the vector to a number."""
+        ln = self.nums[0]
+        for rn in self.nums[1:]:
+            ln = ln.binary(op, rn)
+        return ln
 
     # Resolutions
 
-    def assign(self, vec_index: int) -> Tuple[List[Node], 'SimpleVector']:
+    def assign(self, index: int) -> Tuple[List[Node], 'Vector']:
         """Generate YOLOL assignment statements."""
         assignments = []
-        snums = []
-        expressions = [sn.evaluate() for sn in self.snums]
+        nums = []
+        expressions = [n.evaluate() for n in self.nums]
         for i, expr in enumerate(expressions):
-            ident = 'v{}e{}'.format(vec_index, i)
+            ident = 'v{}e{}'.format(index, i)
             var = Node(kind='variable', value=ident)
             asn = Node(kind='assignment', children=[var, expr])
             assignments.append(asn)
-            snums.append(SimpleNumber(ident))
-        return assignments, SimpleVector(snums)
+            nums.append(Number(ident))
+        return assignments, Vector(nums)
