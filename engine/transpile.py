@@ -3,10 +3,10 @@ from typing import Tuple, List
 
 from engine.env import Env, NumVar, VecVar, MatVar
 from engine.errors import YovecError
-from engine.matrix import SimpleMatrix
+from engine.matrix import Matrix
 from engine.node import Node
-from engine.number import SimpleNumber
-from engine.vector import SimpleVector
+from engine.number import Number
+from engine.vector import Vector
 
 
 def transpile_yovec(program: Node) -> Node:
@@ -102,9 +102,9 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
     """Transpile a number let statement to a line."""
     assert let.kind == 'num_let'
     ident = let.children[0].children[0].value
-    env, sn = _transpile_nexpr(env, let.children[1])
-    assignment, sn = sn.assign(num_index)
-    env = env.set_num(ident, num_index, sn)
+    env, num = _transpile_nexpr(env, let.children[1])
+    assignment, num = num.assign(num_index)
+    env = env.set_num(ident, num_index, num)
     multi = Node(kind='multi', children=[assignment])
     line = Node(kind='line', children=[multi])
     return env, num_index+1, line
@@ -114,9 +114,9 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
     """Transpile a vector let statement to a line."""
     assert let.kind == 'vec_let'
     ident = let.children[0].children[0].value
-    env, sv = _transpile_vexpr(env, let.children[1])
-    assignments, sv = sv.assign(vec_index)
-    env = env.set_vec(ident, vec_index, sv)
+    env, vec = _transpile_vexpr(env, let.children[1])
+    assignments, vec = vec.assign(vec_index)
+    env = env.set_vec(ident, vec_index, vec)
     multi = Node(kind='multi', children=assignments)
     line = Node(kind='line', children=[multi])
     return env, vec_index+1, line
@@ -126,174 +126,227 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     """Transpile a matrix let statement to a line."""
     assert let.kind == 'mat_let'
     ident = let.children[0].children[0].value
-    env, sm = _transpile_mexpr(env, let.children[1])
-    assignments, sm = sm.assign(mat_index)
-    env = env.set_mat(ident, mat_index, sm)
+    env, mat = _transpile_mexpr(env, let.children[1])
+    assignments, mat = mat.assign(mat_index)
+    env = env.set_mat(ident, mat_index, mat)
     multi = Node(kind='multi', children=assignments)
     line = Node(kind='line', children=[multi])
     return env, mat_index+1, line
 
 
-def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, SimpleNumber]:
-    """Transpile a nexpr to a simple number."""
+def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
+    """Transpile a nexpr to a number."""
     if nexpr.kind == 'num_unary':
-        env, sn = _transpile_nexpr(env, nexpr.children[-1])
+        env, num = _transpile_nexpr(env, nexpr.children[-1])
         for op in reversed(nexpr.children[:-1]):
-            sn = sn.unary(op.kind)
-        return env, sn
+            num = num.unary(op.kind)
+        return env, num
 
     elif nexpr.kind == 'num_binary':
-        env, lsn = _transpile_nexpr(env, nexpr.children[0])
+        env, lnum = _transpile_nexpr(env, nexpr.children[0])
         ops = nexpr.children[1::2]
-        rsns = nexpr.children[2::2]
-        for op, rsn in zip(ops, rsns):
-            env, rsn = _transpile_nexpr(env, rsn)
-            lsn = lsn.binary(op.kind, rsn)
-        return env, lsn
+        rnums = nexpr.children[2::2]
+        for op, rnum in zip(ops, rnums):
+            env, rnum = _transpile_nexpr(env, rnum)
+            lnum = lnum.binary(op.kind, rnum)
+        return env, lnum
 
     elif nexpr.kind == 'reduce':
         op = nexpr.children[0]
-        env, sv = _transpile_vexpr(env, nexpr.children[1])
-        return env, sv.reduce(op.kind)
+        env, vec = _transpile_vexpr(env, nexpr.children[1])
+        return env, vec.reduce(op.kind)
 
     elif nexpr.kind == 'dot':
-        env, lsv = _transpile_vexpr(env, nexpr.children[0])
-        env, rsv = _transpile_vexpr(env, nexpr.children[1])
-        return env, lsv.dot(rsv)
+        env, lvec = _transpile_vexpr(env, nexpr.children[0])
+        env, rvec = _transpile_vexpr(env, nexpr.children[1])
+        return env, lvec.dot(rvec)
 
     elif nexpr.kind == 'len':
-        env, sv = _transpile_vexpr(env, nexpr.children[0])
-        return env, sv.len()
+        env, vec = _transpile_vexpr(env, nexpr.children[0])
+        return env, vec.len()
 
     elif nexpr.kind == 'rows':
-        env, sm = _transpile_mexpr(env, nexpr.children[0])
-        return env, sm.rows()
+        env, mat = _transpile_mexpr(env, nexpr.children[0])
+        return env, mat.rows()
 
     elif nexpr.kind == 'cols':
-        env, sm = _transpile_mexpr(env, nexpr.children[0])
-        return env, sm.cols()
+        env, mat = _transpile_mexpr(env, nexpr.children[0])
+        return env, mat.cols()
+
+    elif nexpr.kind == 'vec_elem':
+        env, vec = _transpile_vexpr(env, nexpr.children[0])
+        index = nexpr.children[1].children[0].value
+        try:
+            return env, vec.elem(int(index))
+        except ValueError:
+            raise YovecError('invalid element index: {}'.format(index))
+
+    elif nexpr.kind == 'mat_elem':
+        env, mat = _transpile_mexpr(env, nexpr.children[0])
+        row = nexpr.children[1].children[0].value
+        col = nexpr.children[2].children[0].value
+        try:
+            return env, mat.elem(int(row), int(col))
+        except ValueError:
+            raise YovecError('invalid element indices: {}, {}'.format(row, col))
 
     elif nexpr.kind == 'external':
         ident = nexpr.children[0].value
         _ = env.alias(ident)
-        return env, SimpleNumber(ident)
+        return env, Number(ident)
 
     elif nexpr.kind == 'variable':
         ident = nexpr.children[0].value
-        _. sn = env.var(ident, expect=NumVar)
-        return env, sn
+        _. num = env.var(ident, expect=NumVar)
+        return env, num
 
     elif nexpr.kind == 'number':
         try:
-            return env, SimpleNumber(int(nexpr.children[0].value))
+            return env, Number(int(nexpr.children[0].value))
         except ValueError:
-            return env, SimpleNumber(float(nexpr.children[0].value))
+            return env, Number(float(nexpr.children[0].value))
 
     else:
         raise AssertionError('unknown kind for nexpr: {}'.format(vexpr.kind))
 
 
-def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, SimpleVector]:
-    """Transpile a vexpr to a simple vector."""
+def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
+    """Transpile a vexpr to a vector."""
     if vexpr.kind == 'vec_map':
         op = vexpr.children[0]
-        env, sv = _transpile_vexpr(env, vexpr.children[1])
-        return env, sv.map(op.kind)
+        env, vec = _transpile_vexpr(env, vexpr.children[1])
+        return env, vec.map(op.kind)
 
     elif vexpr.kind == 'vec_premap':
         op = vexpr.children[0]
-        env, sn = _transpile_nexpr(env, vexpr.children[1])
-        env, sv = _transpile_vexpr(env, vexpr.children[2])
-        return env, sv.premap(op.kind, sn)
+        env, num = _transpile_nexpr(env, vexpr.children[1])
+        env, vec = _transpile_vexpr(env, vexpr.children[2])
+        return env, vec.premap(op.kind, num)
 
     elif vexpr.kind == 'vec_postmap':
-        env, sn = _transpile_nexpr(env, vexpr.children[0])
+        env, num = _transpile_nexpr(env, vexpr.children[0])
         op = vexpr.children[1]
-        env, sv = _transpile_vexpr(env, vexpr.children[2])
-        return env, sv.postmap(sn, op.kind)
+        env, vec = _transpile_vexpr(env, vexpr.children[2])
+        return env, vec.postmap(num, op.kind)
+
+    elif vexpr.kind == 'vec_apply':
+        op = vexpr.children[0]
+        env, lvec = _transpile_vexpr(env, vexpr.children[1])
+        for rvec in vexpr.children[1:]:
+            env, rvec = _transpile_vexpr(env, rvec)
+            lvec = lvec.apply(op.kind, rvec)
+        return env, lvec
 
     elif vexpr.kind == 'concat':
-        env, lsv = _transpile_vexpr(env, vexpr.children[0])
-        for rsv in vexpr.children[1:]:
-            env, rsv = _transpile_vexpr(env, rsv)
-            lsv = lsv.concat(rsv)
-        return env, lsv
+        env, lvec = _transpile_vexpr(env, vexpr.children[0])
+        for rvec in vexpr.children[1:]:
+            env, rvec = _transpile_vexpr(env, rvec)
+            lvec = lvec.concat(rvec)
+        return env, lvec
+
+    elif vexpr.kind == 'reverse':
+        env, vec = _transpile_vexpr(env, vexpr.children[0])
+        return env, vec.reverse()
+
+    elif vexpr.kind == 'mat_row':
+        env, mat = _transpile_mexpr(env, vexpr.children[0])
+        row = vexpr.children[1].children[0].value
+        try:
+            return env, mat.row(int(row))
+        except ValueError:
+            raise YovecError('invald row index: {}'.format(row))
+
+    elif vexpr.kind == 'mat_col':
+        env, mat = _transpile_mexpr(env, vexpr.children[0])
+        col = vexpr.children[1].children[0].value
+        try:
+            return env, mat.col(int(col))
+        except ValueError:
+            raise YovecError('invald column index: {}'.format(col))
 
     elif vexpr.kind == 'vec_binary':
-        env, lsv = _transpile_vexpr(env, vexpr.children[0])
+        env, lvec = _transpile_vexpr(env, vexpr.children[0])
         ops = vexpr.children[1::2]
-        rsvs = vexpr.children[2::2]
-        for op, rsv in zip(ops, rsvs):
-            env, rsv = _transpile_vexpr(env, rsv)
-            lsv = lsv.vecbinary(op.kind, rsv)
-        return env, lsv
+        rvecs = vexpr.children[2::2]
+        for op, rvec in zip(ops, rvecs):
+            env, rvec = _transpile_vexpr(env, rvec)
+            lvec = lvec.vecbinary(op.kind, rvec)
+        return env, lvec
 
     elif vexpr.kind == 'variable':
         ident = vexpr.children[0].value
-        _, sv = env.var(ident, expect=VecVar)
-        return env, sv
+        _, vec = env.var(ident, expect=VecVar)
+        return env, vec
 
     elif vexpr.kind == 'vector':
-        snums = []
+        numums = []
         for nexpr in vexpr.children:
-            env, sn = _transpile_nexpr(env, nexpr)
-            snums.append(sn)
-        return env, SimpleVector(snums)
+            env, num = _transpile_nexpr(env, nexpr)
+            numums.append(num)
+        return env, Vector(numums)
 
     else:
         raise AssertionError('unknown kind for vexpr: {}'.format(vexpr.kind))
 
 
-def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, SimpleMatrix]:
-    """Transpile a mexpr to a simple matrix."""
+def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
+    """Transpile a mexpr to a matrix."""
     if mexpr.kind == 'mat_map':
         op = mexpr.children[0]
-        env, sm = _transpile_mexpr(env, mexpr.children[1])
-        return env, sm.map(op.kind)
+        env, mat = _transpile_mexpr(env, mexpr.children[1])
+        return env, mat.map(op.kind)
 
     elif mexpr.kind == 'mat_premap':
         op = mexpr.children[0]
-        env, sn = _transpile_nexpr(env, mexpr.children[1])
-        env, sm = _transpile_mexpr(env, mexpr.children[2])
-        return env, sm.premap(op.kind, sn)
+        env, num = _transpile_nexpr(env, mexpr.children[1])
+        env, mat = _transpile_mexpr(env, mexpr.children[2])
+        return env, mat.premap(op.kind, num)
 
     elif mexpr.kind == 'mat_postmap':
-        env, sn = _transpile_nexpr(env, mexpr.children[0])
+        env, num = _transpile_nexpr(env, mexpr.children[0])
         op = mexpr.children[1]
-        env, sm = _transpile_mexpr(env, mexpr.children[2])
-        return env, sm.postmap(sn, op.kind)
+        env, mat = _transpile_mexpr(env, mexpr.children[2])
+        return env, mat.postmap(num, op.kind)
+
+    elif mexpr.kind == 'mat_apply':
+        op = mexpr.children[0]
+        env, lmat = _transpile_mexpr(env, mexpr.children[1])
+        for rmat in mexpr.children[1:]:
+            env, rmat = _transpile_mexpr(env, rmat)
+            lmat = lmat.apply(op.kind, rmat)
+        return env, lmat
 
     elif mexpr.kind == 'transpose':
-        env, sm = _transpile_mexpr(env, mexpr.children[0])
-        return env, sm.transpose()
+        env, mat = _transpile_mexpr(env, mexpr.children[0])
+        return env, mat.transpose()
 
     elif mexpr.kind == 'mat_mul':
-        env, lsm = _transpile_mexpr(env, mexpr.children[0])
-        for rsm in mexpr.children[1:]:
-            env, rsm = _transpile_mexpr(env, rsm)
-            lsm = lsm.matmul(rsm)
-        return env, lsm
+        env, lmat = _transpile_mexpr(env, mexpr.children[0])
+        for rmat in mexpr.children[1:]:
+            env, rmat = _transpile_mexpr(env, rmat)
+            lmat = lmat.matmul(rmat)
+        return env, lmat
 
     elif mexpr.kind == 'mat_binary':
-        env, lsm = _transpile_mexpr(env, mexpr.children[0])
+        env, lmat = _transpile_mexpr(env, mexpr.children[0])
         ops = mexpr.children[1::2]
-        rsms = mexpr.children[2::2]
-        for op, rsm in zip(ops, rsms):
-            env, rsm = _transpile_mexpr(env, rsm)
-            lsm = lsm.matbinary(op.kind, rsm)
-        return env, lsm
+        rmats = mexpr.children[2::2]
+        for op, rmat in zip(ops, rmats):
+            env, rmat = _transpile_mexpr(env, rmat)
+            lmat = lmat.matbinary(op.kind, rmat)
+        return env, lmat
 
     elif mexpr.kind == 'variable':
         ident = mexpr.children[0].value
-        _, sm = env.var(ident, expect=MatVar)
-        return env, sm
+        _, mat = env.var(ident, expect=MatVar)
+        return env, mat
 
     elif mexpr.kind == 'matrix':
-        svecs = []
+        vececs = []
         for vexpr in mexpr.children:
-            env, sv = _transpile_vexpr(env, vexpr)
-            svecs.append(sv)
-        return env, SimpleMatrix(svecs)
+            env, vec = _transpile_vexpr(env, vexpr)
+            vececs.append(vec)
+        return env, Matrix(vececs)
 
     else:
         raise AssertionError('unknown kind for mexpr: {}'.format(vexpr.kind))

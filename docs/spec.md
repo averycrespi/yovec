@@ -24,7 +24,11 @@ $n
 
 Unary operations are evaluated right-to-left.
 
-- Functions: `neg`, `abs`, `sqrt`, `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`
+- `neg`: negate
+- `abs`: take the absolute value
+- `sqrt`: take the square root
+
+- Functions: `neg`, `abs`, `sqrt`, `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, `ln`
 
 ```
 // Evaluates as sin(cos(0))
@@ -74,10 +78,22 @@ map +1 V
 map 1+ V
 ```
 
+The `apply` function applies a binary operation element-wise to two or more vectors.
+
+```
+apply + V W X
+```
+
 The `concat` function concatenates vectors.
 
 ```
 concat V W X
+```
+
+The `reverse` function reverses a vector.
+
+```
+reverse V
 ```
 
 The `reduce` function reduces a vector to a number.
@@ -94,6 +110,8 @@ V dot W
 
 The binary operators `+` and `-` add and subtract vectors element-wise.
 
+They are convenient shortcuts for `apply +` and `apply -`.
+
 ```
 V + W - X
 ```
@@ -102,6 +120,17 @@ The `len` function returns the length of a vector.
 
 ```
 len V
+```
+
+The `elem` function gets a vector element by index. Indices must be constants.
+
+```
+elem V 0
+```
+
+```
+// Bad: non-constant index
+elem V A
 ```
 
 #### Matrices
@@ -137,13 +166,21 @@ map +1 M
 map 1+ M
 ```
 
+The `apply` function applies a binary operation element-wise to two or more matrices.
+
+```
+apply + M N O
+```
+
 The transpose function switches the rows and columns of a matrix.
 
-````
+```
 transpose M
-````
+```
 
 The binary operators `+` and `-` add and subtract matrices element-wise.
+
+They are convenient shortcuts for `apply +` and `apply -`.
 
 ```
 M + N - O
@@ -165,6 +202,29 @@ The binary operation `*` performs matrix multiplication. The number of columns i
 
 ```
 M * N
+```
+
+The `elem` function gets a matrix element by index. Indices must be constants.
+
+```
+elem M 0 1
+```
+
+```
+// Bad: non-constant index
+elem M A B
+```
+
+The `row` function gets a matrix row by index.
+
+```
+row M 0
+```
+
+The `col` function gets a matrix column by index.
+
+```
+col M 0
 ```
 
 ## Statements

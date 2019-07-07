@@ -4,7 +4,7 @@ from typing import Union, Any, Tuple
 from engine.node import Node
 
 
-class SimpleNumber:
+class Number:
     """Represents a number, variable, or external."""
     def __init__(self, n: Union[int, float, str]):
         self.initial = n
@@ -12,17 +12,49 @@ class SimpleNumber:
 
     # Operations
 
-    def unary(self, op: str) -> 'SimpleNumber':
-        """Apply a unary operation to a simple number."""
-        result = deepcopy(self)
-        result.queue.append((op,))
-        return result
+    def unary(self, op: str) -> 'Number':
+        """Apply a unary operation to a number."""
+        if op == 'ln':
+            return self._ln()
+        elif op == 'csc':
+            return Number(1).binary('div', self.unary('sin'))
+        elif op == 'sec':
+            return Number(1).binary('div', self.unary('cos'))
+        elif op == 'cot':
+            return Number(1).binary('div', self.unary('tan'))
+        elif op == 'arccsc':
+            return Number(1).binary('div', self.unary('arcsin'))
+        elif op == 'arcsec':
+            return Number(1).binary('div', self.unary('arccos'))
+        elif op == 'arccot':
+            return Number(1).binary('div', self.unary('arctan'))
+        else:
+            clone = deepcopy(self)
+            clone.queue.append((op,))
+            return clone
 
-    def binary(self, op: str, sn: 'SimpleNumber') -> 'SimpleNumber':
-        """Apply a binary operation to a simple number."""
-        result = deepcopy(self)
-        result.queue.append((op, sn))
-        return result
+    def binary(self, op: str, other: 'Number') -> 'Number':
+        """Apply a binary operation to a number."""
+        clone = deepcopy(self)
+        clone.queue.append((op, other))
+        return clone
+
+    def _ln(self) -> 'Number':
+        """Approximate the natural logarithm of a number."""
+        n = Number(0)
+        for k in range(0, 4):
+            # 2k + 1
+            common = Number(k).binary('mul', Number(2)).binary('add', Number(1))
+            # 1 / (2k + 1)
+            ln = Number(1).binary('div', common)
+            # ((z - 1) / (z + 1))^(2k + 1)
+            numer = self.binary('sub', Number(1))
+            denom = self.binary('add', Number(1))
+            rn = numer.binary('div', denom).binary('exp', common)
+            # add product of terms
+            n = n.binary('add', ln.binary('mul', rn))
+        n = n.binary('mul', Number(2))
+        return n
 
     # Resolutions
 
@@ -41,10 +73,10 @@ class SimpleNumber:
                 raise AssertionError('unrecognized item in queue: {}, {}'.format(op, args))
         return node
 
-    def assign(self, num_index: int) -> Tuple[Node, 'SimpleNumber']:
+    def assign(self, index: int) -> Tuple[Node, 'Number']:
         """Generate a YOLOL assignment statement."""
-        ident = 'n{}'.format(num_index)
+        ident = 'n{}'.format(index)
         var = Node(kind='variable', value=ident)
         expr = self.evaluate()
         asn = Node(kind='assignment', children=[var, expr])
-        return asn, SimpleNumber(ident)
+        return asn, Number(ident)

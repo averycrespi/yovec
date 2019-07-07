@@ -4,14 +4,14 @@ from string import ascii_uppercase
 from typing import Union, Dict, Any
 
 from engine.errors import YovecError
-from engine.matrix import SimpleMatrix
-from engine.number import SimpleNumber
-from engine.vector import SimpleVector
+from engine.matrix import Matrix
+from engine.number import Number
+from engine.vector import Vector
 
 
-NumVar = namedtuple('NumVar', ('index', 'sn'))
-VecVar = namedtuple('VecVar', ('index', 'sv'))
-MatVar = namedtuple('MatVar', ('index', 'sm'))
+NumVar = namedtuple('NumVar', ('index', 'number'))
+VecVar = namedtuple('VecVar', ('index', 'vector'))
+MatVar = namedtuple('MatVar', ('index', 'matrix'))
 
 
 class Env:
@@ -34,28 +34,28 @@ class Env:
         """Get all identifiers and variables from the environment."""
         return dict(self.variables)
 
-    def set_num(self, ident: str, num_index: int, sn: SimpleNumber) -> 'Env':
+    def set_num(self, ident: str, index: int, num: Number) -> 'Env':
         """Set a number variable."""
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
         clone = deepcopy(self)
-        clone.variables[ident] = NumVar(index=num_index, sn=sn)
+        clone.variables[ident] = NumVar(index=index, number=num)
         return clone
 
-    def set_vec(self, ident: str, vec_index: int, sv: SimpleVector) -> 'Env':
+    def set_vec(self, ident: str, index: int, vec: Vector) -> 'Env':
         """Set a vector variable."""
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
         clone = deepcopy(self)
-        clone.variables[ident] = VecVar(index=vec_index, sv=sv)
+        clone.variables[ident] = VecVar(index=index, vector=vec)
         return clone
 
-    def set_mat(self, ident: str, mat_index: int, sm: SimpleMatrix) -> 'Env':
+    def set_mat(self, ident: str, index: int, mat: Matrix) -> 'Env':
         """Set a matrix variable."""
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
         clone = deepcopy(self)
-        clone.variables[ident] = MatVar(index=mat_index, sm=sm)
+        clone.variables[ident] = MatVar(index=index, matrix=mat)
         return clone
 
     def alias(self, ident: str) -> str:
