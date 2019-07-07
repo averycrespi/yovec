@@ -24,6 +24,10 @@ $n
 
 Unary operations are evaluated right-to-left.
 
+- `neg`: negate
+- `abs`: take the absolute value
+- `sqrt`: take the square root
+
 - Functions: `neg`, `abs`, `sqrt`, `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, `ln`
 
 ```
@@ -74,10 +78,10 @@ map +1 V
 map 1+ V
 ```
 
-The `apply` function applies a binary operation element-wise to two vectors.
+The `apply` function applies a binary operation element-wise to two or more vectors.
 
 ```
-apply + V W
+apply + V W X
 ```
 
 The `concat` function concatenates vectors.
@@ -145,10 +149,10 @@ map +1 M
 map 1+ M
 ```
 
-The `apply` function applies a binary operation element-wise to two matrices.
+The `apply` function applies a binary operation element-wise to two or more matrices.
 
 ```
-apply + M N
+apply + M N O
 ```
 
 The transpose function switches the rows and columns of a matrix.
