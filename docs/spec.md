@@ -74,6 +74,12 @@ map +1 V
 map 1+ V
 ```
 
+The `apply` function applies a binary operation element-wise to two vectors.
+
+```
+apply + V W
+```
+
 The `concat` function concatenates vectors.
 
 ```
@@ -93,6 +99,8 @@ V dot W
 ```
 
 The binary operators `+` and `-` add and subtract vectors element-wise.
+
+They are convenient shortcuts for `apply +` and `apply -`.
 
 ```
 V + W - X
@@ -137,13 +145,21 @@ map +1 M
 map 1+ M
 ```
 
+The `apply` function applies a binary operation element-wise to two matrices.
+
+```
+apply + M N
+```
+
 The transpose function switches the rows and columns of a matrix.
 
-````
+```
 transpose M
-````
+```
 
 The binary operators `+` and `-` add and subtract matrices element-wise.
+
+They are convenient shortcuts for `apply +` and `apply -`.
 
 ```
 M + N - O

@@ -46,6 +46,12 @@ class Matrix:
             vecs.append(Vector([other.binary(op, n) for n in v.nums]))
         return Matrix(vecs)
 
+    def apply(self, op: str, other: 'Matrix') -> 'Matrix':
+        """Apply a binary operation to two matrices."""
+        if self._rows != other._rows or self._cols != other._cols:
+            raise YovecError('cannot apply operation "{}" to matrices of different sizes'.format(op))
+        return Matrix([lv.apply(op, rv) for lv, rv in zip(self.vecs, other.vecs)])
+
     def transpose(self) -> 'Matrix':
         """Return the transpose of the matrix."""
         vecs = []

@@ -33,6 +33,12 @@ class Vector:
         """Postmap a binary operation to a vector."""
         return Vector([other.binary(op, n) for n in self.nums])
 
+    def apply(self, op: str, other: 'Vector') -> 'Vector':
+        """Apply a binary operation to two vectors."""
+        if self.length != other.length:
+            raise YovecError('cannot apply operation "{}" to vectors of different lengths'.format(op))
+        return Vector([ln.binary(op, rn) for ln, rn in zip(self.nums, other.nums)])
+
     def concat(self, other: 'Vector') -> 'Vector':
         """Concatenate two vectors."""
         return Vector([*self.nums, *other.nums])

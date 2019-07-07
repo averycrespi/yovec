@@ -82,6 +82,7 @@ export: "export" variable "as" external
 ?vexpr: "map" num_unary_op vexpr            -> vec_map
       | "map" num_binary_op nexpr vexpr     -> vec_premap
       | "map" nexpr num_binary_op vexpr     -> vec_postmap
+      | "apply" num_binary_op vexpr vexpr   -> vec_apply
       | "concat" vexpr+                     -> concat
       | vexpr (vec_binary_op vexpr)+        -> vec_binary
       | "(" vexpr ")"
@@ -96,6 +97,7 @@ export: "export" variable "as" external
 ?mexpr: "map" num_unary_op mexpr            -> mat_map
       | "map" num_binary_op nexpr mexpr     -> mat_premap
       | "map" nexpr num_binary_op mexpr     -> mat_postmap
+      | "apply" num_binary_op mexpr mexpr   -> mat_apply
       | "transpose" mexpr                   -> transpose
       | mexpr (mat_binary_op mexpr)+        -> mat_binary
       | mexpr ("*" mexpr)+                  -> mat_mul

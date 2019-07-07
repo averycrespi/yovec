@@ -212,6 +212,12 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         env, vec = _transpile_vexpr(env, vexpr.children[2])
         return env, vec.postmap(num, op.kind)
 
+    elif vexpr.kind == 'vec_apply':
+        op = vexpr.children[0]
+        env, lvec = _transpile_vexpr(env, vexpr.children[1])
+        env, rvec = _transpile_vexpr(env, vexpr.children[2])
+        return env, lvec.apply(op.kind, rvec)
+
     elif vexpr.kind == 'concat':
         env, lvec = _transpile_vexpr(env, vexpr.children[0])
         for rvec in vexpr.children[1:]:
@@ -262,6 +268,12 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         op = mexpr.children[1]
         env, mat = _transpile_mexpr(env, mexpr.children[2])
         return env, mat.postmap(num, op.kind)
+
+    elif mexpr.kind == 'mat_apply':
+        op = mexpr.children[0]
+        env, lmat = _transpile_mexpr(env, mexpr.children[1])
+        env, rmat = _transpile_mexpr(env, mexpr.children[2])
+        return env, lmat.apply(op.kind, rmat)
 
     elif mexpr.kind == 'transpose':
         env, mat = _transpile_mexpr(env, mexpr.children[0])
