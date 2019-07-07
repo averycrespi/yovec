@@ -40,7 +40,7 @@ class Number:
         return clone
 
     def _ln(self) -> 'Number':
-        """Estimate the natural logarithm of a number."""
+        """Approximate the natural logarithm of a number."""
         n = Number(0)
         for k in range(0, 4):
             # 2k + 1
