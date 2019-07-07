@@ -173,6 +173,23 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         env, mat = _transpile_mexpr(env, nexpr.children[0])
         return env, mat.cols()
 
+    elif nexpr.kind == 'vec_elem':
+        env, vec = _transpile_vexpr(env, nexpr.children[0])
+        index = nexpr.children[1].children[0].value
+        try:
+            return env, vec.elem(int(index))
+        except ValueError:
+            raise YovecError('invalid element index: {}'.format(index))
+
+    elif nexpr.kind == 'mat_elem':
+        env, mat = _transpile_mexpr(env, nexpr.children[0])
+        row = nexpr.children[1].children[0].value
+        col = nexpr.children[2].children[0].value
+        try:
+            return env, mat.elem(int(row), int(col))
+        except ValueError:
+            raise YovecError('invalid element indices: {}, {}'.format(row, col))
+
     elif nexpr.kind == 'external':
         ident = nexpr.children[0].value
         _ = env.alias(ident)
@@ -230,6 +247,22 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
     elif vexpr.kind == 'reverse':
         env, vec = _transpile_vexpr(env, vexpr.children[0])
         return env, vec.reverse()
+
+    elif vexpr.kind == 'mat_row':
+        env, mat = _transpile_mexpr(env, vexpr.children[0])
+        row = vexpr.children[1].children[0].value
+        try:
+            return env, mat.row(int(row))
+        except ValueError:
+            raise YovecError('invald row index: {}'.format(row))
+
+    elif vexpr.kind == 'mat_col':
+        env, mat = _transpile_mexpr(env, vexpr.children[0])
+        col = vexpr.children[1].children[0].value
+        try:
+            return env, mat.col(int(col))
+        except ValueError:
+            raise YovecError('invald column index: {}'.format(col))
 
     elif vexpr.kind == 'vec_binary':
         env, lvec = _transpile_vexpr(env, vexpr.children[0])

@@ -65,6 +65,13 @@ class Vector:
             ln = ln.binary(op, rn)
         return ln
 
+    def elem(self, index: int) -> Number:
+        """Get a vector element by index."""
+        try:
+            return self.nums[index]
+        except IndexError:
+            raise YovecError('element index "{}" is out of range'.format(index))
+
     # Resolutions
 
     def assign(self, index: int) -> Tuple[List[Node], 'Vector']:

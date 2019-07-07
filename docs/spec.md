@@ -122,6 +122,17 @@ The `len` function returns the length of a vector.
 len V
 ```
 
+The `elem` function gets a vector element by index. Indices must be constants.
+
+```
+elem V 0
+```
+
+```
+// Bad: non-constant index
+elem V A
+```
+
 #### Matrices
 
 Yovec matrices are ordered sequences of vectors. Each vector in a matrix is treated as a row, and all vectors must have the same length.
@@ -191,6 +202,29 @@ The binary operation `*` performs matrix multiplication. The number of columns i
 
 ```
 M * N
+```
+
+The `elem` function gets a matrix element by index. Indices must be constants.
+
+```
+elem M 0 1
+```
+
+```
+// Bad: non-constant index
+elem M A B
+```
+
+The `row` function gets a matrix row by index.
+
+```
+row M 0
+```
+
+The `col` function gets a matrix column by index.
+
+```
+col M 0
 ```
 
 ## Statements

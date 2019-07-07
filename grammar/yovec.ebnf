@@ -69,6 +69,8 @@ export: "export" variable "as" external
       | "len" vexpr                     -> len
       | "rows" mexpr                    -> rows
       | "cols" mexpr                    -> cols
+      | "elem" vexpr number             -> vec_elem
+      | "elem" mexpr number number      -> mat_elem
       | "(" nexpr ")"
       | "$" external
       | variable
@@ -85,6 +87,8 @@ export: "export" variable "as" external
       | "apply" num_binary_op vexpr+        -> vec_apply
       | "concat" vexpr+                     -> concat
       | "reverse" vexpr                     -> reverse
+      | "row" mexpr number                  -> mat_row
+      | "col" mexpr number                  -> mat_col
       | vexpr (vec_binary_op vexpr)+        -> vec_binary
       | "(" vexpr ")"
       | variable

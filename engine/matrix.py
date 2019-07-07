@@ -82,6 +82,27 @@ class Matrix:
         """Return the number of columns in the matrix."""
         return Number(self._cols)
 
+    def elem(self, row_index: int, col_index: int) -> Number:
+        """Get a matrix element by index."""
+        try:
+            return self.vecs[row_index].nums[col_index]
+        except IndexError:
+            raise YovecError('element indices "{}", "{}" are out of range'.format(row_index, col_index))
+
+    def row(self, index: int) -> Vector:
+        """Get a matrix row by index."""
+        try:
+            return self.vecs[index]
+        except IndexError:
+            raise YovecError('row index "{}" is out of range'.format(row_index))
+
+    def col(self, index: int) -> Vector:
+        """Get a matrix column by index."""
+        try:
+            return Vector([v.nums[index] for v in self.vecs])
+        except IndexError:
+            raise YovecError('column index "{}" is out of range'.format(col_index))
+
     # Resolutions
 
     def assign(self, index: int) -> Tuple[List[Node], 'Matrix']:
