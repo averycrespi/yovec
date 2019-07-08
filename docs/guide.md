@@ -18,7 +18,7 @@
 - An **alias** is an alternative identifier for an external or variable
 - An **external** is a value which has been imported from YOLOL
 - A **function** performs an operation on values
-- An **index** identifies an element, row, or column in a vector or matrix
+- A **literal** is a fixed numeric value, such as `0`
 - A **matrix** is a non-empty sequence of vectors
 - A **number** is a limited-precision decimal
 - A **variable** stores a number, vector, or matrix
@@ -38,7 +38,7 @@ Yovec does not have function precedence. All functions are evaluated left-to-rig
 
 Yovec is a functional language. All objects are immutable. Variables may not be updated after definition.
 
-Yovec is 0-indexed. All indices into vectors and matrices must be integer literals.
+Yovec is 0-indexed.
 
 ## Numbers
 
@@ -191,7 +191,7 @@ len V
 // Returns 3
 ```
 
-The `elem` function gets an element from a vector by index.
+The `elem` function gets an element from a vector by index. The index must be a literal.
 
 ```
 let vector V = [0, 1, 2]
@@ -296,7 +296,7 @@ cols M
 // Returns 3
 ```
 
-The `elem` function gets an element of a matrix by row and column index.
+The `elem` function gets an element of a matrix by row and column index. The indices must be literals.
 
 ```
 let matrix M = [
@@ -308,7 +308,7 @@ elem M 1 2
 // Returns 5
 ```
 
-The `row` function gets a row of a matrix by index.
+The `row` function gets a row of a matrix by index. The index must be a literal.
 
 ```
 let matrix M = [
@@ -320,7 +320,7 @@ row M 0
 // Returnes [0, 1, 2]
 ```
 
-The `col` function gets a column of a matrix by index.
+The `col` function gets a column of a matrix by index. The index must be a literal.
 
 ```
 let matrix M = [
@@ -379,7 +379,7 @@ export M as mat
 
 ## Comments
 
-Comments may be used to explain code. A comment must start with `//` and must be on a separate line.
+A comment must start with `//` and must be on its own line.
 
 ```
 // This is a comment
