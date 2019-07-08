@@ -9,7 +9,7 @@ from engine.node import Node
 from engine.transpile import transpile, Context
 
 
-__version__ = 'v1.1'
+__version__ = 'v1.2'
 
 
 def parse_args():
