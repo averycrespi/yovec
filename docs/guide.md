@@ -75,6 +75,12 @@ Unary functions operate on a single number:
 - `arccot A`: calculate the inverse cotangent of `A` (in degrees)
 - `ln A`: approximate the natural logarithm of `A`
 
+Certain unary functions may cause undefined behaviour:
+
+- `sqrt A` where `A < 0`
+- `ln A` where `A < 0`
+- Trig. functions where the operand is outside of the domain
+
 Binary functions operate on two numbers:
 
 - `A + B`: add `A` and `B` (commutative)
@@ -89,6 +95,12 @@ Binary functions operate on two numbers:
 - `A >= B`: return `1` if `A` is greater than or equal to `B`, otherwise `0`
 - `A == B`: return `1` is `A` is equal to `B`, otherwise `0` (commutative)
 - `A != B`: return `1` is `A` is not equal to `B`, otherwise `0` (commutative)
+
+Certain binary functions may cause undefined behaviour:
+
+- `A / 0`
+- `A % 0`
+- `0 ^ -1`
 
 ## Vectors
 
@@ -266,7 +278,7 @@ transpose M
 // Returns [[0, 3], [1, 4], [2, 5]]
 ```
 
-The `*` function multiples two matrices. The number of cols in the first matrix must be equal to the number of rows in the second matrix.
+The `*` function multiples two matrices. The number of columns in the first matrix must be equal to the number of rows in the second matrix.
 
 ```
 M * N
@@ -317,7 +329,7 @@ let matrix M = [
 ]
 
 row M 0
-// Returnes [0, 1, 2]
+// Returns [0, 1, 2]
 ```
 
 The `col` function gets a column of a matrix by index. The index must be a literal.
@@ -334,11 +346,13 @@ col M 0
 
 ## Imports
 
-The `import` statement imports external values from YOLOL. Every value must be a valid number.
+The `import` statement imports external values from YOLOL.
+
+An external value must be a valid number. Importing a string causes undefined behaviour.
 
 Imported names must not include uppercase letters, and must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
-Externals must be prefixed with `$` when used.
+Imported names must be prefixed with `$` when used.
 
 ```
 import n
@@ -346,7 +360,7 @@ import n
 let variable A = $n + 1
 ```
 
-External values may optionally be aliased.
+Imported names may optionally be aliased.
 
 ```
 import long_name as n
@@ -386,5 +400,27 @@ A comment must start with `//` and must be on its own line.
 ```
 
 ## Errors
+
+Syntax errors occur when a program has invalid Yovec syntax.
+
+```
+let vector V = [0, 1, 2
+// Missing closing bracket
+```
+
+Transpilation errors occur when a program performs illegal operations during transpilation.
+
+```
+let number A = 0
+let vector V = A
+// Cannot assign number to vector
+```
+
+Undefined behaviour occurs when a program performs illegal operations at runtime. Anything may happen!
+
+```
+n0 = 1 / 0
+// Generated YOLOL divided by zero
+```
 
 ## Limitations
