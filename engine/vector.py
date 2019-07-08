@@ -18,7 +18,7 @@ class Vector:
     def vecbinary(self, op: str, other: 'Vector') -> 'Vector':
         """Apply a binary operation to two vectors."""
         if self.length != other.length:
-            raise YovecError('cannot apply operation "{}" to vectors of different lengths'.format(op))
+            raise YovecError('cannot apply operation {} to vectors of different lengths'.format(op))
         return Vector([n.binary(op.strip('vec_'), other.nums[i]) for i, n in enumerate(self.nums)])
 
     def map(self, op: str) -> 'Vector':
@@ -36,7 +36,7 @@ class Vector:
     def apply(self, op: str, other: 'Vector') -> 'Vector':
         """Apply a binary operation to two vectors."""
         if self.length != other.length:
-            raise YovecError('cannot apply operation "{}" to vectors of different lengths'.format(op))
+            raise YovecError('cannot apply operation {} to vectors of different lengths'.format(op))
         return Vector([ln.binary(op, rn) for ln, rn in zip(self.nums, other.nums)])
 
     def concat(self, other: 'Vector') -> 'Vector':
@@ -70,7 +70,7 @@ class Vector:
         try:
             return self.nums[index]
         except IndexError:
-            raise YovecError('element index "{}" is out of range'.format(index))
+            raise YovecError('element index {} is out of range'.format(index))
 
     # Resolutions
 

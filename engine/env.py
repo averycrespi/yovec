@@ -20,19 +20,39 @@ class Env:
         self.variables = {}
         self.aliases = {}
 
-    def var(self, ident: str, expect: Any=None) -> Union[NumVar, VecVar]:
-        """Get a variable from the environment."""
+    def vars(self) -> Dict[str, Union[NumVar, VecVar, MatVar]]:
+        """Get all variables from the environment."""
+        return dict(self.variables)
+
+    def num(self, ident: str) -> NumVar:
+        """Get a number variable."""
+        try:
+            n = self.variables[ident]
+        except KeyError:
+            raise YovecError('undefined variable: {}'.format(ident))
+        if type(n) != NumVar:
+            raise YovecError('expected variable {} to have type number, but got {}'.format(ident, n._fields[1]))
+        return n
+
+    def vec(self, ident: str) -> VecVar:
+        """Get a vector variable."""
         try:
             v = self.variables[ident]
         except KeyError:
             raise YovecError('undefined variable: {}'.format(ident))
-        if expect is not None and type(v) != expect:
-            raise YovecError('expected variable to have type {}, but got {}'.format(expect, type(v)))
+        if type(v) != VecVar:
+            raise YovecError('expected variable {} to have type vector, but got {}'.format(ident, v._fields[1]))
         return v
 
-    def vars(self) -> Dict[str, Union[NumVar, VecVar, MatVar]]:
-        """Get all identifiers and variables from the environment."""
-        return dict(self.variables)
+    def mat(self, ident: str) -> MatVar:
+        """Get a matrix variable."""
+        try:
+            m = self.variables[ident]
+        except KeyError:
+            raise YovecError('undefined variable: {}'.format(ident))
+        if type(m) != MatVar:
+            raise YovecError('expected variable {} to have type matrix, but got {}'.format(ident, m._fields[1]))
+        return m
 
     def set_num(self, ident: str, index: int, num: Number) -> 'Env':
         """Set a number variable."""
