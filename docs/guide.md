@@ -334,9 +334,54 @@ col M 0
 
 ## Imports
 
+The `import` statement imports external values from YOLOL. Every value must be a valid number.
+
+Imported names must not include uppercase letters. Externals must be prefixed with `$` when used.
+
+```
+import n
+
+let variable A = $n + 1
+```
+
+External values may optionally be aliased.
+
+```
+import long_name as n
+
+let variable A = $n + 1
+```
+
 ## Exports
 
+The `export` statement exports variables to YOLOL.
+
+Exported names must not included uppercase letters.
+
+```
+let number N = 0
+export N as num
+// Result: num_0=0
+
+let vector V = [0, 1, 2]
+export V as vec
+// Result: vec_0=0 vec_1=1 vec_2=2
+
+let matrix M = [
+    [0, 1, 2],
+    [3, 4, 5]
+]
+export M as mat
+// Result: mat_0_0=0 mat_0_1=1 mat_0_2=2 mat_1_0=3 mat_1_1=4 mat_1_2=5
+```
+
 ## Comments
+
+Comments may be used to explain code. A comment must start with `//` and must be on a separate line.
+
+```
+// This is a comment
+```
 
 ## Errors
 
