@@ -25,7 +25,7 @@ class Matrix:
     def matbinary(self, op: str, other: 'Matrix') -> 'Matrix':
         """Apply a binary operation to two matrices."""
         if self._rows != other._rows or self._cols != other._cols:
-            raise YovecError('cannot apply operation "{}" to matrices of different sizes'.format(op))
+            raise YovecError('cannot apply operation {} to matrices of different sizes'.format(op))
         return Matrix([v.vecbinary(op.replace('mat_', 'vec_'), other.vecs[i]) for i, v in enumerate(self.vecs)])
 
     def map(self, op: str) -> 'Matrix':
@@ -49,7 +49,7 @@ class Matrix:
     def apply(self, op: str, other: 'Matrix') -> 'Matrix':
         """Apply a binary operation to two matrices."""
         if self._rows != other._rows or self._cols != other._cols:
-            raise YovecError('cannot apply operation "{}" to matrices of different sizes'.format(op))
+            raise YovecError('cannot apply operation {} to matrices of different sizes'.format(op))
         return Matrix([lv.apply(op, rv) for lv, rv in zip(self.vecs, other.vecs)])
 
     def transpose(self) -> 'Matrix':
@@ -87,21 +87,21 @@ class Matrix:
         try:
             return self.vecs[row_index].nums[col_index]
         except IndexError:
-            raise YovecError('element indices "{}", "{}" are out of range'.format(row_index, col_index))
+            raise YovecError('element indices {}, {} are out of range'.format(row_index, col_index))
 
     def row(self, index: int) -> Vector:
         """Get a matrix row by index."""
         try:
             return self.vecs[index]
         except IndexError:
-            raise YovecError('row index "{}" is out of range'.format(row_index))
+            raise YovecError('row index {} is out of range'.format(row_index))
 
     def col(self, index: int) -> Vector:
         """Get a matrix column by index."""
         try:
             return Vector([v.nums[index] for v in self.vecs])
         except IndexError:
-            raise YovecError('column index "{}" is out of range'.format(col_index))
+            raise YovecError('column index {} is out of range'.format(col_index))
 
     # Resolutions
 

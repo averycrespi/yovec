@@ -1,11 +1,12 @@
 from argparse import ArgumentParser
-import sys
+from sys import stderr
 
 from lark import Lark
 
-from engine.format import format_yolol
+from engine.errors import YovecError
+from engine.format import format
 from engine.node import Node
-from engine.transpile import transpile_yovec
+from engine.transpile import transpile, Context
 
 
 __version__ = 'v1.1'
@@ -23,20 +24,31 @@ def parse_args():
 def main(infile, outfile, ast=False):
     with open('grammar/yovec.ebnf') as f:
         grammar = f.read()
-    parser = Lark(grammar, start='program')
     with open(infile) as f:
-        raw_program = f.read()
-    yovec_program = Node.from_tree(parser.parse(raw_program))
-    yolol_program = transpile_yovec(yovec_program)
-    if ast:
-        output = yolol_program.pretty()
-    else:
-        output = format_yolol(yolol_program)
+        text = f.read()
+    yolol = transform(grammar, text)
+    output = yolol.pretty() if ast else format(yolol)
     if outfile == '':
         print(output)
-    else:
-        with open(outfile, mode='w') as f:
-            f.write(output)
+        exit(0)
+    with open(outfile, mode='w') as f:
+        f.write(output)
+    exit(0)
+
+
+def transform(grammar: str, text: str) -> Node:
+    try:
+        parser = Lark(grammar, start='program')
+        yovec = Node.from_tree(parser.parse(text))
+    except Exception as e:
+        stderr.write('Parse error: {}\n'.format(str(e)))
+        exit(1)
+    try:
+        return transpile(yovec)
+    except YovecError as e:
+        stderr.write('Transpilation error: {}\n'.format(str(e)))
+        stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
+        exit(1)
 
 
 if __name__ == '__main__':
