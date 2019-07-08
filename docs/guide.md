@@ -336,7 +336,9 @@ col M 0
 
 The `import` statement imports external values from YOLOL. Every value must be a valid number.
 
-Imported names must not include uppercase letters. Externals must be prefixed with `$` when used.
+Imported names must not include uppercase letters, and must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
+
+Externals must be prefixed with `$` when used.
 
 ```
 import n
@@ -356,7 +358,7 @@ let variable A = $n + 1
 
 The `export` statement exports variables to YOLOL.
 
-Exported names must not included uppercase letters.
+Exported names must not included uppercase letters, and must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
 ```
 let number N = 0
