@@ -20,7 +20,7 @@
 - Supports numbers, vectors, and matrices
 - Interoperable with YOLOL (via imports and exports)
 
-Example program:
+Input:
 
 ```
 // Calculate the Euclidean distance between two vectors.
@@ -34,6 +34,16 @@ let vector D = [reduce + C]
 let vector E = map sqrt D
 
 export E as dist
+```
+
+Output:
+
+```
+v0e0=1 v0e1=2 v0e2=3
+v1e0=n+1 v1e1=n+2 v1e2=n+3
+v2e0=(v0e0-v1e0)^2 v2e1=(v0e1-v1e1)^2 v2e2=(v0e2-v1e2)^2
+v3e0=v2e0+v2e1+v2e2
+dist_0=sqrt v3e0
 ```
 
 ## Getting Started
