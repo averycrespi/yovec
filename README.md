@@ -48,7 +48,7 @@ dist_0=sqrt v3e0
 
 ## Getting Started
 
-To clone and run Yovec, you'll need [Git](https://git-scm.com/) and [Python 3.5 (or newer)](https://www.python.org/).
+To clone and run Yovec, you'll need [Git](https://git-scm.com/), [Python 3.5 (or newer)](https://www.python.org/), and [Lark](https://github.com/lark-parser/lark).
 
 ```bash
 # Clone the repository
