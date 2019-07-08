@@ -45,7 +45,7 @@ To clone and run Yovec, you'll need [Git](https://git-scm.com/) and [Python 3.5 
 git clone https://github.com/averycrespi/yovec.git
 
 # Install dependencies
-pip3 install lark-parser
+pip3 install --user lark-parser
 
 # Run Yovec
 python3 yovec.py -i in.yovec -o out.yolol
