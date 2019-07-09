@@ -6,6 +6,7 @@ from lark import Lark
 from engine.errors import YovecError
 from engine.format.text import yolol_to_text
 from engine.node import Node
+from engine.optimize.eliminate import eliminate_dead_code
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
@@ -15,8 +16,9 @@ __version__ = 'v1.2'
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
 parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
 parser.add_argument('-o', action='store', dest='outfile', default=None, help='YOLOL output file (stdout if unset)')
-parser.add_argument('--ast', action='store_true', help='Output AST')
-parser.add_argument('--version', action='store_true', help='Print version info')
+parser.add_argument('--ast', action='store_true', help='output AST')
+parser.add_argument('--no-elim', action='store_true', help='disable dead code elimination')
+parser.add_argument('--version', action='store_true', help='print version info')
 args = parser.parse_args()
 
 # Input
@@ -26,7 +28,7 @@ if args.version:
     exit(0)
 
 if args.infile is None:
-    stderr.write('Input error: no source file provided\n')
+    parser.print_help()
     exit(1)
 
 try:
@@ -58,6 +60,11 @@ except YovecError as e:
     stderr.write('Transpilation error: {}\n'.format(str(e)))
     stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
     exit(1)
+
+# Optimize
+
+if not args.no_elim:
+    yolol = eliminate_dead_code(yolol, exported)
 
 # Output
 
