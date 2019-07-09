@@ -3,11 +3,10 @@ from typing import List, Optional
 from lark.tree import Tree
 
 
-SEP = '  '
-
-
 class Node:
     """Represents a generic AST node."""
+    sep = '  '
+
     def __init__(self,
             kind: Optional[str]=None,
             value: Optional[str]=None,
@@ -24,9 +23,9 @@ class Node:
 
     def _pretty(self, indent: int) -> str:
         if self.children is None:
-            return '{}{} {}\n'.format(SEP * indent, self.kind, self.value)
+            return '{}{} {}\n'.format(Node.sep * indent, self.kind, self.value)
         p = ''.join(c._pretty(indent+1) for c in self.children)
-        return '{}{}\n{}'.format(SEP * indent, self.kind, p)
+        return '{}{}\n{}'.format(Node.sep * indent, self.kind, p)
 
     def pretty(self) -> str:
         """Pretty-format a node."""
