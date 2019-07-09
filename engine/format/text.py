@@ -32,7 +32,7 @@ OPERATORS = {
 }
 
 
-def format(program: Node) -> str:
+def program_to_text(program: Node) -> str:
     """Format a YOLOL program as text."""
     assert program.kind == 'program'
     return '\n'.join(_format_line(c) for c in program.children)

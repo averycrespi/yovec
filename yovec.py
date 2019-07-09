@@ -4,7 +4,7 @@ from sys import stderr
 from lark import Lark
 
 from engine.errors import YovecError
-from engine.format import format
+from engine.format.text import program_to_text
 from engine.node import Node
 from engine.transpile import transpile, Context
 
@@ -27,7 +27,7 @@ def main(infile, outfile, ast=False):
     with open(infile) as f:
         text = f.read()
     yolol = transform(grammar, text)
-    output = yolol.pretty() if ast else format(yolol)
+    output = yolol.pretty() if ast else program_to_text(yolol)
     if outfile == '':
         print(output)
         exit(0)
