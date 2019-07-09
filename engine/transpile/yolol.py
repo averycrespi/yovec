@@ -9,9 +9,6 @@ from engine.transpile.resolve import resolve_aliases
 from engine.transpile.vector import Vector
 
 
-Exported = Tuple[str]
-
-
 class Context:
     """Store transpilation context."""
     _state = {}
@@ -21,7 +18,7 @@ class Context:
         self.node = node
 
 
-def yovec_to_yolol(program: Node) -> Tuple[Node, Exported]:
+def yovec_to_yolol(program: Node) -> Tuple[Node, Tuple[str]]:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()

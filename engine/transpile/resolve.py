@@ -6,10 +6,7 @@ from engine.node import Node
 from engine.transpile.env import Env
 
 
-Exported = Tuple[str]
-
-
-def resolve_aliases(env: Env, node: Node, exported: Optional[Exported]=None) -> Tuple[Node, Exported]:
+def resolve_aliases(env: Env, node: Node, exported: Optional[Tuple[str]]=None) -> Tuple[Node, Tuple[str]]:
     """Resolve aliases to their targets."""
     if exported is None:
         exported = tuple()
