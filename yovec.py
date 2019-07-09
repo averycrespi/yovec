@@ -4,9 +4,9 @@ from sys import stderr
 from lark import Lark
 
 from engine.errors import YovecError
-from engine.format.text import program_to_text
+from engine.format.text import yolol_to_text
 from engine.node import Node
-from engine.transpile.transpile import transpile, Context
+from engine.transpile.yolol import yovec_to_yolol, Context
 
 
 __version__ = 'v1.2'
@@ -27,7 +27,7 @@ def main(infile, outfile, ast=False):
     with open(infile) as f:
         text = f.read()
     yolol = transform(grammar, text)
-    output = yolol.pretty() if ast else program_to_text(yolol)
+    output = yolol.pretty() if ast else yolol_to_text(yolol)
     if outfile == '':
         print(output)
         exit(0)
@@ -44,7 +44,7 @@ def transform(grammar: str, text: str) -> Node:
         stderr.write('Parse error: {}\n'.format(str(e)))
         exit(1)
     try:
-        return transpile(yovec)
+        return yovec_to_yolol(yovec)
     except YovecError as e:
         stderr.write('Transpilation error: {}\n'.format(str(e)))
         stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))

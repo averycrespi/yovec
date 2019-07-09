@@ -18,7 +18,7 @@ class Context:
         self.node = node
 
 
-def transpile(program: Node) -> Node:
+def yovec_to_yolol(program: Node) -> Node:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()
