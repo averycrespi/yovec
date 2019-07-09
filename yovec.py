@@ -12,51 +12,64 @@ from engine.transpile.yolol import yovec_to_yolol, Context
 __version__ = 'v1.2'
 
 
-def parse_args():
-    parser = ArgumentParser(description='Transpile Yovec to YOLOL')
-    parser.add_argument('-i', action='store', default='', help='Yovec source file')
-    parser.add_argument('-o', action='store', default='', help='YOLOL output file (if unset, prints to stdout)')
-    parser.add_argument('--ast', action='store_true', help='Output YOLOL AST')
-    parser.add_argument('--version', action='store_true', help='Print version info')
-    return parser, parser.parse_args()
+parser = ArgumentParser(description='Transpile Yovec to YOLOL')
+parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
+parser.add_argument('-o', action='store', dest='outfile', default=None, help='YOLOL output file (stdout if unset)')
+parser.add_argument('--ast', action='store_true', help='Output AST')
+parser.add_argument('--version', action='store_true', help='Print version info')
+args = parser.parse_args()
 
+# Input
 
-def main(infile, outfile, ast=False):
-    with open('grammar/yovec.ebnf') as f:
-        grammar = f.read()
-    with open(infile) as f:
-        text = f.read()
-    yolol = transform(grammar, text)
-    output = yolol.pretty() if ast else yolol_to_text(yolol)
-    if outfile == '':
-        print(output)
-        exit(0)
-    with open(outfile, mode='w') as f:
-        f.write(output)
+if args.version:
+    print(__version__)
     exit(0)
 
+if args.infile is None:
+    stderr.write('Input error: no source file provided\n')
+    exit(1)
 
-def transform(grammar: str, text: str) -> Node:
-    try:
-        parser = Lark(grammar, start='program')
-        yovec = Node.from_tree(parser.parse(text))
-    except Exception as e:
-        stderr.write('Parse error: {}\n'.format(str(e)))
-        exit(1)
-    try:
-        yolol, exported = yovec_to_yolol(yovec)
-        return yolol
-    except YovecError as e:
-        stderr.write('Transpilation error: {}\n'.format(str(e)))
-        stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
-        exit(1)
+try:
+    with open(args.infile) as f:
+        text = f.read()
+except IOError as e:
+    stderr.write('Input error: {}\n'.format(str(e)))
+    exit(1)
 
+try:
+    with open('grammar/yovec.ebnf') as f:
+        grammar = f.read()
+except IOError as e:
+    stderr.write('Input error: {}\n'.format(str(e)))
+    exit(1)
 
-if __name__ == '__main__':
-    parser, args = parse_args()
-    if args.version:
-        print(__version__)
-    elif args.i == '':
-        parser.print_help(sys.stderr)
-    else:
-        main(args.i, args.o, ast=args.ast)
+# Transpilation
+
+try:
+    parser = Lark(grammar, start='program')
+    yovec = Node.from_tree(parser.parse(text))
+except Exception as e:
+    stderr.write('Parse error: {}\n'.format(str(e)))
+    exit(1)
+
+try:
+    yolol, exported = yovec_to_yolol(yovec)
+except YovecError as e:
+    stderr.write('Transpilation error: {}\n'.format(str(e)))
+    stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
+    exit(1)
+
+# Output
+
+if args.ast:
+    output = yolol.pretty()
+else:
+    output = yolol_to_text(yolol)
+
+if args.outfile is None:
+    print(output)
+    exit(0)
+else:
+    with open(args.outfile, mode='w') as f:
+        f.write(output)
+    exit(0)
