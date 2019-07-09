@@ -44,7 +44,8 @@ def transform(grammar: str, text: str) -> Node:
         stderr.write('Parse error: {}\n'.format(str(e)))
         exit(1)
     try:
-        return yovec_to_yolol(yovec)
+        yolol, exported = yovec_to_yolol(yovec)
+        return yolol
     except YovecError as e:
         stderr.write('Transpilation error: {}\n'.format(str(e)))
         stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))

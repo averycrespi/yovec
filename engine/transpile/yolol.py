@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Tuple, List
 
 from engine.errors import YovecError
@@ -6,7 +5,11 @@ from engine.node import Node
 from engine.transpile.env import Env, NumVar, VecVar, MatVar
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
+from engine.transpile.resolve import resolve_aliases
 from engine.transpile.vector import Vector
+
+
+Exported = Tuple[str]
 
 
 class Context:
@@ -18,7 +21,7 @@ class Context:
         self.node = node
 
 
-def yovec_to_yolol(program: Node) -> Node:
+def yovec_to_yolol(program: Node) -> Tuple[Node, Exported]:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()
@@ -45,44 +48,9 @@ def yovec_to_yolol(program: Node) -> Node:
             pass
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
-    yolol_program = Node(kind='program', children=yolol_lines)
-    return _resolve_aliases(env, yolol_program)
-
-
-def _resolve_aliases(env: Env, node: Node) -> Node:
-    """Resolve aliases to their targets."""
-    if node.kind == 'variable':
-        for alias, target in env.aliases.items():
-            if node.value == alias:
-                return Node(kind=node.kind, value=target)
-            try:
-                num_index, _ = env.num(alias)
-                prefix = 'n{}'.format(num_index)
-                if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target))
-            except YovecError:
-                pass
-            try:
-                vec_index, _ = env.vec(alias)
-                prefix = 'v{}e'.format(vec_index)
-                if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
-            except YovecError:
-                pass
-            try:
-                mat_index, _ = env.mat(alias)
-                prefix = 'm{}'.format(mat_index)
-                if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
-            except YovecError:
-                pass
-        return node
-    elif node.children is None:
-        return node
-    else:
-        clone = deepcopy(node)
-        clone.children = [_resolve_aliases(env, c) for c in clone.children]
-        return clone
+    yolol, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
+    exported = tuple(set(exported)) # dedupe
+    return yolol, exported
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
