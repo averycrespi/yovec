@@ -177,7 +177,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 
     elif nexpr.kind == 'variable':
         ident = nexpr.children[0].value
-        _. num = env.num(ident)
+        _, num = env.num(ident)
         return env, num
 
     elif nexpr.kind == 'number':
