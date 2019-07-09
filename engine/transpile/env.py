@@ -4,9 +4,9 @@ from string import ascii_uppercase
 from typing import Union, Dict, Any
 
 from engine.errors import YovecError
-from engine.matrix import Matrix
-from engine.number import Number
-from engine.vector import Vector
+from engine.transpile.matrix import Matrix
+from engine.transpile.number import Number
+from engine.transpile.vector import Vector
 
 
 NumVar = namedtuple('NumVar', ('index', 'number'))

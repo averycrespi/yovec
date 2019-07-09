@@ -1,12 +1,12 @@
 from copy import deepcopy
 from typing import Tuple, List
 
-from engine.env import Env, NumVar, VecVar, MatVar
 from engine.errors import YovecError
-from engine.matrix import Matrix
 from engine.node import Node
-from engine.number import Number
-from engine.vector import Vector
+from engine.transpile.env import Env, NumVar, VecVar, MatVar
+from engine.transpile.matrix import Matrix
+from engine.transpile.number import Number
+from engine.transpile.vector import Vector
 
 
 class Context:

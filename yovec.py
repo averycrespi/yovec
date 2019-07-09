@@ -6,7 +6,7 @@ from lark import Lark
 from engine.errors import YovecError
 from engine.format.text import program_to_text
 from engine.node import Node
-from engine.transpile import transpile, Context
+from engine.transpile.transpile import transpile, Context
 
 
 __version__ = 'v1.2'
