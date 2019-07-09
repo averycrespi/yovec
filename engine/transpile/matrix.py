@@ -7,7 +7,6 @@ from engine.transpile.number import Number
 from engine.transpile.vector import Vector
 
 
-
 class Matrix:
     """Represents a list of vectors."""
     def __init__(self, vecs: List[Vector]):
