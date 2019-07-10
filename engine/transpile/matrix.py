@@ -93,14 +93,14 @@ class Matrix:
         try:
             return self.vecs[index]
         except IndexError:
-            raise YovecError('row index {} is out of range'.format(row_index))
+            raise YovecError('row index {} is out of range'.format(index))
 
     def col(self, index: int) -> Vector:
         """Get a matrix column by index."""
         try:
             return Vector([v.nums[index] for v in self.vecs])
         except IndexError:
-            raise YovecError('column index {} is out of range'.format(col_index))
+            raise YovecError('column index {} is out of range'.format(index))
 
     # Resolutions
 

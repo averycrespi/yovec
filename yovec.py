@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from sys import stderr
 
-from lark import Lark
+from lark import Lark # type: ignore
 
 from engine.errors import YovecError
 from engine.format.text import yolol_to_text
@@ -48,8 +48,7 @@ except IOError as e:
 # Transpilation
 
 try:
-    parser = Lark(grammar, start='program')
-    yovec = Node.from_tree(parser.parse(text))
+    yovec = Node.from_tree(Lark(grammar, start='program').parse(text))
 except Exception as e:
     stderr.write('Parse error: {}\n'.format(str(e)))
     exit(1)

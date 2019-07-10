@@ -46,8 +46,8 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Tuple[str]]:
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
     yolol, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
-    exported = tuple(set(exported)) # dedupe
-    return yolol, exported
+    exported = tuple(set(exported))
+    return yolol, exported # type: ignore
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
@@ -187,7 +187,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
             return env, Number(float(nexpr.children[0].value))
 
     else:
-        raise AssertionError('unknown kind for nexpr: {}'.format(vexpr.kind))
+        raise AssertionError('unknown kind for nexpr: {}'.format(nexpr.kind))
 
 
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
@@ -329,4 +329,4 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         return env, Matrix(vecs)
 
     else:
-        raise AssertionError('unknown kind for mexpr: {}'.format(vexpr.kind))
+        raise AssertionError('unknown kind for mexpr: {}'.format(mexpr.kind))

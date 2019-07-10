@@ -71,7 +71,7 @@ def _format_expr(expr: Node, parent: Op) -> str:
         )
         return expr.value
     elif len(expr.children) == 1:
-        op = OPERATORS[expr.kind]
+        op = OPERATORS[expr.kind] # type: ignore
         return '{space}{lparen}{sym}{child}{rparen}'.format(
             space=' ' if parent.precedence <= op.precedence and parent.symbol.isalpha() else '',
             lparen='(' if parent.precedence > op.precedence else '',
@@ -80,7 +80,7 @@ def _format_expr(expr: Node, parent: Op) -> str:
             rparen=')' if parent.precedence > op.precedence else '',
         )
     elif len(expr.children) == 2:
-        op = OPERATORS[expr.kind]
+        op = OPERATORS[expr.kind] # type: ignore
         return '{space}{lparen}{lchild}{sym}{rchild}{rparen}'.format(
             space=' ' if parent.precedence <= op.precedence and parent.symbol.isalpha() else '',
             lparen='(' if parent.precedence > op.precedence else '',

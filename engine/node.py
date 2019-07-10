@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import List, Optional, Callable
 
-from lark.tree import Tree
+from lark.tree import Tree # type: ignore
 
 
 class Node:
@@ -43,6 +43,7 @@ class Node:
 
     def remove_child(self, child: 'Node'):
         """Remove the child of a node."""
+        assert self._children is not None
         self._children.remove(child)
 
     def find(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
@@ -57,7 +58,7 @@ class Node:
         return found
 
     @staticmethod
-    def from_tree(tree: Tree) -> 'Node':
+    def from_tree(tree: Tree) -> 'Node': # type: ignore
         """Make a node from a Lark parse tree."""
         if not hasattr(tree, 'data'):
             return Node(kind=tree.type, value=tree.value)

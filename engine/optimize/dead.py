@@ -47,9 +47,11 @@ def _remove_dead(program: Node, alive: Set[str]) -> Node:
     assignments = clone.find(lambda node: node.kind == 'assignment')
     for asn in assignments:
         if asn.children[0].value not in alive:
-            asn.parent.remove_child(asn)
+            assert asn.parent is not None
+            asn.parent.remove_child(asn) # type: ignore
     lines = clone.find(lambda node: node.kind == 'line')
     for line in lines:
         if len(line.children) == 0:
-            line.parent.remove_child(line)
+            assert line.parent is not None
+            line.parent.remove_child(line) # type: ignore
     return clone
