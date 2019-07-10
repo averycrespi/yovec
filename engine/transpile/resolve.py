@@ -6,48 +6,42 @@ from engine.node import Node
 from engine.transpile.env import Env
 
 
-def resolve_aliases(env: Env, node: Node, exported: Optional[Tuple[str]]=None) -> Tuple[Node, Tuple[str]]:
-    """Resolve aliases to their targets."""
-    if exported is None:
-        exported = tuple()
-    if node.kind == 'variable':
+def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str]]:
+    """Resolve aliases to their targets in a YOLOL program."""
+    assert program.kind == 'program'
+    exported = []
+    clone = deepcopy(program)
+    variables = clone.find(lambda node: node.kind == 'variable')
+    for v in variables:
         for alias, target in env.aliases.items():
-            if node.value == alias:
-                return Node(kind=node.kind, value=target), exported
+            if v.value == alias:
+                v.value = target
+                break
             try:
                 num_index, _ = env.num(alias)
                 prefix = 'n{}'.format(num_index)
-                if node.value.startswith(prefix):
-                    ident = node.value.replace(prefix, target)
-                    return Node(kind=node.kind, value=ident), (*exported, ident)
+                if v.value.startswith(prefix):
+                    v.value = v.value.replace(prefix, target)
+                    exported.append(v.value)
+                    break
             except YovecError:
                 pass
             try:
                 vec_index, _ = env.vec(alias)
                 prefix = 'v{}e'.format(vec_index)
-                if node.value.startswith(prefix):
-                    ident = node.value.replace(prefix, target + '_')
-                    return Node(kind=node.kind, value=ident), (*exported, ident)
+                if v.value.startswith(prefix):
+                    v.value = v.value.replace(prefix, target + '_')
+                    exported.append(v.value)
+                    break
             except YovecError:
                 pass
             try:
                 mat_index, _ = env.mat(alias)
                 prefix = 'm{}'.format(mat_index)
-                if node.value.startswith(prefix):
-                    ident = node.value.replace(prefix, target + '_')
-                    return Node(kind=node.kind, value=ident), (*exported, ident)
+                if v.value.startswith(prefix):
+                    v.value = v.value.replace(prefix, target + '_')
+                    exported.append(v.value)
+                    break
             except YovecError:
                 pass
-        return node, exported
-    elif node.children is None:
-        return node, exported
-    else:
-        clone = deepcopy(node)
-        resolved = []
-        for c in clone.children:
-            r, e = resolve_aliases(env, c, exported)
-            resolved.append(r)
-            exported = e
-        clone.children = resolved
-        return clone, exported
-
+    return clone, exported

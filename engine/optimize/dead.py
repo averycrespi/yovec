@@ -9,36 +9,20 @@ def eliminate_dead_code(program: Node, keep: Sequence[str]) -> Node:
     assert program.kind == 'program'
     graph = _graph_deps(program)
     alive = _find_alive(graph, keep)
-    eliminated = _remove_assignments(program, alive)
-    pruned = _prune_nodes(eliminated)
-    return pruned
+    return _prune_empty(_remove_dead(program, alive))
 
 
 def _graph_deps(program: Node) -> Dict[str, Set[str]]:
     """Graph variable dependencies."""
     assert program.kind == 'program'
     graph = {}
-    for line in program.children:
-        for multi in line.children:
-            for assignment in multi.children:
-                variable = assignment.children[0]
-                expr = assignment.children[1]
-                graph[variable.value] = _find_vars(expr)
+    assignments = program.find(lambda node: node.kind == 'assignment')
+    for a in assignments:
+        variable = a.children[0]
+        expr = a.children[1]
+        unique = {v.value for v in expr.find(lambda node: node.kind == 'variable')}
+        graph[variable.value] = unique
     return graph
-
-
-def _find_vars(node: Node, vars: Optional[Set[str]]=None) -> Set[str]:
-    """Find unique variables."""
-    if vars is None:
-        vars = set()
-    if node.kind == 'variable':
-        return vars | {node.value}
-    elif node.children is None:
-        return vars
-    else:
-        for c in node.children:
-            vars = _find_vars(c, vars)
-        return vars
 
 
 def _find_alive(graph: Dict[str, Set[str]], keep: Sequence[str]) -> Set[str]:
@@ -58,24 +42,18 @@ def _find_alive(graph: Dict[str, Set[str]], keep: Sequence[str]) -> Set[str]:
     return alive
 
 
-def _remove_assignments(node: Node, alive: Set[str]) -> Node:
+def _remove_dead(program: Node, alive: Set[str]) -> Node:
     """Remove dead assignments."""
-    if node.kind == 'multi':
-        remaining = []
-        for assignment in node.children:
-            var = assignment.children[0].value
-            if var in alive:
-                remaining.append(deepcopy(assignment))
-        return Node(kind=node.kind, children=remaining)
-    elif node.children is None:
-        return node
-    else:
-        clone = deepcopy(node)
-        clone.children = [_remove_assignments(c, alive) for c in clone.children]
-        return clone
+    assert program.kind == 'program'
+    clone = deepcopy(program)
+    multis = clone.find(lambda node: node.kind == 'multi')
+    for m in multis:
+        assignments = m.find(lambda node: node.kind == 'assignment')
+        m.children = [a for a in assignments if a.children[0].value in alive]
+    return clone
 
 
-def _prune_nodes(program: Node) -> Node:
+def _prune_empty(program: Node) -> Node:
     """Prune empty nodes."""
     assert program.kind == 'program'
     pruned = Node(kind=program.kind, children=[])

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Callable
 
 from lark.tree import Tree
 
@@ -7,10 +7,7 @@ class Node:
     """Represents a generic AST node."""
     sep = '  '
 
-    def __init__(self,
-            kind: Optional[str]=None,
-            value: Optional[str]=None,
-            children: Optional[List['Node']]=None):
+    def __init__(self, kind: Optional[str]=None, value: Optional[str]=None, children: Optional[List['Node']]=None):
         self.kind = kind
         self.value = value
         self.children = children
@@ -18,18 +15,29 @@ class Node:
     def __str__(self) -> str:
         if self.children is None:
             return '{} {}'.format(self.kind, self.value)
-        p = ' '.join('({})'.format(str(c)) for c in self.children)
-        return '{} {}'.format(self.kind, p)
+        s = ' '.join('({})'.format(str(c)) for c in self.children)
+        return '{} {}'.format(self.kind, s)
 
     def _pretty(self, indent: int) -> str:
         if self.children is None:
             return '{}{} {}\n'.format(Node.sep * indent, self.kind, self.value)
-        p = ''.join(c._pretty(indent+1) for c in self.children)
-        return '{}{}\n{}'.format(Node.sep * indent, self.kind, p)
+        s = ''.join(c._pretty(indent+1) for c in self.children)
+        return '{}{}\n{}'.format(Node.sep * indent, self.kind, s)
 
     def pretty(self) -> str:
         """Pretty-format a node."""
         return self._pretty(0)
+
+    def find(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
+        """Recursively find children that satisfy a predicate."""
+        if found is None:
+            found = []
+        if predicate(self):
+            found.append(self)
+        if self.children is not None:
+            for c in self.children:
+                c.find(predicate, found)
+        return found
 
     @staticmethod
     def from_tree(tree: Tree) -> 'Node':
