@@ -45,14 +45,6 @@ class Node:
         """Remove the child of a node."""
         self._children.remove(child)
 
-    def validate(self):
-        """Validate parent-child relationships."""
-        if self.children is None:
-            return
-        for c in self.children:
-            assert c.parent == self
-            c.validate()
-
     def find(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
         """Recursively find children that satisfy a predicate."""
         if found is None:
