@@ -8,7 +8,7 @@ def eliminate_dead_code(program: Node, keep: Sequence[str]) -> Node:
     assert program.kind == 'program'
     graph = _graph_deps(program)
     alive = _find_alive(graph, keep)
-    return _prune_empty(_remove_dead(program, alive))
+    return _remove_dead(program, alive)
 
 
 def _graph_deps(program: Node) -> Dict[str, Set[str]]:
@@ -16,9 +16,9 @@ def _graph_deps(program: Node) -> Dict[str, Set[str]]:
     assert program.kind == 'program'
     graph = {}
     assignments = program.find(lambda node: node.kind == 'assignment')
-    for a in assignments:
-        variable = a.children[0]
-        expr = a.children[1]
+    for asn in assignments:
+        variable = asn.children[0]
+        expr = asn.children[1]
         unique = {v.value for v in expr.find(lambda node: node.kind == 'variable')}
         graph[variable.value] = unique
     return graph
@@ -45,16 +45,9 @@ def _remove_dead(program: Node, alive: Set[str]) -> Node:
     assert program.kind == 'program'
     clone = program.clone()
     assignments = clone.find(lambda node: node.kind == 'assignment')
-    for a in assignments:
-        if a.children[0].value not in alive:
-            a.parent.remove_child(a)
-    return clone
-
-
-def _prune_empty(program: Node) -> Node:
-    """Prune empty lines."""
-    assert program.kind == 'program'
-    clone = program.clone()
+    for asn in assignments:
+        if asn.children[0].value not in alive:
+            asn.parent.remove_child(asn)
     lines = clone.find(lambda node: node.kind == 'line')
     for line in lines:
         if len(line.children) == 0:
