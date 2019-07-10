@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List, Optional, Callable
 
 from lark.tree import Tree
@@ -27,6 +28,10 @@ class Node:
     def pretty(self) -> str:
         """Pretty-format a node."""
         return self._pretty(0)
+
+    def clone(self) -> 'Node':
+        """Clone a node."""
+        return deepcopy(self)
 
     def find(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
         """Recursively find children that satisfy a predicate."""

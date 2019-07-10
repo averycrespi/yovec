@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Dict, Sequence, Set, Optional
 
 from engine.node import Node
@@ -45,7 +44,7 @@ def _find_alive(graph: Dict[str, Set[str]], keep: Sequence[str]) -> Set[str]:
 def _remove_dead(program: Node, alive: Set[str]) -> Node:
     """Remove dead assignments."""
     assert program.kind == 'program'
-    clone = deepcopy(program)
+    clone = program.clone()
     multis = clone.find(lambda node: node.kind == 'multi')
     for m in multis:
         assignments = m.find(lambda node: node.kind == 'assignment')
@@ -58,7 +57,7 @@ def _prune_empty(program: Node) -> Node:
     assert program.kind == 'program'
     pruned = Node(kind=program.kind, children=[])
     for line in program.children:
-        multis = [m for m in line.children if len(m.children) > 0]
+        multis = [m.clone() for m in line.children if len(m.children) > 0]
         if len(multis) > 0:
-            pruned.children.append(Node(kind='line', children=deepcopy(multis)))
+            pruned.children.append(Node(kind='line', children=multis))
     return pruned

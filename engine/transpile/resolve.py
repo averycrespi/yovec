@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Tuple, List, Optional
 
 from engine.errors import YovecError
@@ -10,7 +9,7 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str]]:
     """Resolve aliases to their targets in a YOLOL program."""
     assert program.kind == 'program'
     exported = []
-    clone = deepcopy(program)
+    clone = program.clone()
     variables = clone.find(lambda node: node.kind == 'variable')
     for v in variables:
         for alias, target in env.aliases.items():
