@@ -6,7 +6,7 @@ from lark import Lark
 from engine.errors import YovecError
 from engine.format.text import yolol_to_text
 from engine.node import Node
-from engine.optimize.eliminate import eliminate_dead_code
+from engine.optimize.dead import eliminate_dead_code
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
@@ -17,7 +17,7 @@ parser = ArgumentParser(description='Transpile Yovec to YOLOL')
 parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
 parser.add_argument('-o', action='store', dest='outfile', default=None, help='YOLOL output file (stdout if unset)')
 parser.add_argument('--ast', action='store_true', help='output AST')
-parser.add_argument('--no-elim', action='store_true', help='disable dead code elimination')
+parser.add_argument('--no-dead', action='store_true', help='disable dead code elimination')
 parser.add_argument('--version', action='store_true', help='print version info')
 args = parser.parse_args()
 
@@ -63,7 +63,7 @@ except YovecError as e:
 
 # Optimize
 
-if not args.no_elim:
+if not args.no_dead:
     yolol = eliminate_dead_code(yolol, exported)
 
 # Output
