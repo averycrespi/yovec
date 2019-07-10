@@ -10,7 +10,7 @@ from engine.optimize.dead import eliminate_dead_code
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
-__version__ = 'v1.2.1'
+__version__ = 'v1.3.0'
 
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
