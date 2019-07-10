@@ -36,7 +36,6 @@ def _find_alive(graph: Dict[str, Set[str]], keep: Sequence[str]) -> Set[str]:
         try:
             queue.extend(list(graph[var]))
         except KeyError:
-            # External value
             pass
     return alive
 
@@ -45,19 +44,19 @@ def _remove_dead(program: Node, alive: Set[str]) -> Node:
     """Remove dead assignments."""
     assert program.kind == 'program'
     clone = program.clone()
-    multis = clone.find(lambda node: node.kind == 'multi')
-    for m in multis:
-        assignments = m.find(lambda node: node.kind == 'assignment')
-        m.children = [a for a in assignments if a.children[0].value in alive]
+    assignments = clone.find(lambda node: node.kind == 'assignment')
+    for a in assignments:
+        if a.children[0].value not in alive:
+            a.parent.remove_child(a)
     return clone
 
 
 def _prune_empty(program: Node) -> Node:
-    """Prune empty nodes."""
+    """Prune empty lines."""
     assert program.kind == 'program'
-    pruned = Node(kind=program.kind, children=[])
-    for line in program.children:
-        multis = [m.clone() for m in line.children if len(m.children) > 0]
-        if len(multis) > 0:
-            pruned.children.append(Node(kind='line', children=multis))
-    return pruned
+    clone = program.clone()
+    lines = clone.find(lambda node: node.kind == 'line')
+    for line in lines:
+        if len(line.children) == 0:
+            line.parent.remove_child(line)
+    return clone

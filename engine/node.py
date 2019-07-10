@@ -11,7 +11,15 @@ class Node:
     def __init__(self, kind: Optional[str]=None, value: Optional[str]=None, children: Optional[List['Node']]=None):
         self.kind = kind
         self.value = value
-        self.children = children
+        self._children = children
+        self.parent = None
+        if self._children is not None:
+            for c in self.children:
+                c.parent = self
+
+    @property
+    def children(self):
+        return self._children
 
     def __str__(self) -> str:
         if self.children is None:
@@ -33,6 +41,18 @@ class Node:
         """Clone a node."""
         return deepcopy(self)
 
+    def remove_child(self, child: 'Node'):
+        """Remove the child of a node."""
+        self._children.remove(child)
+
+    def validate(self):
+        """Validate parent-child relationships."""
+        if self.children is None:
+            return
+        for c in self.children:
+            assert c.parent == self
+            c.validate()
+
     def find(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
         """Recursively find children that satisfy a predicate."""
         if found is None:
@@ -49,5 +69,4 @@ class Node:
         """Make a node from a Lark parse tree."""
         if not hasattr(tree, 'data'):
             return Node(kind=tree.type, value=tree.value)
-        node = Node(kind=tree.data, children=[Node.from_tree(c) for c in tree.children])
-        return node
+        return Node(kind=tree.data, children=[Node.from_tree(c) for c in tree.children])

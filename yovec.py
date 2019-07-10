@@ -50,12 +50,14 @@ except IOError as e:
 try:
     parser = Lark(grammar, start='program')
     yovec = Node.from_tree(parser.parse(text))
+    yovec.validate()
 except Exception as e:
     stderr.write('Parse error: {}\n'.format(str(e)))
     exit(1)
 
 try:
     yolol, exported = yovec_to_yolol(yovec)
+    yolol.validate()
 except YovecError as e:
     stderr.write('Transpilation error: {}\n'.format(str(e)))
     stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
