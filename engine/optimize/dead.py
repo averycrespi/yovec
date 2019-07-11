@@ -49,6 +49,11 @@ def _remove_dead(program: Node, alive: Set[str]) -> Node:
         if asn.children[0].value not in alive:
             assert asn.parent is not None
             asn.parent.remove_child(asn) # type: ignore
+    multis = clone.find(lambda node: node.kind == 'multi')
+    for multi in multis:
+        if len(multi.children) == 0:
+            assert multi.parent is not None
+            multi.parent.remove_child(multi) # type: ignore
     lines = clone.find(lambda node: node.kind == 'line')
     for line in lines:
         if len(line.children) == 0:
