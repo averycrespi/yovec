@@ -1,4 +1,4 @@
-from operator import add, sub, mul, truediv, mod, pow
+from operator import add, sub, mul, truediv, mod, pow, lt, le, gt, ge, eq, ne
 from typing import Union
 
 
@@ -8,7 +8,13 @@ BINARY = {
     'mul': mul,
     'div': truediv,
     'mod': mod,
-    'exp': pow
+    'exp': pow,
+    'lt': lt,
+    'le': le,
+    'gt': gt,
+    'ge': ge,
+    'eq': eq,
+    'ne': ne
 }
 
 
