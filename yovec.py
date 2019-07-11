@@ -17,7 +17,7 @@ parser = ArgumentParser(description='Transpile Yovec to YOLOL')
 parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
 parser.add_argument('-o', action='store', dest='outfile', default=None, help='YOLOL output file (stdout if unset)')
 parser.add_argument('--ast', action='store_true', help='output AST')
-parser.add_argument('--no-dead', action='store_true', help='disable dead code elimination')
+parser.add_argument('--no-elim', action='store_true', help='disable dead code elimination')
 parser.add_argument('--version', action='store_true', help='print version info')
 args = parser.parse_args()
 
@@ -62,7 +62,7 @@ except YovecError as e:
 
 # Optimize
 
-if not args.no_dead:
+if not args.no_elim:
     yolol = eliminate_dead_code(yolol, exported)
 
 # Output
