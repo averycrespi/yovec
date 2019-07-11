@@ -3,9 +3,8 @@ from typing import List, Tuple
 
 from engine.errors import YovecError
 from engine.node import Node
-from engine.number import Number
-from engine.vector import Vector
-
+from engine.transpile.number import Number
+from engine.transpile.vector import Vector
 
 
 class Matrix:
@@ -94,14 +93,14 @@ class Matrix:
         try:
             return self.vecs[index]
         except IndexError:
-            raise YovecError('row index {} is out of range'.format(row_index))
+            raise YovecError('row index {} is out of range'.format(index))
 
     def col(self, index: int) -> Vector:
         """Get a matrix column by index."""
         try:
             return Vector([v.nums[index] for v in self.vecs])
         except IndexError:
-            raise YovecError('column index {} is out of range'.format(col_index))
+            raise YovecError('column index {} is out of range'.format(index))
 
     # Resolutions
 

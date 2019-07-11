@@ -1,12 +1,12 @@
-from copy import deepcopy
 from typing import Tuple, List
 
-from engine.env import Env, NumVar, VecVar, MatVar
 from engine.errors import YovecError
-from engine.matrix import Matrix
 from engine.node import Node
-from engine.number import Number
-from engine.vector import Vector
+from engine.transpile.env import Env, NumVar, VecVar, MatVar
+from engine.transpile.matrix import Matrix
+from engine.transpile.number import Number
+from engine.transpile.resolve import resolve_aliases
+from engine.transpile.vector import Vector
 
 
 class Context:
@@ -18,7 +18,7 @@ class Context:
         self.node = node
 
 
-def transpile(program: Node) -> Node:
+def yovec_to_yolol(program: Node) -> Tuple[Node, List[str], List[str]]:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()
@@ -45,44 +45,7 @@ def transpile(program: Node) -> Node:
             pass
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
-    yolol_program = Node(kind='program', children=yolol_lines)
-    return _resolve_aliases(env, yolol_program)
-
-
-def _resolve_aliases(env: Env, node: Node) -> Node:
-    """Resolve aliases to their targets."""
-    if node.kind == 'variable':
-        for alias, target in env.aliases.items():
-            if node.value == alias:
-                return Node(kind=node.kind, value=target)
-            try:
-                num_index, _ = env.num(alias)
-                prefix = 'n{}'.format(num_index)
-                if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target))
-            except YovecError:
-                pass
-            try:
-                vec_index, _ = env.vec(alias)
-                prefix = 'v{}e'.format(vec_index)
-                if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
-            except YovecError:
-                pass
-            try:
-                mat_index, _ = env.mat(alias)
-                prefix = 'm{}'.format(mat_index)
-                if node.value.startswith(prefix):
-                    return Node(kind=node.kind, value=node.value.replace(prefix, target + '_'))
-            except YovecError:
-                pass
-        return node
-    elif node.children is None:
-        return node
-    else:
-        clone = deepcopy(node)
-        clone.children = [_resolve_aliases(env, c) for c in clone.children]
-        return clone
+    return resolve_aliases(env, Node(kind='program', children=yolol_lines))
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
@@ -222,7 +185,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
             return env, Number(float(nexpr.children[0].value))
 
     else:
-        raise AssertionError('unknown kind for nexpr: {}'.format(vexpr.kind))
+        raise AssertionError('unknown kind for nexpr: {}'.format(nexpr.kind))
 
 
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
@@ -364,4 +327,4 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         return env, Matrix(vecs)
 
     else:
-        raise AssertionError('unknown kind for mexpr: {}'.format(vexpr.kind))
+        raise AssertionError('unknown kind for mexpr: {}'.format(mexpr.kind))

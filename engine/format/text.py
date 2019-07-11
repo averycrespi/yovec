@@ -1,4 +1,5 @@
 from collections import namedtuple
+from sys import stderr
 
 from engine.node import Node
 
@@ -32,27 +33,27 @@ OPERATORS = {
 }
 
 
-def format(program: Node) -> str:
+def yolol_to_text(program: Node) -> str:
     """Format a YOLOL program as text."""
     assert program.kind == 'program'
-    return '\n'.join(_format_line(c) for c in program.children)
-
-
-def _format_line(line: Node) -> str:
-    """Format a line."""
-    assert line.kind == 'line'
-    return _format_multi(line.children[0])
-
-
-def _format_multi(multi: Node) -> str:
-    """Format multiple statements."""
-    assert multi.kind == 'multi'
-    return ' '.join(_format_statement(c) for c in multi.children)
-
-
-def _format_statement(statement: Node) -> str:
-    """Format a statement."""
-    return _format_assignment(statement)
+    assignments = program.find(lambda node: node.kind == 'assignment')
+    formatted = [_format_assignment(a) for a in assignments]
+    text = ''
+    curr = []
+    for f in formatted:
+        line = ' '.join(curr)
+        if len(f) > 70:
+            stderr.write('Warning: line exceeds 70 characters\n')
+            text += '{}\n{}\n'.format(line, f)
+            curr = []
+        elif len(line) + len(' ') + len(f) > 70:
+            text += '{}\n'.format(line)
+            curr = [f]
+        else:
+            curr.append(f)
+    if len(curr) > 0:
+        text += '{}\n'.format(' '.join(curr))
+    return text.strip('\n')
 
 
 def _format_assignment(assignment: Node) -> str:
@@ -70,7 +71,7 @@ def _format_expr(expr: Node, parent: Op) -> str:
         )
         return expr.value
     elif len(expr.children) == 1:
-        op = OPERATORS[expr.kind]
+        op = OPERATORS[expr.kind] # type: ignore
         return '{space}{lparen}{sym}{child}{rparen}'.format(
             space=' ' if parent.precedence <= op.precedence and parent.symbol.isalpha() else '',
             lparen='(' if parent.precedence > op.precedence else '',
@@ -79,7 +80,7 @@ def _format_expr(expr: Node, parent: Op) -> str:
             rparen=')' if parent.precedence > op.precedence else '',
         )
     elif len(expr.children) == 2:
-        op = OPERATORS[expr.kind]
+        op = OPERATORS[expr.kind] # type: ignore
         return '{space}{lparen}{lchild}{sym}{rchild}{rparen}'.format(
             space=' ' if parent.precedence <= op.precedence and parent.symbol.isalpha() else '',
             lparen='(' if parent.precedence > op.precedence else '',
