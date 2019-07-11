@@ -58,8 +58,10 @@ vector: "[" (vector ",")* vector ("," vector)* "]"
 ?vexpr: "map" unary_op vexpr            -> unary_map
       | "map" binary_op vexpr vexpr+    -> binary_map
       | "concat" vexpr+                 -> concat
+      | "dim" vexpr                     -> dim
       | "dot" vexpr vexpr               -> dot
       | "elem" vexpr literal            -> elem
+      | "len" vexpr                     -> len
       | "matmul" vexpr vexpr            -> matmul
       | "reduce" binary_op vexpr        -> reduce
       | "repeat" vexpr literal          -> repeat

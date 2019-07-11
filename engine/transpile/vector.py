@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Sequence, Union
+from typing import Sequence, Union, Tuple, List
 
 from engine.errors import YovecError
 from engine.transpile.number import Number
@@ -63,6 +63,13 @@ class Vector:
         else:
             return Vector([*self.vectors, *other.vectors])
 
+    def dim(self) -> 'Vector':
+        """Get the dimensionality of an N-dimensional version.
+
+        Returns a 0-dimensional vector.
+        """
+        return Vector(self.dim)
+
     def dot(self, other: 'Vector') -> 'Vector':
         """Calculate the dot product of two 1-dimensional vectors.
 
@@ -97,12 +104,36 @@ class Vector:
         else:
             return Vector(self.vectors[index])
 
+    def len(self) -> 'Vector':
+        """Get the length of an N-dimensional vector.
+
+        Returns a 0-dimensional vector.
+        """
+        return Vector(self.length)
+
     def matmul(self, other: 'Vector') -> 'Vector':
         """Multiply two 2-dimensional vectors.
 
         Returns a 2-dimensional vector.
         """
-        pass #TODO
+        if self.dim != 2 or other.dim != 2:
+            raise YovecError('can only calculate matrix product of 2-dimensional vectors')
+        self_cols = self.vectors[0].length
+        self_rows = self.length
+        other_cols = other.vectors[0].length
+        other_rows = other.length
+        if self_cols != other_rows:
+            raise YovecError('cannot multiple matrices with mismatching sizes')
+        vectors = []
+        for i in range(self_rows):
+            numbers = []
+            for j in range(other_cols):
+                n = Number(0)
+                for k in range(other_rows):
+                    n = n.binary('add', self.vectors[i].vectors[k].binary('mul', other.vectors[k].vectors[j]))
+                numbers.append(Vector(n))
+            vectors.append(numbers)
+        return Vector(vecs)
 
     def reduce(self, op: str) -> 'Vector':
         """Reduce an (N>0)-dimensional vector.
@@ -150,19 +181,30 @@ class Vector:
 
         Returns a 2-dimensional vector.
         """
-        pass #TODO
+        if self.dims != 2:
+            raise YovecError('can only transpose 2-dimensional vector')
+        vectors = []
+        cols = self.vectors[0].length
+        for i in range(cols):
+            vectors.append(Vector([v.vectors[i] for v in self.vectors]))
+        return Vector(vectors)
 
-    # Resolutions
-
-    def assign(self, index: int) -> Tuple[List[Node], 'Vector']:
-        """Generate YOLOL assignment statements."""
-        assignments = []
-        nums = []
-        expressions = [n.evaluate() for n in self.nums]
-        for i, expr in enumerate(expressions):
-            ident = 'v{}e{}'.format(index, i)
+    def assign(self, prefix: str, indices: Tuple[int]=None, assignments: Tuple[Node]=None) -> Tuple[Tuple[Node], 'Vector']:
+        """Generate YOLOL assignment statements from an N-dimensional vector."""
+        if indices is None:
+            indices = (prefix,)
+        if assignments is None:
+            assignments = tuple()
+        if self.dim == 0:
+            expr = self.number.evaluate()
+            ident = '{}_{}'.format(prefix, '_'.join(str(i) for i in indices))
             var = Node(kind='variable', value=ident)
             asn = Node(kind='assignment', children=[var, expr])
-            assignments.append(asn)
-            nums.append(Number(ident))
-        return assignments, Vector(nums)
+            return (asn,), Vector(Number(ident))
+        else:
+            vectors = []
+            for i, v in enumerate(self.vectors):
+                asns, vec = v.assign(prefix, indices=(*indices, i))
+                assignments = (*assignments, *asns)
+                vectors.append(vec)
+            return assignments, Vector(vectors)
