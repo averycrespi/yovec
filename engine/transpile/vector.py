@@ -28,7 +28,7 @@ class Vector:
 
         Returns an N-dimensional vector.
         """
-        if self.vectors is None:
+        if self.dim == 0:
             return Vector(self.number.unary(op))
         else:
             return Vector([v.map_unary(op) for v in self.vectors])
@@ -44,7 +44,7 @@ class Vector:
             raise YovecError('cannot apply operation {} to vectors with different dimensionalities'.format(op))
         elif self.length != other.length:
             raise YovecError('cannot apply operation {} to vectors with different lengths'.format(op))
-        elif self.vectors is None:
+        elif self.dim == 0:
             return Vector(self.number.binary(op, other.number.binary))
         else:
             return Vector([v.map_binary(op, o) for v, o in zip(self.vectors, other.vectors)])
@@ -58,7 +58,7 @@ class Vector:
         """
         if self.dim != other.dim:
             raise YovecError('cannot concatenate vectors with different dimensionalities')
-        elif self.vectors is None:
+        elif self.dim == 0:
             raise YovecError('cannot concatenate 0-dimensional vectors')
         else:
             return Vector([*self.vectors, *other.vectors])
@@ -86,7 +86,16 @@ class Vector:
 
         Returns an (N-1)-dimensional vector.
         """
-        pass #TODO
+        try:
+            index = int(lit)
+        except ValueError:
+            raise YovecError('invalid index: {}'.format(lit))
+        if index < 0 or index >= self.length:
+            raise YovecError('index is out of range: {}'.format(index))
+        elif self.dim == 0:
+            raise YovecError('cannot get element from a 0-dimensional vector')
+        else:
+            return Vector(self.vectors[index])
 
     def matmul(self, other: 'Vector') -> 'Vector':
         """Multiply two 2-dimensional vectors.
@@ -96,13 +105,19 @@ class Vector:
         pass #TODO
 
     def reduce(self, op: str) -> 'Vector':
-        """Reduce an N-dimensional vector.
+        """Reduce an (N>0)-dimensional vector.
 
         Returns a 0-dimensional vector.
         """
-        if self.vectors is None:
-            return Vector(self.number)
-        pass #TODO
+        if self.dim == 0:
+            raise YovecError('cannot reduce a 0-dimensional vector')
+        elif self.dim == 1:
+            n = self.vectors[0].number
+            for vec in self.vectors[1:]:
+                n = n.binary(op, vec.number)
+            return Vector(ln)
+        else:
+            return Vector([v.reduce(op) for v in self.vectors])
 
     def repeat(self, lit: str) -> 'Vector':
         """Repeat an N-dimensional vector.
@@ -136,15 +151,6 @@ class Vector:
         Returns a 2-dimensional vector.
         """
         pass #TODO
-
-    # Operations
-
-    def reduce(self, op: str) -> Number:
-        """Reduce the vector to a number."""
-        ln = self.nums[0]
-        for rn in self.nums[1:]:
-            ln = ln.binary(op, rn)
-        return ln
 
     # Resolutions
 
