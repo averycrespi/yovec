@@ -7,7 +7,7 @@ from engine.errors import YovecError
 from engine.format.text import yolol_to_text
 from engine.node import Node
 from engine.optimize.elim import eliminate_dead_code
-from engine.optimize.prop import propagate_constants
+from engine.optimize.fold import fold_constants
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
@@ -19,7 +19,7 @@ parser.add_argument('-i', action='store', dest='infile', default=None, help='Yov
 parser.add_argument('-o', action='store', dest='outfile', default=None, help='YOLOL output file (stdout if unset)')
 parser.add_argument('--ast', action='store_true', help='output AST')
 parser.add_argument('--no-elim', action='store_true', help='disable dead code elimination')
-parser.add_argument('--no-prop', action='store_true', help='disable constant propagation')
+parser.add_argument('--no-fold', action='store_true', help='disable constant folding')
 parser.add_argument('--version', action='store_true', help='print version info')
 args = parser.parse_args()
 
@@ -67,8 +67,8 @@ except YovecError as e:
 try:
     if not args.no_elim:
         yolol = eliminate_dead_code(yolol, exported)
-    if not args.no_prop:
-        yolol = propagate_constants(yolol)
+    if not args.no_fold:
+        yolol = fold_constants(yolol)
 except YovecError as e:
     stderr.write('Optimization error: {}\n'.format(str(e)))
     exit(1)
