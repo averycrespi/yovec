@@ -1,62 +1,143 @@
 from copy import deepcopy
-from typing import List, Tuple
+from typing import Sequence, Union
 
 from engine.errors import YovecError
-from engine.node import Node
 from engine.transpile.number import Number
 
 
-
 class Vector:
-    """Represents a list of numbers."""
-    def __init__(self, nums: List[Number]):
-        self.nums = nums
-        self.length = len(nums)
+    """Represents an N-dimensional vector."""
+    def __init__(self, elems: Union[Sequence['Vector'], Number]):
+        if type(elems) == Number:
+            self.number = elems
+            self.vectors = None
+            self.dim = 0
+            self.length = 1
+        elif len({v.length for v in elems}) != 1:
+            raise YovecError('cannot create vector with multiple lengths')
+        elif len({v.dim for v in elems}) != 1:
+            raise YovecError('cannot create vector with multiple dimensionalities')
+        else:
+            self.numbers = None
+            self.vectors = elems
+            self.dim = elems[0].dim + 1
+            self.length = len(elems)
 
-    # Operations
+    def map_unary(self, op: str) -> 'Vector':
+        """Map a unary operation onto an N-dimensional vector.
 
-    def vecbinary(self, op: str, other: 'Vector') -> 'Vector':
-        """Apply a binary operation to two vectors."""
-        if self.length != other.length:
-            raise YovecError('cannot apply operation {} to vectors of different lengths'.format(op))
-        return Vector([n.binary(op.strip('vec_'), other.nums[i]) for i, n in enumerate(self.nums)])
+        Returns an N-dimensional vector.
+        """
+        if self.vectors is None:
+            return Vector(self.number.unary(op))
+        else:
+            return Vector([v.map_unary(op) for v in self.vectors])
 
-    def map(self, op: str) -> 'Vector':
-        """Map a unary operation to a vector."""
-        return Vector([n.unary(op) for n in self.nums])
+    def map_binary(self, op: str, other: 'Vector') -> 'Vector':
+        """Map a binary operation onto two N-dimensional vectors.
 
-    def premap(self, op: str, other: Number) -> 'Vector':
-        """Premap a binary operation to a vector."""
-        return Vector([n.binary(op, other) for n in self.nums])
+        Both vectors must have the same length and dimensionality.
 
-    def postmap(self, other: Number, op: str) -> 'Vector':
-        """Postmap a binary operation to a vector."""
-        return Vector([other.binary(op, n) for n in self.nums])
-
-    def apply(self, op: str, other: 'Vector') -> 'Vector':
-        """Apply a binary operation to two vectors."""
-        if self.length != other.length:
-            raise YovecError('cannot apply operation {} to vectors of different lengths'.format(op))
-        return Vector([ln.binary(op, rn) for ln, rn in zip(self.nums, other.nums)])
+        Returns an N-dimensional vector.
+        """
+        if self.dim != other.dim:
+            raise YovecError('cannot apply operation {} to vectors with different dimensionalities'.format(op))
+        elif self.length != other.length:
+            raise YovecError('cannot apply operation {} to vectors with different lengths'.format(op))
+        elif self.vectors is None:
+            return Vector(self.number.binary(op, other.number.binary))
+        else:
+            return Vector([v.map_binary(op, o) for v, o in zip(self.vectors, other.vectors)])
 
     def concat(self, other: 'Vector') -> 'Vector':
-        """Concatenate two vectors."""
-        return Vector([*self.nums, *other.nums])
+        """Shallowly concatenate two (N>0)-dimensional vectors.
+
+        Both vectors must have the same dimensionality.
+
+        Returns an N-dimensional vector.
+        """
+        if self.dim != other.dim:
+            raise YovecError('cannot concatenate vectors with different dimensionalities')
+        elif self.vectors is None:
+            raise YovecError('cannot concatenate 0-dimensional vectors')
+        else:
+            return Vector([*self.vectors, *other.vectors])
+
+    def dot(self, other: 'Vector') -> 'Vector':
+        """Calculate the dot product of two 1-dimensional vectors.
+
+        Both vectors must have the same length.
+
+        Returns a 0-dimensional vector.
+        """
+        if self.dim != 1 or other.dim != 1:
+            raise YovecError('can only calculate dot product of 1-dimensional vectors')
+        elif self.length != other.length:
+            raise YovecError('cannot calculate dot product of vectors with different lengths')
+        n = Number(0)
+        lns = [v.number for v in self.vectors]
+        rns = [v.number for v in other.vectors]
+        for ln, rn in zip(lns, rns):
+            n = n.binary('add', ln.binary('mul', rn))
+        return Vector(n)
+
+    def elem(self, lit: str) -> 'Vector':
+        """Get an element from an (N>0)-dimensional vector.
+
+        Returns an (N-1)-dimensional vector.
+        """
+        pass #TODO
+
+    def matmul(self, other: 'Vector') -> 'Vector':
+        """Multiply two 2-dimensional vectors.
+
+        Returns a 2-dimensional vector.
+        """
+        pass #TODO
+
+    def reduce(self, op: str) -> 'Vector':
+        """Reduce an N-dimensional vector.
+
+        Returns a 0-dimensional vector.
+        """
+        if self.vectors is None:
+            return Vector(self.number)
+        pass #TODO
+
+    def repeat(self, lit: str) -> 'Vector':
+        """Repeat an N-dimensional vector.
+
+        Returns a (N+1)-dimensional vector.
+        """
+        try:
+            count = int(lit)
+        except ValueError:
+            raise YovecError('invalid count: {}'.format(lit))
+        if count <= 0:
+            raise YovecError('count must be positive: {}'.format(count))
+        elif self.vectors is None:
+            return Vector([self.number] * count)
+        else:
+            return Vector([self.vectors] * count)
 
     def reverse(self) -> 'Vector':
-        """Reverse a vector."""
-        return Vector(list(self.nums[::-1]))
+        """Shallowly reverse an N-dimensional vector.
 
-    def dot(self, other: 'Vector') -> Number:
-        """Calculate the dot product of two vectors."""
-        n = Number(0)
-        for ln, rn in zip(self.nums, other.nums):
-            n = n.binary('add', ln.binary('mul', rn))
-        return n
+        Returns an N-dimensional vector.
+        """
+        if self.vectors is None:
+            return Vector(self.number)
+        else:
+            return Vector(self.vectors[::-1])
 
-    def len(self) -> Number:
-        """Return the length of the vector."""
-        return Number(self.length)
+    def transpose(self) -> 'Vector':
+        """Swap the rows and columns of a 2-dimensional vector.
+
+        Returns a 2-dimensional vector.
+        """
+        pass #TODO
+
+    # Operations
 
     def reduce(self, op: str) -> Number:
         """Reduce the vector to a number."""
@@ -64,13 +145,6 @@ class Vector:
         for rn in self.nums[1:]:
             ln = ln.binary(op, rn)
         return ln
-
-    def elem(self, index: int) -> Number:
-        """Get a vector element by index."""
-        try:
-            return self.nums[index]
-        except IndexError:
-            raise YovecError('element index {} is out of range'.format(index))
 
     # Resolutions
 
