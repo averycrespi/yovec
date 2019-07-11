@@ -21,6 +21,18 @@ class Node:
     def children(self):
         return self._children
 
+    def append_child(self, child: 'Node'):
+        """Append a child to a node."""
+        child.parent = self
+        if self.children is None:
+            self._children = []
+        self._children.append(child)
+
+    def remove_child(self, child: 'Node'):
+        """Remove the child of a node."""
+        assert self._children is not None
+        self._children.remove(child)
+
     def __str__(self) -> str:
         if self.children is None:
             return '{} {}'.format(self.kind, self.value)
@@ -40,11 +52,6 @@ class Node:
     def clone(self) -> 'Node':
         """Clone a node."""
         return deepcopy(self)
-
-    def remove_child(self, child: 'Node'):
-        """Remove the child of a node."""
-        assert self._children is not None
-        self._children.remove(child)
 
     def find(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
         """Recursively find children that satisfy a predicate."""
