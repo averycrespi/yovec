@@ -6,7 +6,7 @@ from lark import Lark # type: ignore
 from engine.errors import YovecError
 from engine.format.text import yolol_to_text
 from engine.node import Node
-from engine.optimize.dead import eliminate_dead_code
+from engine.optimize.elim import eliminate_dead_code
 from engine.optimize.prop import propagate_constants
 from engine.transpile.yolol import yovec_to_yolol, Context
 
