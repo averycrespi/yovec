@@ -67,12 +67,12 @@ except YovecError as e:
 # Optimize
 
 try:
-    if not args.no_mangle:
-        yolol = mangle_names(yolol, imported, exported)
-    if not args.no_elim:
-        yolol = eliminate_dead_code(yolol, exported)
     if not args.no_reduce:
         yolol = reduce_expressions(yolol)
+    if not args.no_elim:
+        yolol = eliminate_dead_code(yolol, exported)
+    if not args.no_mangle:
+        yolol = mangle_names(yolol, imported, exported)
 except YovecError as e:
     stderr.write('Optimization error: {}\n'.format(str(e)))
     exit(1)
