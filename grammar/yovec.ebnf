@@ -1,23 +1,18 @@
 %import common.WS
 %ignore WS
 
-// Entities
-
-NUMBER: /-?\d+(\.\d{1,4})?/
-number: NUMBER
+LITERAL: /-?\d+(\.\d{1,4})?/
+literal: LITERAL
 
 VAR_IDENT: /[A-Z_]+/
 variable: VAR_IDENT
 
-YOLOL_IDENT: /[a-z][a-z0-9]*|:[a-z0-9]+/
-external: YOLOL_IDENT
+YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9_]*|:[a-zA-Z0-9_]+/
+external: "$" YOLOL_IDENT
+
+?number: literal | variable | external
 
 comment: /\/\/[^\n]*/
-
-vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
-matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
-
-// Statements
 
 program: line*
 
@@ -25,87 +20,50 @@ line: import | export | let | comment
 
 import: "import" external ("as" external)?
 export: "export" variable "as" external
+let: "let" variable "=" vexpr
 
-?let: "let" "number" variable "=" nexpr     -> num_let
-    | "let" "vector" variable "=" vexpr     -> vec_let
-    | "let" "matrix" variable "=" mexpr     -> mat_let
+?unary_op: "neg"        -> neg
+         | "abs"        -> abs
+         | "sqrt"       -> sqrt
+         | "sin"        -> sin
+         | "cos"        -> cos
+         | "tan"        -> tan
+         | "arcsin"     -> arcsin
+         | "arccos"     -> arccos
+         | "arctan"     -> arctan
+         | "csc"        -> csc
+         | "sec"        -> sec
+         | "cot"        -> cot
+         | "arccsc"     -> arccsc
+         | "arcsec"     -> arcsec
+         | "arccot"     -> arccot
+         | "ln"         -> ln
 
-// Numbers
+?binary_op: "+"     -> add
+          | "-"     -> sub
+          | "*"     -> mul
+          | "/"     -> div
+          | "%"     -> mod
+          | "^"     -> exp
+          | "<"     -> lt
+          | "<="    -> le
+          | ">"     -> gt
+          | ">="    -> ge
+          | "=="    -> eq
+          | "!="    -> ne
 
-?num_unary_op: "neg"        -> neg
-             | "abs"        -> abs
-             | "sqrt"       -> sqrt
-             | "sin"        -> sin
-             | "cos"        -> cos
-             | "tan"        -> tan
-             | "arcsin"     -> arcsin
-             | "arccos"     -> arccos
-             | "arctan"     -> arctan
-             | "ln"         -> ln
-             | "csc"        -> csc
-             | "sec"        -> sec
-             | "cot"        -> cot
-             | "arccsc"     -> arccsc
-             | "arcsec"     -> arcsec
-             | "arccot"     -> arccot
+vector: "[" (vector ",")* vector ("," vector)* "]"
+      | "[" (number ",")* number ("," number)* "]"
 
-?num_binary_op: "+"     -> add
-              | "-"     -> sub
-              | "*"     -> mul
-              | "/"     -> div
-              | "%"     -> mod
-              | "^"     -> exp
-              | "<"     -> lt
-              | "<="    -> le
-              | ">"     -> gt
-              | ">="    -> ge
-              | "=="    -> eq
-              | "!="    -> ne
-
-?nexpr: (num_unary_op)+ nexpr           -> num_unary
-      | nexpr (num_binary_op nexpr)+    -> num_binary
-      | "reduce" num_binary_op vexpr    -> reduce
-      | vexpr "dot" vexpr               -> dot
-      | "len" vexpr                     -> len
-      | "rows" mexpr                    -> rows
-      | "cols" mexpr                    -> cols
-      | "elem" vexpr number             -> vec_elem
-      | "elem" mexpr number number      -> mat_elem
-      | "(" nexpr ")"
-      | "$" external
-      | variable
-      | number
-
-// Vectors
-
-?vec_binary_op: "+"     -> vec_add
-              | "-"     -> vec_sub
-
-?vexpr: "map" num_unary_op vexpr            -> vec_map
-      | "map" num_binary_op nexpr vexpr     -> vec_premap
-      | "map" nexpr num_binary_op vexpr     -> vec_postmap
-      | "apply" num_binary_op vexpr+        -> vec_apply
-      | "concat" vexpr+                     -> concat
-      | "reverse" vexpr                     -> reverse
-      | "row" mexpr number                  -> mat_row
-      | "col" mexpr number                  -> mat_col
-      | vexpr (vec_binary_op vexpr)+        -> vec_binary
+?vexpr: "map" unary_op vexpr            -> unary_map
+      | "map" binary_op vexpr vexpr+    -> binary_map
+      | "concat" vexpr+                 -> concat
+      | "dot" vexpr vexpr               -> dot
+      | "matmul" vexpr vexpr            -> matmul
+      | "reduce" binary_op vexpr        -> reduce
+      | "repeat" vexpr literal          -> repeat
+      | "reverse" vexpr                 -> reverse
+      | "transpose" vexpr               -> transpose
       | "(" vexpr ")"
       | variable
       | vector
-
-// Matrices
-
-?mat_binary_op: "+"     -> mat_add
-              | "-"     -> mat_sub
-
-?mexpr: "map" num_unary_op mexpr            -> mat_map
-      | "map" num_binary_op nexpr mexpr     -> mat_premap
-      | "map" nexpr num_binary_op mexpr     -> mat_postmap
-      | "apply" num_binary_op mexpr+        -> mat_apply
-      | "transpose" mexpr                   -> transpose
-      | mexpr (mat_binary_op mexpr)+        -> mat_binary
-      | mexpr ("*" mexpr)+                  -> mat_mul
-      | "(" mexpr ")"
-      | variable
-      | matrix
