@@ -18,7 +18,7 @@ class Context:
         self.node = node
 
 
-def yovec_to_yolol(program: Node) -> Tuple[Node, Tuple[str]]:
+def yovec_to_yolol(program: Node) -> Tuple[Node, List[str], List[str]]:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()
@@ -45,9 +45,7 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Tuple[str]]:
             pass
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
-    yolol, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
-    exported = tuple(set(exported))
-    return yolol, exported # type: ignore
+    return resolve_aliases(env, Node(kind='program', children=yolol_lines))
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:

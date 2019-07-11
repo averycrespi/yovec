@@ -5,9 +5,10 @@ from engine.node import Node
 from engine.transpile.env import Env
 
 
-def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str]]:
+def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str], List[str]]:
     """Resolve aliases to their targets in a YOLOL program."""
     assert program.kind == 'program'
+    imported = []
     exported = []
     clone = program.clone()
     variables = clone.find(lambda node: node.kind == 'variable')
@@ -15,6 +16,7 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str]]:
         for alias, target in env.aliases.items():
             if v.value == alias:
                 v.value = target
+                imported.append(v.value)
                 break
             try:
                 num_index, _ = env.num(alias)
@@ -43,4 +45,6 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str]]:
                     break
             except YovecError:
                 pass
-    return clone, exported
+    imported = list(set(imported))
+    exported = list(set(exported))
+    return clone, imported, exported

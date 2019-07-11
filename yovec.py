@@ -54,7 +54,7 @@ except Exception as e:
     exit(1)
 
 try:
-    yolol, exported = yovec_to_yolol(yovec)
+    yolol, imported, exported = yovec_to_yolol(yovec)
 except YovecError as e:
     stderr.write('Transpilation error: {}\n'.format(str(e)))
     stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
