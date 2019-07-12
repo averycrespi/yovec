@@ -17,9 +17,9 @@
 
 ## Features
 
-- Simple, unambiguous syntax
+- Simple, declarative syntax
 - Supports numbers, vectors, and matrices
-- Interoperable with YOLOL (via imports and exports)
+- Interoperable with YOLOL
 
 Input:
 
@@ -68,7 +68,7 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 
 After cloning the repository, run `make develop` to setup a development environment.
 
-Run `make test` to run tests, and `make check` to validate type annotations.
+Run `make test` to run tests, and `make check` to check type annotations.
 
 ## License
 
