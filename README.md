@@ -48,14 +48,14 @@ dist_0=sqrt v3e0
 
 ## Getting Started
 
-To clone and run Yovec, you'll need [Git](https://git-scm.com/), [Python 3.5 (or newer)](https://www.python.org/), and [Lark](https://github.com/lark-parser/lark).
+To run Yovec, you'll need [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), and [Python 3.5](https://www.python.org/) (or newer).
 
 ```bash
 # Clone the repository
-git clone https://github.com/averycrespi/yovec.git
+git clone https://github.com/averycrespi/yovec.git && cd yovec
 
 # Install dependencies
-pip3 install --user lark-parser
+make install
 
 # Run Yovec
 python3 yovec.py -i in.yovec -o out.yolol
