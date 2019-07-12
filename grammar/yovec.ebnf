@@ -62,8 +62,12 @@ export: "export" variable "as" external
               | "=="    -> eq
               | "!="    -> ne
 
-?nexpr: (num_unary_op)+ nexpr           -> num_unary
-      | nexpr (num_binary_op nexpr)+    -> num_binary
+?nexpr: nbin
+
+?nbin: nbase
+     | nbin (num_binary_op nbase)+      -> num_binary
+
+?nbase: (num_unary_op)+ nexpr           -> num_unary
       | "reduce" num_binary_op vexpr    -> reduce
       | vexpr "dot" vexpr               -> dot
       | "len" vexpr                     -> len
@@ -81,7 +85,12 @@ export: "export" variable "as" external
 ?vec_binary_op: "+"     -> vec_add
               | "-"     -> vec_sub
 
-?vexpr: "map" num_unary_op vexpr            -> vec_map
+?vexpr: vbin
+
+?vbin: vbase
+      | vbin (vec_binary_op vbase)+         -> vec_binary
+
+?vbase: "map" num_unary_op vexpr            -> vec_map
       | "map" num_binary_op nexpr vexpr     -> vec_premap
       | "map" nexpr num_binary_op vexpr     -> vec_postmap
       | "apply" num_binary_op vexpr+        -> vec_apply
@@ -89,7 +98,6 @@ export: "export" variable "as" external
       | "reverse" vexpr                     -> reverse
       | "row" mexpr number                  -> mat_row
       | "col" mexpr number                  -> mat_col
-      | vexpr (vec_binary_op vexpr)+        -> vec_binary
       | "(" vexpr ")"
       | variable
       | vector
@@ -99,12 +107,16 @@ export: "export" variable "as" external
 ?mat_binary_op: "+"     -> mat_add
               | "-"     -> mat_sub
 
-?mexpr: "map" num_unary_op mexpr            -> mat_map
+?mexpr: mbin
+
+?mbin: mbase
+     | mbin (mat_binary_op mbase)+          -> mat_binary
+
+?mbase: "map" num_unary_op mexpr            -> mat_map
       | "map" num_binary_op nexpr mexpr     -> mat_premap
       | "map" nexpr num_binary_op mexpr     -> mat_postmap
       | "apply" num_binary_op mexpr+        -> mat_apply
       | "transpose" mexpr                   -> transpose
-      | mexpr (mat_binary_op mexpr)+        -> mat_binary
       | mexpr ("*" mexpr)+                  -> mat_mul
       | "(" mexpr ")"
       | variable
