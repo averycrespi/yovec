@@ -13,7 +13,7 @@ from engine.optimize.reduce import reduce_expressions
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
-__version__ = 'v1.3.0'
+__version__ = 'v1.4.0'
 
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
