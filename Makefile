@@ -1,4 +1,4 @@
-.PHONY: install check test
+.PHONY: install develop check test
 
 all:
 	@echo "Please specify a target: install, develop, check, test"
