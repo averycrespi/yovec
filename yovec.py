@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from pathlib import Path
 from sys import stderr
 
 from lark import Lark # type: ignore
@@ -43,7 +44,7 @@ except IOError as e:
     exit(1)
 
 try:
-    with open('grammar/yovec.ebnf') as f:
+    with open(Path('grammar') / 'yovec.ebnf') as f:
         grammar = f.read()
 except IOError as e:
     stderr.write('Input error: {}\n'.format(str(e)))
