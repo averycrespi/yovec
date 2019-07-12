@@ -1,7 +1,5 @@
-from collections import namedtuple
 from copy import deepcopy
-from string import ascii_uppercase
-from typing import Union, Dict, Any
+from typing import Union, Dict, Tuple
 
 from engine.errors import YovecError
 from engine.transpile.matrix import Matrix
@@ -9,94 +7,69 @@ from engine.transpile.number import Number
 from engine.transpile.vector import Vector
 
 
-NumVar = namedtuple('NumVar', ('index', 'number'))
-VecVar = namedtuple('VecVar', ('index', 'vector'))
-MatVar = namedtuple('MatVar', ('index', 'matrix'))
+Variable = Union[Number, Vector, Matrix]
 
 
 class Env:
     """Represents a program environment."""
     def __init__(self):
-        self.variables = {}
-        self.aliases = {}
+        self._variables = {}
+        self._imports = {}
+        self._exports = {}
 
-    def vars(self) -> Dict[str, Union[NumVar, VecVar, MatVar]]:
-        """Get all variables from the environment."""
-        return dict(self.variables)
+    @property
+    def variables(self) -> Dict[str, Tuple[Variable, int]]:
+        return dict(self._variables)
 
-    def num(self, ident: str) -> NumVar:
-        """Get a number variable."""
+    @property
+    def imports(self) -> Dict[str, str]:
+        return dict(self._imports)
+
+    @property
+    def exports(self) -> Dict[str, str]:
+        return dict(self._exports)
+
+    def var(self, ident: str) -> Tuple[Variable, int]:
         try:
-            n = self.variables[ident]
+            return self.variables[ident]
         except KeyError:
             raise YovecError('undefined variable: {}'.format(ident))
-        if type(n) != NumVar:
-            raise YovecError('expected variable {} to have type number, but got {}'.format(ident, n._fields[1]))
-        return n
 
-    def vec(self, ident: str) -> VecVar:
-        """Get a vector variable."""
-        try:
-            v = self.variables[ident]
-        except KeyError:
-            raise YovecError('undefined variable: {}'.format(ident))
-        if type(v) != VecVar:
-            raise YovecError('expected variable {} to have type vector, but got {}'.format(ident, v._fields[1]))
-        return v
-
-    def mat(self, ident: str) -> MatVar:
-        """Get a matrix variable."""
-        try:
-            m = self.variables[ident]
-        except KeyError:
-            raise YovecError('undefined variable: {}'.format(ident))
-        if type(m) != MatVar:
-            raise YovecError('expected variable {} to have type matrix, but got {}'.format(ident, m._fields[1]))
-        return m
-
-    def set_num(self, ident: str, index: int, num: Number) -> 'Env':
-        """Set a number variable."""
+    def set_var(self, ident: str, var: Variable, index: int) -> 'Env':
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
         clone = deepcopy(self)
-        clone.variables[ident] = NumVar(index=index, number=num)
+        clone._variables[ident] = (var, index)
         return clone
 
-    def set_vec(self, ident: str, index: int, vec: Vector) -> 'Env':
-        """Set a vector variable."""
-        if ident in self.variables:
-            raise YovecError('cannot redefine existing variable: {}'.format(ident))
-        clone = deepcopy(self)
-        clone.variables[ident] = VecVar(index=index, vector=vec)
-        return clone
-
-    def set_mat(self, ident: str, index: int, mat: Matrix) -> 'Env':
-        """Set a matrix variable."""
-        if ident in self.variables:
-            raise YovecError('cannot redefine existing variable: {}'.format(ident))
-        clone = deepcopy(self)
-        clone.variables[ident] = MatVar(index=index, matrix=mat)
-        return clone
-
-    def alias(self, ident: str) -> str:
-        """Get an alias from the environment."""
+    def import_(self, alias: str) -> str:
         try:
-            return self.aliases[ident]
+            return self._imports[alias]
         except KeyError:
-            raise YovecError('undefined alias: {}'.format(ident))
+            raise YovecError('undefined import: {}'.format(alias))
 
-    def aliases(self) -> Dict[str, str]:
-        """Get all identifiers and aliases from the environment."""
-        return dict(self.aliases)
+    def set_import(self, alias: str, target: str) -> 'Env':
+        if alias in self.imports:
+            raise YovecError('cannot redefine existing import: {}'.format(alias))
+        if target in self.imports.values() or target in self.exports.values():
+            raise YovecError('conflicting import target: {}'.format(target))
+        clone = deepcopy(self)
+        clone._imports[alias] = target
+        return clone
 
-    def set_alias(self, alias: str, target: str) -> 'Env':
-        """Set an alias."""
-        if alias in self.aliases:
-            raise YovecError('cannot redefine existing alias: {}'.format(alias))
-        if target in self.aliases.values():
-            raise YovecError('conflicting alias target: {}'.format(target))
-        if set(alias) in set(ascii_uppercase + '_') and alias not in self.variables:
+    def export(self, alias: str) -> str:
+        try:
+            return self.exports[alias]
+        except KeyError:
+            raise YovecError('undefined export: {}'.format(alias))
+
+    def set_export(self, alias: str, target: str) -> 'Env':
+        if alias not in self.variables:
             raise YovecError('cannot export undefined variable: {}'.format(alias))
+        if alias in self.exports:
+            raise YovecError('cannot redefine existing export: {}'.format(alias))
+        if target in self.exports.values() or target in self.imports or target in self.imports.values():
+            raise YovecError('conflicting export target: {}'.format(target))
         clone = deepcopy(self)
-        clone.aliases[alias] = target
+        clone._exports[alias] = target
         return clone

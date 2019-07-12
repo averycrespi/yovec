@@ -6,8 +6,9 @@ from engine.node import Node
 from engine.transpile.number import Number
 
 
-
 class Vector:
+    PREFIX = '_yovec_vec'
+
     """Represents a list of numbers."""
     def __init__(self, nums: List[Number]):
         self.nums = nums
@@ -80,7 +81,7 @@ class Vector:
         nums = []
         expressions = [n.evaluate() for n in self.nums]
         for i, expr in enumerate(expressions):
-            ident = 'v{}e{}'.format(index, i)
+            ident = '{}{}_e{}'.format(Vector.PREFIX, index, i)
             var = Node(kind='variable', value=ident)
             asn = Node(kind='assignment', children=[var, expr])
             assignments.append(asn)

@@ -9,6 +9,8 @@ from engine.transpile.vector import Vector
 
 class Matrix:
     """Represents a list of vectors."""
+    PREFIX = '_yovec_mat'
+
     def __init__(self, vecs: List[Vector]):
         assert len(vecs) > 0
         if len(vecs) > 1:
@@ -112,7 +114,7 @@ class Matrix:
             nums = []
             for j, n in enumerate(v.nums):
                 expr = n.evaluate()
-                ident = 'm{}r{}c{}'.format(index, i, j)
+                ident = '{}{}_r{}c{}'.format(Matrix.PREFIX, index, i, j)
                 var = Node(kind='variable', value=ident)
                 asn = Node(kind='assignment', children=[var, expr])
                 assignments.append(asn)
