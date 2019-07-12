@@ -11,6 +11,7 @@
 <p align="center">
     <a href="#features">Features</a> •
     <a href="#getting-started">Getting Started</a> •
+	<a href="#development">Development</a> •
 	<a href="#license">License</a>
 </p>
 
@@ -62,6 +63,12 @@ python3 yovec.py -i in.yovec -o out.yolol
 ```
 
 To learn the Yovec language, check out some [example programs](programs/) or read the [language guide](docs/guide.md).
+
+## Development
+
+After cloning the repository, run `make develop` to setup a development environment.
+
+Run `make test` to run tests, and `make check` to validate type annotations.
 
 ## License
 
