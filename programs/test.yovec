@@ -3,25 +3,30 @@
 import n
 import longname as o
 
-let number A = 1 + 2 - 3 * 4 / 5 % 6 ^ 7 + ln 1
-let number B = neg abs sqrt sin cos tan arcsin arccos arctan 0
-let number C = 1 < 2 <= 3 > 4 >= 5 == 6 != 7
-let number D = csc sec cot arccsc arcsec arccot 0
+let A = 1
+let V = [0, 1, 2]
+let M = [
+    [0, 1],
+    [2, 3]
+]
 
-let vector V = [$n, $o]
-let vector W = map abs (map +1 (map 1+ (apply + V V V)))
-let vector X = reverse (concat V (V + V - V))
-let number V_A = V dot V + len V + (reduce + V)
-let number V_E = elem V 0
+let AA = map + (map - (map * (map / (map % (map ^ A A) A) A) A) A) A
+let AB = map neg (map abs (map sqrt (map sin A)))
+let AC = map < (map <= (map > (map >= (map == (map != A A) A) A) A) A) A
+let AD = map ln 1
 
-let matrix M = [[1, 2, 3], [4, 5, 6]]
-let matrix N = map abs (map +1 (map 1+ (apply + M M M)))
-let matrix O = M * (transpose M)
-let number M_A = rows M + cols M
-let vector M_R = row M 0
-let vector M_C = col M 0
-let number M_E = elem M 0 0
+let VA = concat V V
+let VB = dim V
+let VC = dot V V
+let VD = elem V 0
+let VE = len V
+let VF = reduce + V
+let VG = repeat V 3
+let VH = reverse V
 
-export A as foo
-export V as bar
-export M as baz
+let MA = matmul M M
+let MB = transpose M
+
+export A as num
+export V as vec
+export M as mat

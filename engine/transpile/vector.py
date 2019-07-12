@@ -12,16 +12,16 @@ class Vector:
         if type(elems) == Number:
             self.number = elems
             self.vectors = None
-            self.dim = 0
+            self._dim = 0
             self.length = 1
         elif len({v.length for v in elems}) != 1:
             raise YovecError('cannot create vector with multiple lengths')
-        elif len({v.dim for v in elems}) != 1:
+        elif len({v._dim for v in elems}) != 1:
             raise YovecError('cannot create vector with multiple dimensionalities')
         else:
             self.numbers = None
             self.vectors = elems
-            self.dim = elems[0].dim + 1
+            self._dim = elems[0]._dim + 1
             self.length = len(elems)
 
     def map_unary(self, op: str) -> 'Vector':
@@ -29,7 +29,7 @@ class Vector:
 
         Returns an N-dimensional vector.
         """
-        if self.dim == 0:
+        if self._dim == 0:
             return Vector(self.number.unary(op))
         else:
             return Vector([v.map_unary(op) for v in self.vectors])
@@ -41,11 +41,11 @@ class Vector:
 
         Returns an N-dimensional vector.
         """
-        if self.dim != other.dim:
-            raise YovecError('cannot apply operation {} to vectors with different dimensionalities: {}, {}'.format(op, self.dim, other.dim))
+        if self._dim != other._dim:
+            raise YovecError('cannot apply operation {} to vectors with different dimensionalities: {}, {}'.format(op, self._dim, other._dim))
         elif self.length != other.length:
             raise YovecError('cannot apply operation {} to vectors with different lengths'.format(op))
-        elif self.dim == 0:
+        elif self._dim == 0:
             return Vector(self.number.binary(op, other.number))
         else:
             return Vector([v.map_binary(op, o) for v, o in zip(self.vectors, other.vectors)])
@@ -57,9 +57,9 @@ class Vector:
 
         Returns an N-dimensional vector.
         """
-        if self.dim != other.dim:
+        if self._dim != other._dim:
             raise YovecError('cannot concatenate vectors with different dimensionalities')
-        elif self.dim == 0:
+        elif self._dim == 0:
             raise YovecError('cannot concatenate 0-dimensional vectors')
         else:
             return Vector([*self.vectors, *other.vectors])
@@ -69,7 +69,7 @@ class Vector:
 
         Returns a 0-dimensional vector.
         """
-        return Vector(self.dim)
+        return Vector(Number(self._dim))
 
     def dot(self, other: 'Vector') -> 'Vector':
         """Calculate the dot product of two 1-dimensional vectors.
@@ -78,7 +78,7 @@ class Vector:
 
         Returns a 0-dimensional vector.
         """
-        if self.dim != 1 or other.dim != 1:
+        if self._dim != 1 or other._dim != 1:
             raise YovecError('can only calculate dot product of 1-dimensional vectors')
         elif self.length != other.length:
             raise YovecError('cannot calculate dot product of vectors with different lengths')
@@ -100,24 +100,24 @@ class Vector:
             raise YovecError('invalid index: {}'.format(lit))
         if index < 0 or index >= self.length:
             raise YovecError('index is out of range: {}'.format(index))
-        elif self.dim == 0:
+        elif self._dim == 0:
             raise YovecError('cannot get element from a 0-dimensional vector')
         else:
-            return Vector(self.vectors[index])
+            return self.vectors[index]
 
     def len(self) -> 'Vector':
         """Get the length of an N-dimensional vector.
 
         Returns a 0-dimensional vector.
         """
-        return Vector(self.length)
+        return Vector(Number(self.length))
 
     def matmul(self, other: 'Vector') -> 'Vector':
         """Multiply two 2-dimensional vectors.
 
         Returns a 2-dimensional vector.
         """
-        if self.dim != 2 or other.dim != 2:
+        if self._dim != 2 or other._dim != 2:
             raise YovecError('can only calculate matrix product of 2-dimensional vectors')
         self_cols = self.vectors[0].length
         self_rows = self.length
@@ -131,9 +131,9 @@ class Vector:
             for j in range(other_cols):
                 n = Number(0)
                 for k in range(other_rows):
-                    n = n.binary('add', self.vectors[i].vectors[k].binary('mul', other.vectors[k].vectors[j]))
+                    n = n.binary('add', self.vectors[i].vectors[k].number.binary('mul', other.vectors[k].vectors[j].number))
                 numbers.append(Vector(n))
-            vectors.append(numbers)
+            vectors.append(Vector(numbers))
         return Vector(vectors)
 
     def reduce(self, op: str) -> 'Vector':
@@ -141,9 +141,9 @@ class Vector:
 
         Returns a 0-dimensional vector.
         """
-        if self.dim == 0:
+        if self._dim == 0:
             raise YovecError('cannot reduce a 0-dimensional vector')
-        elif self.dim == 1:
+        elif self._dim == 1:
             n = self.vectors[0].number
             for vec in self.vectors[1:]:
                 n = n.binary(op, vec.number)
@@ -163,9 +163,9 @@ class Vector:
         if count <= 0:
             raise YovecError('count must be positive: {}'.format(count))
         elif self.vectors is None:
-            return Vector([self.number] * count)
+            return Vector([Vector(self.number)] * count)
         else:
-            return Vector([self.vectors] * count)
+            return Vector(self.vectors * count)
 
     def reverse(self) -> 'Vector':
         """Shallowly reverse an N-dimensional vector.
@@ -182,7 +182,7 @@ class Vector:
 
         Returns a 2-dimensional vector.
         """
-        if self.dim != 2:
+        if self._dim != 2:
             raise YovecError('can only transpose 2-dimensional vector')
         vectors = []
         cols = self.vectors[0].length
@@ -194,7 +194,7 @@ class Vector:
         """Generate YOLOL assignment statements from an N-dimensional vector."""
         if indices is None:
             indices = (prefix,)
-        if self.dim == 0:
+        if self._dim == 0:
             expr = self.number.evaluate()
             ident = '_'.join(i for i in indices)
             var = Node(kind='variable', value=ident)

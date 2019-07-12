@@ -50,10 +50,10 @@ let: "let" variable "=" vexpr
           | "=="    -> eq
           | "!="    -> ne
 
-?number: literal | variable | "$" external
-
-vector.9: "[" (vector ",")* vector ("," vector)* "]"
-        | number
+?vector: "[" (vector ",")* vector ("," vector)* "]"     -> vector
+       | literal
+       | variable
+       | "$" external
 
 ?vexpr: "map" unary_op vexpr            -> map_unary
       | "map" binary_op vexpr vexpr+    -> map_binary
@@ -68,5 +68,4 @@ vector.9: "[" (vector ",")* vector ("," vector)* "]"
       | "reverse" vexpr                 -> reverse
       | "transpose" vexpr               -> transpose
       | "(" vexpr ")"
-      | variable
       | vector
