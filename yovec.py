@@ -53,7 +53,6 @@ except IOError as e:
 
 try:
     yovec = Node.from_tree(Lark(grammar, start='program').parse(text))
-    print(yovec.pretty()) #REMOVE
 except Exception as e:
     stderr.write('Parse error: {}\n'.format(str(e)))
     exit(1)
