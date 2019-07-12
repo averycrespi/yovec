@@ -16,7 +16,7 @@
 ## Terminology
 
 - An **alias** is an alternative identifier for an external or variable
-- An **external** is a value which has been imported from YOLOL
+- An **external** is an imported value
 - A **function** performs an operation on values
 - A **literal** is a fixed numeric value, such as `0`
 - A **matrix** is a non-empty sequence of vectors
@@ -26,9 +26,12 @@
 
 ## General Notes
 
-Yovec does not have function precedence. All functions are evaluated left-to-right. Parentheses must be used to enforce precedence.
+Unary functions are evaluated right-to-left, while binary functions are evaluated left-to-right. Parentheses may be used to enforce precedence.
 
 ```
+sin cos 0
+// Evaluates as sin(cos(0))
+
 1 + 2 * 3 / 4
 // Evaluates as ((1 + 2) * 3) / 4
 
@@ -36,9 +39,28 @@ Yovec does not have function precedence. All functions are evaluated left-to-rig
 // Evaluates as 1 + (2 * (3 / 4))
 ```
 
-Yovec is a functional language. All objects are immutable. Variables may not be updated after definition.
+Yovec is a functional language, so all variables are immutable.
+
+```
+let number A = 0
+let number A = 1
+// Error: cannot redefine variable
+```
 
 Yovec is 0-indexed.
+
+```
+let vector V = [4, 5, 6]
+let number A = elem V 1
+// A == 5
+```
+
+Trig. functions operate on degrees, not radians.
+
+```
+let number A = sin 90
+// A == 1
+```
 
 ## Numbers
 
@@ -346,11 +368,11 @@ col M 0
 
 ## Imports
 
-The `import` statement imports external values from YOLOL.
+The `import` statement imports an external value from YOLOL.
 
 An external value must be a valid number. Importing a string causes undefined behaviour.
 
-Imported names must not include uppercase letters, and must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
+Imported names must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
 Imported names must be prefixed with `$` when used.
 
@@ -360,7 +382,7 @@ import n
 let variable A = $n + 1
 ```
 
-Imported names may optionally be aliased.
+Imported names may be aliased.
 
 ```
 import long_name as n
@@ -370,9 +392,9 @@ let variable A = $n + 1
 
 ## Exports
 
-The `export` statement exports variables to YOLOL.
+The `export` statement export a variable to YOLOL.
 
-Exported names must not included uppercase letters, and must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
+Exported names must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
 ```
 let number N = 0

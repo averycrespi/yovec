@@ -53,9 +53,9 @@ def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
     Context().update(import_)
-    target = import_.children[0].children[0].value
+    target = import_.children[0].children[0].value.lower()
     if len(import_.children) == 2:
-        alias = import_.children[1].children[0].value
+        alias = import_.children[1].children[0].value.lower()
     else:
         alias = target
     return env.set_import(alias, target)
@@ -66,7 +66,7 @@ def _transpile_export(env: Env, export: Node):
     assert export.kind == 'export'
     Context().update(export)
     alias = export.children[0].children[0].value
-    target = export.children[1].children[0].value
+    target = export.children[1].children[0].value.lower()
     return env.set_export(alias, target)
 
 
