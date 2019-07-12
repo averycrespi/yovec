@@ -21,8 +21,8 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str], List[str]
             try:
                 _, index = env.vector(alias)
                 prefix = 'v{}'.format(index)
-                if v.value.startswith(prefix):
-                    v.value = v.value.replace(prefix, target)
+                if v.value.startswith(prefix): # type: ignore
+                    v.value = v.value.replace(prefix, target) # type: ignore
                     exported.append(v.value)
                     break
             except YovecError:

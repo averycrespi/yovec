@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Sequence, Union, Tuple, List
+from typing import Sequence, Union, Tuple, List, Optional
 
 from engine.errors import YovecError
 from engine.node import Node
@@ -134,7 +134,7 @@ class Vector:
                     n = n.binary('add', self.vectors[i].vectors[k].binary('mul', other.vectors[k].vectors[j]))
                 numbers.append(Vector(n))
             vectors.append(numbers)
-        return Vector(vecs)
+        return Vector(vectors)
 
     def reduce(self, op: str) -> 'Vector':
         """Reduce an (N>0)-dimensional vector.
@@ -147,7 +147,7 @@ class Vector:
             n = self.vectors[0].number
             for vec in self.vectors[1:]:
                 n = n.binary(op, vec.number)
-            return Vector(ln)
+            return Vector(n)
         else:
             return Vector([v.reduce(op) for v in self.vectors])
 
@@ -182,7 +182,7 @@ class Vector:
 
         Returns a 2-dimensional vector.
         """
-        if self.dims != 2:
+        if self.dim != 2:
             raise YovecError('can only transpose 2-dimensional vector')
         vectors = []
         cols = self.vectors[0].length
@@ -190,13 +190,13 @@ class Vector:
             vectors.append(Vector([v.vectors[i] for v in self.vectors]))
         return Vector(vectors)
 
-    def assign(self, prefix: str, indices: Tuple[int]=None) -> Tuple[List[Node], 'Vector']:
+    def assign(self, prefix: str, indices: Optional[Tuple[str]]=None) -> Tuple[List[Node], 'Vector']:
         """Generate YOLOL assignment statements from an N-dimensional vector."""
         if indices is None:
             indices = (prefix,)
         if self.dim == 0:
             expr = self.number.evaluate()
-            ident = '_'.join(str(i) for i in indices)
+            ident = '_'.join(i for i in indices)
             var = Node(kind='variable', value=ident)
             asn = Node(kind='assignment', children=[var, expr])
             return [asn], Vector(Number(ident))
@@ -204,7 +204,7 @@ class Vector:
             vectors = []
             assignments = []
             for i, v in enumerate(self.vectors):
-                asns, vec = v.assign(prefix, indices=(*indices, i))
+                asns, vec = v.assign(prefix, indices=(*indices, str(i)))
                 assignments.extend(asns)
                 vectors.append(vec)
             return assignments, Vector(vectors)

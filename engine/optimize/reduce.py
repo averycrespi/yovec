@@ -24,8 +24,8 @@ def _fold_constants(program: Node) -> Tuple[Node, bool]:
     numbers = clone.find(lambda node: node.kind == 'number')
     for num in numbers:
         assert num.parent is not None
-        if len(num.parent.children) == 2:
-            if _fold_binary(num.parent):
+        if len(num.parent.children) == 2: # type: ignore
+            if _fold_binary(num.parent): # type: ignore
                 return clone, True
     return clone, False
 
