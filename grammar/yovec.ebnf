@@ -8,7 +8,7 @@ VAR_IDENT: /[A-Z_]+/
 variable: VAR_IDENT
 
 YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9_]*|:[a-zA-Z0-9_]+/
-external: "$" YOLOL_IDENT
+external: YOLOL_IDENT
 
 comment: /\/\/[^\n]*/
 
@@ -50,14 +50,14 @@ let: "let" variable "=" vexpr
           | "=="    -> eq
           | "!="    -> ne
 
-?number: literal | variable | external
+?number: literal | variable | "$" external
 
-vector: "[" (vector ",")* vector ("," vector)* "]"
-      | number
+vector.9: "[" (vector ",")* vector ("," vector)* "]"
+        | number
 
-?vexpr: "map" unary_op vexpr            -> unary_map
-      | "map" binary_op vexpr vexpr+    -> binary_map
-      | "concat" vexpr+                 -> concat
+?vexpr: "map" unary_op vexpr            -> map_unary
+      | "map" binary_op vexpr vexpr+    -> map_binary
+      | "concat" vexpr vexpr+           -> concat
       | "dim" vexpr                     -> dim
       | "dot" vexpr vexpr               -> dot
       | "elem" vexpr literal            -> elem

@@ -19,28 +19,10 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, List[str], List[str]
                 imported.append(v.value)
                 break
             try:
-                num_index, _ = env.num(alias)
-                prefix = 'n{}'.format(num_index)
+                _, index = env.vector(alias)
+                prefix = 'v{}'.format(index)
                 if v.value.startswith(prefix):
                     v.value = v.value.replace(prefix, target)
-                    exported.append(v.value)
-                    break
-            except YovecError:
-                pass
-            try:
-                vec_index, _ = env.vec(alias)
-                prefix = 'v{}e'.format(vec_index)
-                if v.value.startswith(prefix):
-                    v.value = v.value.replace(prefix, target + '_')
-                    exported.append(v.value)
-                    break
-            except YovecError:
-                pass
-            try:
-                mat_index, _ = env.mat(alias)
-                prefix = 'm{}'.format(mat_index)
-                if v.value.startswith(prefix):
-                    v.value = v.value.replace(prefix, target + '_')
                     exported.append(v.value)
                     break
             except YovecError:
