@@ -1,8 +1,8 @@
 from typing import Tuple, Set
 
+from engine.env import Env
 from engine.errors import YovecError
 from engine.node import Node
-from engine.transpile.env import Env
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.resolve import resolve_aliases
@@ -18,7 +18,7 @@ class Context:
         self.node = node
 
 
-def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
+def yovec_to_yolol(program: Node) -> Tuple[Env, Node]:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()
@@ -45,8 +45,7 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
             pass
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
-    yolol, imported, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
-    return yolol, imported, exported
+    return resolve_aliases(env, Node(kind='program', children=yolol_lines))
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
