@@ -37,9 +37,18 @@ class Number:
 
     def binary(self, op: str, other: 'Number') -> 'Number':
         """Apply a binary operation to a number."""
-        clone = deepcopy(self)
-        clone.queue.append((op, other))
-        return clone
+        if op == 'nand':
+            return self.binary('and', other).unary('not')
+        elif op == 'nor':
+            return self.binary('or', other).unary('not')
+        elif op == 'xor':
+            left = self.binary('or', other)
+            right = self.binary('and', other).unary('not')
+            return left.binary('and', right)
+        else:
+            clone = deepcopy(self)
+            clone.queue.append((op, other))
+            return clone
 
     def _ln(self) -> 'Number':
         """Approximate the natural logarithm of a number."""
