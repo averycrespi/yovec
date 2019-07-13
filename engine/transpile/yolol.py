@@ -1,8 +1,8 @@
-from typing import Tuple, List
+from typing import Tuple, Set
 
 from engine.errors import YovecError
 from engine.node import Node
-from engine.transpile.env import Env, NumVar, VecVar, MatVar
+from engine.transpile.env import Env
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.resolve import resolve_aliases
@@ -18,7 +18,7 @@ class Context:
         self.node = node
 
 
-def yovec_to_yolol(program: Node) -> Tuple[Node, List[str], List[str]]:
+def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     """Transpile a Yovec program to YOLOL."""
     Context().update(program)
     env = Env()
@@ -45,19 +45,20 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, List[str], List[str]]:
             pass
         else:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
-    return resolve_aliases(env, Node(kind='program', children=yolol_lines))
+    yolol, imported, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
+    return yolol, imported, exported
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
     Context().update(import_)
-    target = import_.children[0].children[0].value
+    target = import_.children[0].children[0].value.lower()
     if len(import_.children) == 2:
-        alias = import_.children[1].children[0].value
+        alias = import_.children[1].children[0].value.lower()
     else:
         alias = target
-    return env.set_alias(alias, target)
+    return env.set_import(alias, target)
 
 
 def _transpile_export(env: Env, export: Node):
@@ -65,12 +66,8 @@ def _transpile_export(env: Env, export: Node):
     assert export.kind == 'export'
     Context().update(export)
     alias = export.children[0].children[0].value
-    target = export.children[1].children[0].value
-    try:
-        _ = env.vars()[alias]
-    except KeyError:
-        raise YovecError('cannot export undefined variable: {}'.format(alias))
-    return env.set_alias(alias, target)
+    target = export.children[1].children[0].value.lower()
+    return env.set_export(alias, target)
 
 
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
@@ -80,7 +77,7 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
     ident = let.children[0].children[0].value
     env, num = _transpile_nexpr(env, let.children[1])
     assignment, num = num.assign(num_index)
-    env = env.set_num(ident, num_index, num)
+    env = env.set_var(ident, num, num_index)
     multi = Node(kind='multi', children=[assignment])
     line = Node(kind='line', children=[multi])
     return env, num_index+1, line
@@ -93,7 +90,7 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
     ident = let.children[0].children[0].value
     env, vec = _transpile_vexpr(env, let.children[1])
     assignments, vec = vec.assign(vec_index)
-    env = env.set_vec(ident, vec_index, vec)
+    env = env.set_var(ident, vec, vec_index)
     multi = Node(kind='multi', children=assignments)
     line = Node(kind='line', children=[multi])
     return env, vec_index+1, line
@@ -106,7 +103,7 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     ident = let.children[0].children[0].value
     env, mat = _transpile_mexpr(env, let.children[1])
     assignments, mat = mat.assign(mat_index)
-    env = env.set_mat(ident, mat_index, mat)
+    env = env.set_var(ident, mat, mat_index)
     multi = Node(kind='multi', children=assignments)
     line = Node(kind='line', children=[multi])
     return env, mat_index+1, line
@@ -170,13 +167,15 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 
     elif nexpr.kind == 'external':
         ident = nexpr.children[0].value
-        _ = env.alias(ident)
+        _ = env.import_(ident)
         return env, Number(ident)
 
     elif nexpr.kind == 'variable':
         ident = nexpr.children[0].value
-        _, num = env.num(ident)
-        return env, num
+        var, _ = env.var(ident)
+        if type(var) != Number:
+            raise YovecError('expected variable {} to be number, but got {}'.format(ident, type(var)))
+        return env, var
 
     elif nexpr.kind == 'number':
         try:
@@ -253,8 +252,10 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
 
     elif vexpr.kind == 'variable':
         ident = vexpr.children[0].value
-        _, vec = env.vec(ident)
-        return env, vec
+        var, _ = env.var(ident)
+        if type(var) != Vector:
+            raise YovecError('expected variable {} to be vector, but got {}'.format(ident, type(var)))
+        return env, var
 
     elif vexpr.kind == 'vector':
         numums = []
@@ -316,8 +317,10 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
 
     elif mexpr.kind == 'variable':
         ident = mexpr.children[0].value
-        _, mat = env.mat(ident)
-        return env, mat
+        var, _ = env.var(ident)
+        if type(var) != Matrix:
+            raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, type(var)))
+        return env, var
 
     elif mexpr.kind == 'matrix':
         vecs = []

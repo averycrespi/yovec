@@ -32,6 +32,7 @@ class Node:
         """Remove the child of a node."""
         assert self._children is not None
         self._children.remove(child)
+        child.parent = None
 
     def __str__(self) -> str:
         if self.children is None:

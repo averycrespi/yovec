@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from pathlib import Path
 from sys import stderr
 
 from lark import Lark # type: ignore
@@ -12,7 +13,7 @@ from engine.optimize.reduce import reduce_expressions
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
-__version__ = 'v1.3.0'
+__version__ = 'v1.4.0'
 
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
@@ -43,7 +44,7 @@ except IOError as e:
     exit(1)
 
 try:
-    with open('grammar/yovec.ebnf') as f:
+    with open(Path('grammar') / 'yovec.ebnf') as f:
         grammar = f.read()
 except IOError as e:
     stderr.write('Input error: {}\n'.format(str(e)))

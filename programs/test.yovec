@@ -3,7 +3,7 @@
 import n
 import longname as o
 
-let number A = 1 + 2 - 3 * 4 / 5 % 6 ^ 7 + ln 1
+let number A = 0 + 1 - 2 * 3 / 4 % 5 ^ 6 + ln 7
 let number B = neg abs sqrt sin cos tan arcsin arccos arctan 0
 let number C = 1 < 2 <= 3 > 4 >= 5 == 6 != 7
 let number D = csc sec cot arccsc arcsec arccot 0

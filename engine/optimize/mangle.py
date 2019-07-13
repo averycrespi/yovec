@@ -41,5 +41,5 @@ def mangle_names(program: Node, imported: Sequence[str], exported: Sequence[str]
     pool = Pool([*imported, *exported])
     variables = clone.find(lambda node: node.kind == 'variable')
     for var in variables:
-        var.value = pool.replace(var.value)
+        var.value = pool.replace(var.value) # type: ignore
     return clone
