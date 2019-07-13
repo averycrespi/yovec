@@ -1,14 +1,13 @@
 from typing import Dict, Sequence, Set, Optional
 
-from engine.env import Env
 from engine.node import Node
 
 
-def eliminate_dead_code(env: Env, program: Node) -> Node:
+def eliminate_dead_code(program: Node, keep: Sequence[str]) -> Node:
     """Eliminate dead code from a YOLOL program."""
     assert program.kind == 'program'
     graph = _graph_deps(program)
-    alive = _find_alive(graph, env.resolved_exports)
+    alive = _find_alive(graph, keep)
     return _remove_dead(program, alive)
 
 

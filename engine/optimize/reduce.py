@@ -1,20 +1,19 @@
 from typing import Tuple
 
-from engine.env import Env
 from engine.node import Node
 from engine.optimize.decimal import Decimal
 
 from engine.errors import YovecError
 
 
-def reduce_expressions(env: Env, program: Node) -> Node:
+def reduce_expressions(program: Node) -> Node:
     """Reduce expressions in a YOLOL program."""
     assert program.kind == 'program'
     clone = program.clone()
-    while True:
-        clone, delta = _fold_constants(clone)
-        if not delta:
-            break
+    delta = True
+    while delta:
+        clone, fold_delta = _fold_constants(clone)
+        delta = fold_delta
     return clone
 
 
@@ -87,8 +86,3 @@ def _fold_binary(expr: Node):
         return True
     else:
         return False
-
-
-def _propagate_constants(env: Env, program: Node):
-    #TODO
-    pass

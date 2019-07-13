@@ -59,7 +59,7 @@ except Exception as e:
     exit(1)
 
 try:
-    env, yolol = yovec_to_yolol(yovec)
+    yolol, imported, exported = yovec_to_yolol(yovec)
 except YovecError as e:
     stderr.write('Transpilation error: {}\n'.format(str(e)))
     stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
@@ -69,11 +69,11 @@ except YovecError as e:
 
 try:
     if not args.no_reduce:
-        yolol = reduce_expressions(env, yolol)
+        yolol = reduce_expressions(yolol)
     if not args.no_elim:
-        yolol = eliminate_dead_code(env, yolol)
+        yolol = eliminate_dead_code(yolol, exported)
     if not args.no_mangle:
-        yolol = mangle_names(env, yolol)
+        yolol = mangle_names(yolol, imported, exported)
 except YovecError as e:
     stderr.write('Optimization error: {}\n'.format(str(e)))
     exit(1)

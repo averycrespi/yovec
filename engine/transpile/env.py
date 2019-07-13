@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Union, Dict, Tuple, List
+from typing import Union, Dict, Tuple
 
 from engine.errors import YovecError
 from engine.transpile.matrix import Matrix
@@ -11,21 +11,11 @@ Variable = Union[Number, Vector, Matrix]
 
 
 class Env:
-    """Represents a program environment.
-
-    Contents:
-    - variables: maps identifiers to a variable and an index
-    - imports: maps imported aliases to targets
-    - exports: maps exported aliases to targets
-    - resolved_imports: lists resolved import targets
-    - resolved_exports: lists resolved export targets
-    """
+    """Represents a program environment."""
     def __init__(self):
         self._variables = {}
         self._imports = {}
         self._exports = {}
-        self._resolved_imports = None
-        self._resolved_exports = None
 
     @property
     def variables(self) -> Dict[str, Tuple[Variable, int]]:
@@ -38,14 +28,6 @@ class Env:
     @property
     def exports(self) -> Dict[str, str]:
         return dict(self._exports)
-
-    @property
-    def resolved_imports(self) -> List[str]:
-        return list(self._resolved_imports)
-
-    @property
-    def resolved_exports(self) -> List[str]:
-        return list(self._resolved_exports)
 
     def var(self, ident: str) -> Tuple[Variable, int]:
         try:
@@ -90,18 +72,4 @@ class Env:
             raise YovecError('conflicting export target: {}'.format(target))
         clone = deepcopy(self)
         clone._exports[alias] = target
-        return clone
-
-    def resolve_imports(self, imports: List[str]) -> 'Env':
-        if self._resolved_imports is not None:
-            raise YovecError('cannot resolve imports twice')
-        clone = deepcopy(self)
-        clone._resolved_imports = imports
-        return clone
-
-    def resolve_exports(self, exports: List[str]) -> 'Env':
-        if self._resolved_exports is not None:
-            raise YovecError('cannot resolve exports twice')
-        clone = deepcopy(self)
-        clone._resolved_exports = exports
         return clone

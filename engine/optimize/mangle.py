@@ -2,7 +2,6 @@ from itertools import product
 from string import ascii_lowercase
 from typing import Sequence
 
-from engine.env import Env
 from engine.node import Node
 
 
@@ -35,11 +34,11 @@ class Pool:
             return replacement
 
 
-def mangle_names(env: Env, program: Node) -> Node:
+def mangle_names(program: Node, imported: Sequence[str], exported: Sequence[str]) -> Node:
     """Mangle names in a YOLOL program."""
     assert program.kind == 'program'
     clone = program.clone()
-    pool = Pool([*env.resolved_imports, *env.resolved_exports])
+    pool = Pool([*imported, *exported])
     variables = clone.find(lambda node: node.kind == 'variable')
     for var in variables:
         var.value = pool.replace(var.value) # type: ignore
