@@ -84,8 +84,8 @@ def _fold_binary(expr: Node):
         except ArithmeticError:
             raise YovecError('failed to fold constants in expression: {}'.format(expr))
     if delta:
-        expr.parent.remove_child(expr)
         expr.parent.append_child(replacement)
+        expr.parent.remove_child(expr)
         return True
     else:
         return False
