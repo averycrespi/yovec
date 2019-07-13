@@ -10,10 +10,14 @@ for case in cases:
 
     if not yolol.exists():
         print('Generating {} ...'.format(yolol))
-        subprocess.run(['python3', 'yovec.py', '-i', yovec, '-o', yolol])
+        result = subprocess.run(['python3', 'yovec.py', '-i', yovec, '-o', yolol])
+        if result.returncode != 0:
+            exit(1)
 
     print('Testing {} ...'.format(yovec))
     result = subprocess.run(['python3', 'yovec.py', '-i', yovec], stdout=subprocess.PIPE)
+    if result.returncode != 0:
+        exit(1)
     output = result.stdout.decode('utf-8').strip()
     with open(yolol) as f:
         expected = f.read().strip()
