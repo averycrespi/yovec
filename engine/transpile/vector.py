@@ -11,6 +11,7 @@ class Vector:
 
     """Represents a list of numbers."""
     def __init__(self, nums: List[Number]):
+        assert len(nums) > 0
         self.nums = nums
         self.length = len(nums)
 

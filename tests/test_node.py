@@ -1,4 +1,5 @@
-import pytest # type: ignore
+# pyre-ignore-all-errors
+import pytest
 
 from engine.node import Node
 
@@ -8,18 +9,17 @@ def test_relationships():
     assert child.parent is None
     assert child.children is None
     parent = Node(children=[child])
-    assert parent.children is not None
     assert child in parent.children
 
 
 def test_append_remove_child():
     child = Node()
     parent = Node()
+    assert parent.children is None
     parent.append_child(child)
-    assert parent.children is not None
     assert child in parent.children
+    assert child.parent == parent
     parent.remove_child(child)
-    assert parent.children is not None
     assert child not in parent.children
     assert child.parent is None
 
