@@ -48,11 +48,8 @@ def _fold_binary(expr: Node):
         # n - 0 => n
         delta = True
         replacement = left
-    elif expr.kind == 'mul' and left.value == 0:
+    elif expr.kind == 'mul' and left.value == 0 or right.value == 0:
         # 0 * n => 0
-        delta = True
-        replacement = Node(kind='number', value=0)
-    elif expr.kind == 'mul' and right.value == 0:
         # n * 0 => 0
         delta = True
         replacement = Node(kind='number', value=0)
