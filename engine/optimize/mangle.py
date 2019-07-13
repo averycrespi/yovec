@@ -18,7 +18,7 @@ class Pool:
         if len(self.pool) == 0:
             self.pool = [''.join(x) for x in product(ascii_lowercase, repeat=self.size)]
             self.size += 1
-        return self.pool.pop()
+        return self.pool.pop(0)
 
     def replace(self, name: str) -> str:
         """Replace a name."""
