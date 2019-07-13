@@ -1,0 +1,10 @@
+import n
+
+let matrix M = [
+    [$n, 1],
+    [2, 3]
+]
+
+let matrix N = M * M
+
+export N as product

@@ -1,0 +1,2 @@
+z=n y=1 x=2 w=3 product_r0c0=y*x+z*z product_r0c1=y*w+z*y
+product_r1c0=w*x+x*z product_r1c1=w*w+x*y

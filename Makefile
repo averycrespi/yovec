@@ -7,11 +7,11 @@ install:
 	pip3 install --user -r requirements.txt
 
 develop:
-	pip3 install --user pytest pyre-check
+	pip3 install --user pyre-check
 	pip3 install -e .
 
 check:
 	pyre check
 
 test:
-	pytest
+	@python3 utils/test.py
