@@ -63,26 +63,31 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 ## FAQ
 
 **Q**: Why is the output of Yovec empty?
+
 **A**: If no variables are exported, Yovec will eliminate the entire program. Export a variable, or use `--no-elim` to disable dead code elimination.
 
 ---
 
 **Q**: What's the difference between `map` and `apply`?
+
 **A**: `map` works with unary functions (e.g. `map neg`), and with binary functions where one operand is "empty" (e.g. `map 1+`). `apply` works with binary functions where both operands are "empty" (e.g. `apply +`)
 
 ---
 
 **Q**: Why doesn't Yovec support conditionals?
+
 **A**: YOLOL conditionals take up large amounts of space on a line. Evaluating a conditional for each element of a vector would quickly fill an entire chip.
 
 ---
 
 **Q**: Why do indices have to be literals?
+
 **A**: All indexing operations must be resolved at compile time. Variable indices would require conditionals.
 
 ---
 
 **Q**: Why is there no `filter` function?
+
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
 
 ## Development
