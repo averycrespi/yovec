@@ -1,23 +1,18 @@
 %import common.WS
 %ignore WS
 
-// Entities
+// =========
+// Terminals
+// =========
 
-NUMBER: /-?\d+(\.\d{1,4})?/
-number: NUMBER
-
+COMMENT: /\/\/[^\n]*/
+LITERAL: /-?\d+(\.\d{1,4})?/
 VAR_IDENT: /[A-Z_]+/
-variable: VAR_IDENT
-
 YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
-external: YOLOL_IDENT
 
-comment: /\/\/[^\n]*/
-
-vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
-matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
-
+// ==========
 // Statements
+// ==========
 
 program: line*
 
@@ -30,7 +25,21 @@ export: "export" variable "as" external
     | "let" "vector" variable "=" vexpr     -> vec_let
     | "let" "matrix" variable "=" mexpr     -> mat_let
 
+comment: COMMENT
+
+// =========
+// Variables
+// =========
+
+variable: VAR_IDENT
+
+external: YOLOL_IDENT
+
+// =======
 // Numbers
+// =======
+
+number: LITERAL
 
 ?num_unary_op: "neg"        -> neg
              | "not"        -> not
@@ -86,7 +95,11 @@ export: "export" variable "as" external
       | variable
       | number
 
+// =======
 // Vectors
+// =======
+
+vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
 
 ?vec_binary_op: "+"     -> vec_add
               | "-"     -> vec_sub
@@ -108,7 +121,11 @@ export: "export" variable "as" external
       | variable
       | vector
 
+// ========
 // Matrices
+// ========
+
+matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
 
 ?mat_binary_op: "+"     -> mat_add
               | "-"     -> mat_sub
