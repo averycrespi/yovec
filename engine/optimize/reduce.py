@@ -18,8 +18,8 @@ def _propagate_constants(program: Node) -> bool:
     assert program.kind == 'program'
     variables = program.find(lambda node: node.kind == 'variable')
     for var in variables:
-        # Ignore "A" in "let number A = B"
         if var.parent.kind == 'assignment' and var.parent.children.index(var) == 0:
+            # Ignore "A" in "let A = expr"
             continue
         if _propagate_var(program, var):
             return True
@@ -28,14 +28,19 @@ def _propagate_constants(program: Node) -> bool:
 
 def _propagate_var(program: Node, var: Node):
     "Propagate constants in an variable."
-    # Look for "let number A = B" with a given "A"
+    # Look for "let number var = expr"
     assignments = program.find(lambda node: node.kind == 'assignment' and node.children[0].value == var.value)
     if len(assignments) == 0:
         # Found external
         return False
     expr = assignments[0].children[1].clone()
-    # Check if expr is constant
+    if expr.kind == 'variable':
+        # Found "let A = B"
+        var.parent.append_child(expr)
+        var.parent.remove_child(var)
+        return True
     if len(expr.find(lambda node: node.kind == 'variable')) == 0:
+        # Found "let A = 1 + 2 + 3"
         var.parent.append_child(expr)
         var.parent.remove_child(var)
         return True
