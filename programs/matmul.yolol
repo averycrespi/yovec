@@ -1,2 +1,2 @@
-a=n b=1 c=2 d=3 product_r0c0=b*c+a*a product_r0c1=b*d+a*b
-product_r1c0=d*c+c*a product_r1c1=d*d+c*b
+a=n product_r0c0=a*a+2 product_r0c1=3+a product_r1c0=a*2+6
+product_r1c1=11
