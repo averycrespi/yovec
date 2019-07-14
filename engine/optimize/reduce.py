@@ -18,7 +18,7 @@ def _propagate_constants(program: Node) -> bool:
     assert program.kind == 'program'
     variables = program.find(lambda node: node.kind == 'variable')
     for var in variables:
-        if var.parent.kind == 'assignment' and var.parent.children.index(var) == 0:
+        if var.parent.kind == 'assignment' and var.parent.children.index(var) == 0: # type: ignore
             # Ignore "A" in "let A = expr"
             continue
         if _propagate_var(program, var):
@@ -52,7 +52,7 @@ def _fold_constants(program: Node) -> bool:
     assert program.kind == 'program'
     numbers = program.find(lambda node: node.kind == 'number')
     for num in numbers:
-        if len(num.parent.children) == 2 and _fold_binary_expr(num.parent):
+        if len(num.parent.children) == 2 and _fold_binary_expr(num.parent): # type: ignore
             return True
     return False
 
