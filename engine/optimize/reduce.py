@@ -52,7 +52,10 @@ def _fold_constants(program: Node) -> bool:
     assert program.kind == 'program'
     numbers = program.find(lambda node: node.kind == 'number')
     for num in numbers:
-        if len(num.parent.children) == 2 and _fold_binary_expr(num.parent): # type: ignore
+        if len(num.parent.children) != 2 or num.parent.kind == 'assignment': # type: ignore
+            # Skip assignments and unary exprs
+            continue
+        if _fold_binary_expr(num.parent): # type: ignore
             return True
     return False
 
