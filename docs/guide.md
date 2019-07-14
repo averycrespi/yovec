@@ -11,7 +11,6 @@
 - [Exports](#exports)
 - [Comments](#comments)
 - [Errors](#errors)
-- [Limitations](#limitations)
 
 ## Terminology
 
@@ -460,7 +459,3 @@ let variable A = 1 / 0
 // YOLOL
 n0=1/0
 ```
-
-## Limitations
-
-All vector lengths and matrix sizes must be known at transpile-time. Therefore, all indices must be literals.
