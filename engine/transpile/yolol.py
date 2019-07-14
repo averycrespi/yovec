@@ -3,7 +3,6 @@ from typing import Tuple, Set
 from engine.errors import YovecError
 from engine.node import Node
 from engine.transpile.env import Env
-from engine.transpile.function import Function
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.resolve import resolve_aliases
@@ -42,8 +41,6 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
         elif child.kind == 'mat_let':
             env, mat_index, yolol_line = _transpile_mat_let(env, mat_index, child)
             yolol_lines.append(yolol_line)
-        elif child.kind == 'define':
-            env = _transpile_define(env, child)
         elif child.kind == 'comment':
             pass
         else:
@@ -112,19 +109,6 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     return env, mat_index+1, line
 
 
-def _transpile_define(env: Env, definition: Node) -> Env:
-    """Transpile a define statement."""
-    assert definition.kind == 'define'
-    Context().update(definition)
-    ident = definition.children[0].children[0].value
-    params = definition.children[1:-2]
-    return_type = definition.children[-2]
-    body = definition.children[-1]
-    func = Function(ident, params, return_type, body)
-    env = env.set_func(ident, func)
-    return env
-
-
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
     if nexpr.kind == 'num_unary':
@@ -185,12 +169,6 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         ident = nexpr.children[0].value
         _ = env.import_(ident)
         return env, Number(ident)
-
-    elif nexpr.kind == 'call':
-        ident = nexpr.children[0].children[0].value
-        args = nexpr.children[1:]
-        func = env.func(ident)
-        return _transpile_nexpr(env, func.call_nexpr(args))
 
     elif nexpr.kind == 'variable':
         ident = nexpr.children[0].value
@@ -272,12 +250,6 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
             lvec = lvec.vecbinary(op.kind, rvec)
         return env, lvec
 
-    elif vexpr.kind == 'call':
-        ident = vexpr.children[0].children[0].value
-        args = vexpr.children[1:]
-        func = env.func(ident)
-        return _transpile_vexpr(env, func.call_vexpr(args))
-
     elif vexpr.kind == 'variable':
         ident = vexpr.children[0].value
         var, _ = env.var(ident)
@@ -342,12 +314,6 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
             env, rmat = _transpile_mexpr(env, rmat)
             lmat = lmat.matbinary(op.kind, rmat)
         return env, lmat
-
-    elif mexpr.kind == 'call':
-        ident = mexpr.children[0].children[0].value
-        args = mexpr.children[1:]
-        func = env.func(ident)
-        return _transpile_mexpr(env, func.call_mexpr(args))
 
     elif mexpr.kind == 'variable':
         ident = mexpr.children[0].value

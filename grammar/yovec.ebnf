@@ -44,8 +44,7 @@ external: YOLOL_IDENT
 
 function: FUNC_IDENT
 
-param: type variable
-?params: "(" (param ",")* param ("," param)* ")"
+?params: "(" (type variable ",")* type variable ("," type variable)* ")"
 
 ?type: "number" -> type_num
      | "vector" -> type_vec
