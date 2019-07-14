@@ -66,7 +66,10 @@ def _transpile_export(env: Env, export: Node):
     assert export.kind == 'export'
     Context().update(export)
     alias = export.children[0].children[0].value
-    target = export.children[1].children[0].value.lower()
+    if len(export.children) == 2:
+        target = export.children[1].children[0].value.lower()
+    else:
+        target = alias.lower()
     return env.set_export(alias, target)
 
 
