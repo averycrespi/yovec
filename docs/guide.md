@@ -62,6 +62,13 @@ let number A = sin 90
 // A == 1
 ```
 
+`0` is false and all other numbers are true. The default truth value is `1`.
+
+```
+let number A = 0 or 47
+// A == 1
+```
+
 ## Numbers
 
 A number is a [limited-precision decimal](https://wiki.starbasegame.com/index.php/YOLOL#Decimals).
@@ -81,6 +88,7 @@ let number A = 0
 Unary functions operate on a single number:
 
 - `neg A`: negate `A`
+- `not A`: return true if `A` is false, otherwise false
 - `abs A`: calculate the absolute value of `A`
 - `sqrt A`: calculate the square root of `A`
 - `sin A`: calculate the sine of `A` (in degrees)
@@ -111,12 +119,17 @@ Binary functions operate on two numbers:
 - `A / B`: divide `A` by `B`
 - `A % B`: calculate the modulus of `A` and `B`
 - `A ^ B`: raise `A` to the power of `B`
-- `A < B`: return `1` if `A` is less than `B`, otherwise `0`
-- `A <= B`: return `1` if `A` is less than or equal to `B`, otherwise `0`
-- `A > B`: return `1` if `A` is greater than `B`, otherwise `0`
-- `A >= B`: return `1` if `A` is greater than or equal to `B`, otherwise `0`
-- `A == B`: return `1` is `A` is equal to `B`, otherwise `0` (commutative)
-- `A != B`: return `1` is `A` is not equal to `B`, otherwise `0` (commutative)
+- `A < B`: return true if `A` is less than `B`, otherwise false
+- `A <= B`: return true if `A` is less than or equal to `B`, otherwise false
+- `A > B`: return true if `A` is greater than `B`, otherwise false
+- `A >= B`: return true if `A` is greater than or equal to `B`, otherwise false
+- `A == B`: return true if `A` is equal to `B`, otherwise false (commutative)
+- `A != B`: return true if `A` is not equal to `B`, otherwise false (commutative)
+- `A and B`: return true if `A` is true and `B` is true, otherwise false
+- `A or B`: return true if `A` is true or `B` is true, otherwise false
+- `A nand B`: return false if `A` is true and `B` is true, otherwise true
+- `A nor B`: return false if `A` is true or `B` is true, otherwise true
+- `A xor B`: return true if `A` and `B` have different boolean values, otherwise false
 
 Certain binary functions may cause undefined behaviour:
 

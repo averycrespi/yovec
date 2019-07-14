@@ -21,30 +21,25 @@
 - Supports numbers, vectors, and matrices
 - Interoperable with YOLOL
 
-Input:
+Turns this ...
 
 ```
-// Calculate the Euclidean distance between two vectors.
-
 import n
 
-let vector A = [1, 2, 3]
-let vector B = [$n, $n, $n]
-let vector C = map ^2 (A - B)
-let vector D = [reduce + C]
-let vector E = map sqrt D
+let matrix M = [
+    [$n, 1],
+    [2, 3]
+]
 
-export E as dist
+let matrix N = M * M
+
+export N as product
 ```
 
-Output:
+... into this:
 
 ```
-v0e0=1 v0e1=2 v0e2=3
-v1e0=n+1 v1e1=n+2 v1e2=n+3
-v2e0=(v0e0-v1e0)^2 v2e1=(v0e1-v1e1)^2 v2e2=(v0e2-v1e2)^2
-v3e0=v2e0+v2e1+v2e2
-dist_0=sqrt v3e0
+product_r0c0=n*n+2 product_r0c1=3+n product_r1c0=2*n+6 product_r1c1=11
 ```
 
 ## Getting Started

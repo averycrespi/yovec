@@ -1,8 +1,8 @@
-from operator import add, sub, mul, truediv, mod, pow, lt, le, gt, ge, eq, ne
+from operator import add, sub, mul, truediv, mod, pow, lt, le, gt, ge, eq, ne, and_, or_
 from typing import Union
 
 
-BINARY = {
+ARITHMETIC = {
     'add': add,
     'sub': sub,
     'mul': mul,
@@ -15,6 +15,11 @@ BINARY = {
     'ge': ge,
     'eq': eq,
     'ne': ne
+}
+
+BOOLEAN = {
+    'and': and_,
+    'or': or_
 }
 
 
@@ -31,4 +36,9 @@ class Decimal:
 
     def binary(self, op: str, other: 'Decimal') -> 'Decimal':
         """Apply a binary operation to two decimals."""
-        return Decimal(round(BINARY[op](self.value, other.value), 4))
+        try:
+            return Decimal(round(ARITHMETIC[op](self.value, other.value), 4))
+        except KeyError:
+            left = int(0 == self.value)
+            right = int(0 == other.value)
+            return Decimal(round(BOOLEAN[op](left, right), 4))

@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from engine.node import Node
 from engine.optimize.decimal import Decimal
 
@@ -10,28 +8,57 @@ def reduce_expressions(program: Node) -> Node:
     """Reduce expressions in a YOLOL program."""
     assert program.kind == 'program'
     clone = program.clone()
-    delta = True
-    while delta:
-        clone, fold_delta = _fold_constants(clone)
-        delta = fold_delta
+    while _propagate_constants(clone) or _fold_constants(clone):
+        pass
     return clone
 
 
-def _fold_constants(program: Node) -> Tuple[Node, bool]:
-    """Fold constants."""
+def _propagate_constants(program: Node) -> bool:
+    """Propagate constants in a program."""
     assert program.kind == 'program'
-    clone = program.clone()
-    numbers = clone.find(lambda node: node.kind == 'number')
+    variables = program.find(lambda node: node.kind == 'variable')
+    for var in variables:
+        if var.parent.kind == 'assignment' and var.parent.children.index(var) == 0: # type: ignore
+            # Ignore "A" in "let A = expr"
+            continue
+        if _propagate_var(program, var):
+            return True
+    return False
+
+
+def _propagate_var(program: Node, var: Node):
+    "Propagate constants in an variable."
+    # Look for "let number var = expr"
+    assignments = program.find(lambda node: node.kind == 'assignment' and node.children[0].value == var.value)
+    if len(assignments) == 0:
+        # Found external
+        return False
+    expr = assignments[0].children[1].clone()
+    if expr.kind == 'variable':
+        # Found "let A = B"
+        var.parent.append_child(expr)
+        var.parent.remove_child(var)
+        return True
+    if len(expr.find(lambda node: node.kind == 'variable')) == 0:
+        # Found "let A = 1 + 2 + 3"
+        var.parent.append_child(expr)
+        var.parent.remove_child(var)
+        return True
+    return False
+
+
+def _fold_constants(program: Node) -> bool:
+    """Fold constants in a program."""
+    assert program.kind == 'program'
+    numbers = program.find(lambda node: node.kind == 'number')
     for num in numbers:
-        assert num.parent is not None
-        if len(num.parent.children) == 2: # type: ignore
-            if _fold_binary(num.parent): # type: ignore
-                return clone, True
-    return clone, False
+        if len(num.parent.children) == 2 and _fold_binary_expr(num.parent): # type: ignore
+            return True
+    return False
 
 
-def _fold_binary(expr: Node):
-    """Fold constants in a binary operation."""
+def _fold_binary_expr(expr: Node):
+    """Fold constants in a binary expression."""
     assert len(expr.children) == 2 and expr.parent is not None
     left, right = expr.children
     delta = False
@@ -48,11 +75,8 @@ def _fold_binary(expr: Node):
         # n - 0 => n
         delta = True
         replacement = left
-    elif expr.kind == 'mul' and left.value == 0:
+    elif expr.kind == 'mul' and left.value == 0 or right.value == 0:
         # 0 * n => 0
-        delta = True
-        replacement = Node(kind='number', value=0)
-    elif expr.kind == 'mul' and right.value == 0:
         # n * 0 => 0
         delta = True
         replacement = Node(kind='number', value=0)

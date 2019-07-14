@@ -1,0 +1,28 @@
+let number UNARY = neg not abs sin cos tan arcsin arccos arctan csc sec cot arccsc arcsec arccot ln 1
+let number BINARY = 0 + 1 - 2 * 3 / 4 % 5 and 6 or 7 nand 8 nor 9 xor 10
+
+let vector V = [0, 1, 2]
+let number REDUCE = reduce + V
+let number DOT = V dot V
+let number LEN = len V
+let number VEC_ELEM = elem V 0
+let vector VEC_BINARY = V + V - V
+let vector VEC_MAP = map neg V
+let vector VEC_PREMAP = map +1 V
+let vector VEC_POSTMAP = map 1+ V
+let vector VEC_APPLY = apply + V V
+let vector CONCAT = concat V V
+let vector REVERSE = reverse V
+
+let matrix M = [[0, 1], [2, 3]]
+let number COLS = cols M
+let number ROWS = rows M
+let vector MAT_ROW = row M 0
+let vector MAT_COL = col M 0
+let matrix MAT_BINARY = M + M - M
+let matrix MAT_MAP = map neg M
+let matrix MAT_PREMAP = map +1 M
+let matrix MAT_POSTMAP = map 1+ M
+let matrix MAT_APPLY = apply + M M
+let matrix TRANSPOSE = transpose M
+let matrix MAT_MUL = M * M

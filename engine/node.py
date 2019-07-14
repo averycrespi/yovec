@@ -40,15 +40,12 @@ class Node:
         s = ' '.join('({})'.format(str(c)) for c in self.children)
         return '{} {}'.format(self.kind, s)
 
-    def _pretty(self, indent: int) -> str:
+    def pretty(self, indent=0) -> str:
+        """Pretty-format a node."""
         if self.children is None:
             return '{}{} {}\n'.format(Node.sep * indent, self.kind, self.value)
-        s = ''.join(c._pretty(indent+1) for c in self.children)
+        s = ''.join(c.pretty(indent=indent+1) for c in self.children)
         return '{}{}\n{}'.format(Node.sep * indent, self.kind, s)
-
-    def pretty(self) -> str:
-        """Pretty-format a node."""
-        return self._pretty(0)
 
     def clone(self) -> 'Node':
         """Clone a node."""

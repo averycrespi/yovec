@@ -5,6 +5,7 @@ from sys import stderr
 from lark import Lark # type: ignore
 
 from engine.errors import YovecError
+from engine.format.cylon import yolol_to_cylon
 from engine.format.text import yolol_to_text
 from engine.node import Node
 from engine.optimize.elim import eliminate_dead_code
@@ -13,13 +14,14 @@ from engine.optimize.reduce import reduce_expressions
 from engine.transpile.yolol import yovec_to_yolol, Context
 
 
-__version__ = 'v1.4.0'
+__version__ = 'v1.5.0'
 
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
 parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
 parser.add_argument('-o', action='store', dest='outfile', default=None, help='YOLOL output file (stdout if unset)')
-parser.add_argument('--ast', action='store_true', help='output AST')
+parser.add_argument('--ast', action='store_true', help='output AST (overrides --cylon)')
+parser.add_argument('--cylon', action='store_true', help='output Cylon JSON')
 parser.add_argument('--no-elim', action='store_true', help='disable dead code elimination')
 parser.add_argument('--no-mangle', action='store_true', help='disable name mangling')
 parser.add_argument('--no-reduce', action='store_true', help='disable expression reduction')
@@ -82,6 +84,8 @@ except YovecError as e:
 
 if args.ast:
     output = yolol.pretty()
+elif args.cylon:
+    output = yolol_to_cylon(yolol)
 else:
     output = yolol_to_text(yolol)
 

@@ -10,14 +10,15 @@ Op = namedtuple('Op', ('symbol', 'precedence'))
 NOOP = Op('', 0)
 OPERATORS = {
     'neg': Op('-', 100),
-    'abs': Op('abs', 90),
-    'sqrt': Op('sqrt', 90),
-    'sin': Op('sin', 90),
-    'cos': Op('cos', 90),
-    'tan': Op('tan', 90),
-    'arcsin': Op('arcsin', 90),
-    'arccos': Op('arccos', 90),
-    'arctan': Op('arctan', 90),
+    'not': Op(' not ', 90),
+    'abs': Op(' abs ', 90),
+    'sqrt': Op(' sqrt ', 90),
+    'sin': Op(' sin ', 90),
+    'cos': Op(' cos ', 90),
+    'tan': Op(' tan ', 90),
+    'arcsin': Op(' arcsin ', 90),
+    'arccos': Op(' arccos ', 90),
+    'arctan': Op(' arctan ', 90),
     'exp': Op('^', 80),
     'mul': Op('*', 70),
     'div': Op('/', 70),
@@ -30,6 +31,8 @@ OPERATORS = {
     'ge': Op('>=', 50),
     'eq': Op('==', 40),
     'ne': Op('!=', 40),
+    'or': Op(' or ', 30),
+    'and': Op(' and ', 20)
 }
 
 
@@ -59,21 +62,21 @@ def yolol_to_text(program: Node) -> str:
 def _format_assignment(assignment: Node) -> str:
     """Format an assignment."""
     assert assignment.kind == 'assignment'
-    return '{}={}'.format(assignment.children[0].value, _format_expr(assignment.children[1], NOOP))
+    variable = assignment.children[0].value
+    expr = _format_expr(assignment.children[1], NOOP).strip()
+    expr = expr.replace(' (', '(').replace('( ', '(')
+    expr = expr.replace(' )', ')').replace(') ', ')')
+    expr = expr.replace('  ', ' ')
+    return '{}={}'.format(variable, expr)
 
 
 def _format_expr(expr: Node, parent: Op) -> str:
     """Format an expression."""
     if expr.children is None:
-        return '{space}{value}'.format(
-            space=' ' if parent.symbol.isalpha() else '',
-            value=expr.value
-        )
-        return expr.value
+        return str(expr.value)
     elif len(expr.children) == 1:
         op = OPERATORS[expr.kind] # type: ignore
-        return '{space}{lparen}{sym}{child}{rparen}'.format(
-            space=' ' if parent.precedence <= op.precedence and parent.symbol.isalpha() else '',
+        return '{lparen}{sym}{child}{rparen}'.format(
             lparen='(' if parent.precedence > op.precedence else '',
             sym=op.symbol,
             child=_format_expr(expr.children[0], op),
@@ -81,8 +84,7 @@ def _format_expr(expr: Node, parent: Op) -> str:
         )
     elif len(expr.children) == 2:
         op = OPERATORS[expr.kind] # type: ignore
-        return '{space}{lparen}{lchild}{sym}{rchild}{rparen}'.format(
-            space=' ' if parent.precedence <= op.precedence and parent.symbol.isalpha() else '',
+        return '{lparen}{lchild}{sym}{rchild}{rparen}'.format(
             lparen='(' if parent.precedence > op.precedence else '',
             lchild=_format_expr(expr.children[0], op),
             sym=op.symbol,
