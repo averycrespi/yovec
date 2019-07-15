@@ -48,8 +48,7 @@ def _format_program(program: Node) -> Any:
 def _format_line(line: Node) -> Any:
     """Format a line."""
     assert line.kind == 'line'
-    assignments = line.find(lambda node: node.kind == 'assignment')
-    return {'type': 'line', 'code': [_format_assignment(a) for a in assignments]}
+    return {'type': 'line', 'code': [_format_assignment(asn) for asn in line.children]}
 
 
 def _format_assignment(assignment: Node) -> Any:

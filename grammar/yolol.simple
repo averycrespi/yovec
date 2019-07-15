@@ -1,8 +1,4 @@
-number
-variable
-
-line: multi
-multi: statement+
+line: statement+
 ?statement: assignment
 
 assignment: variable "=" expr
