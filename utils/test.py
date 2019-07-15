@@ -25,5 +25,6 @@ for case in cases:
         print('Test failed: output was different than expected\n')
         diff = list(Differ().compare(expected.splitlines(), output.splitlines()))
         print('\n'.join(diff))
+        exit(1)
 
 exit(0)

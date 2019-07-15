@@ -28,8 +28,8 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     yolol_lines = []
     for line in program.children:
         child = line.children[0]
-        if child.kind == 'import':
-            env = _transpile_import(env, child)
+        if child.kind == 'import_group':
+            env = _transpile_import_group(env, child)
         elif child.kind == 'export':
             env = _transpile_export(env, child)
         elif child.kind == 'num_let':
@@ -47,6 +47,15 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
             raise AssertionError('unknown kind for child: {}'.format(child.kind))
     yolol, imported, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
     return yolol, imported, exported
+
+
+def _transpile_import_group(env: Env, group: Node) -> Env:
+    """Transpile a group of import statements."""
+    assert group.kind == 'import_group'
+    Context().update(group)
+    for import_ in group.children:
+        env = _transpile_import(env, import_)
+    return env
 
 
 def _transpile_import(env: Env, import_: Node) -> Env:

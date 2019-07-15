@@ -16,9 +16,11 @@ YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
 
 program: line*
 
-line: import | export | let | comment
+line: import_group | export | let | comment
 
-import: "import" external ("as" external)?
+import_group: "import" (import ",")* import ("," import)*
+import: external ("as" external)?
+
 export: "export" variable ("as" external)?
 
 ?let: "let" "number" variable "=" nexpr     -> num_let
