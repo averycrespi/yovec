@@ -1,0 +1,2 @@
+a=abs vx b=abs vy c=abs vz axis_e0=vx*(a>=b and a>=c)
+axis_e1=vy*(b>a and b>=c) axis_e2=vz*(c>a and c>b)

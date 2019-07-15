@@ -28,8 +28,8 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     yolol_lines = []
     for line in program.children:
         child = line.children[0]
-        if child.kind == 'import':
-            env = _transpile_import(env, child)
+        if child.kind == 'import_group':
+            env = _transpile_import_group(env, child)
         elif child.kind == 'export':
             env = _transpile_export(env, child)
         elif child.kind == 'num_let':
@@ -49,6 +49,15 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     return yolol, imported, exported
 
 
+def _transpile_import_group(env: Env, group: Node) -> Env:
+    """Transpile a group of import statements."""
+    assert group.kind == 'import_group'
+    Context().update(group)
+    for import_ in group.children:
+        env = _transpile_import(env, import_)
+    return env
+
+
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
@@ -66,7 +75,10 @@ def _transpile_export(env: Env, export: Node):
     assert export.kind == 'export'
     Context().update(export)
     alias = export.children[0].children[0].value
-    target = export.children[1].children[0].value.lower()
+    if len(export.children) == 2:
+        target = export.children[1].children[0].value.lower()
+    else:
+        target = alias.lower()
     return env.set_export(alias, target)
 
 
@@ -78,8 +90,7 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
     env, num = _transpile_nexpr(env, let.children[1])
     assignment, num = num.assign(num_index)
     env = env.set_var(ident, num, num_index)
-    multi = Node(kind='multi', children=[assignment])
-    line = Node(kind='line', children=[multi])
+    line = Node(kind='line', children=[assignment])
     return env, num_index+1, line
 
 
@@ -91,8 +102,7 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
     env, vec = _transpile_vexpr(env, let.children[1])
     assignments, vec = vec.assign(vec_index)
     env = env.set_var(ident, vec, vec_index)
-    multi = Node(kind='multi', children=assignments)
-    line = Node(kind='line', children=[multi])
+    line = Node(kind='line', children=assignments)
     return env, vec_index+1, line
 
 
@@ -104,8 +114,7 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     env, mat = _transpile_mexpr(env, let.children[1])
     assignments, mat = mat.assign(mat_index)
     env = env.set_var(ident, mat, mat_index)
-    multi = Node(kind='multi', children=assignments)
-    line = Node(kind='line', children=[multi])
+    line = Node(kind='line', children=assignments)
     return env, mat_index+1, line
 
 

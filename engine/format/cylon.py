@@ -35,7 +35,7 @@ OPERATORS = {
 def yolol_to_cylon(program: Node) -> str:
     """Format a YOLOL program as Cylon JSON."""
     assert program.kind == 'program'
-    root = {'version': '0.1.0', 'program': _format_program(program)}
+    root = {'version': '0.2.0', 'program': _format_program(program)}
     return json.dumps(root, indent=4)
 
 
@@ -48,8 +48,7 @@ def _format_program(program: Node) -> Any:
 def _format_line(line: Node) -> Any:
     """Format a line."""
     assert line.kind == 'line'
-    assignments = line.find(lambda node: node.kind == 'assignment')
-    return {'type': 'line', 'code': [_format_assignment(a) for a in assignments]}
+    return {'type': 'line', 'code': [_format_assignment(asn) for asn in line.children]}
 
 
 def _format_assignment(assignment: Node) -> Any:

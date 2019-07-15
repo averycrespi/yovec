@@ -36,13 +36,11 @@ def _propagate_var(program: Node, var: Node):
     expr = assignments[0].children[1].clone()
     if expr.kind == 'variable':
         # Found "let A = B"
-        var.parent.append_child(expr)
-        var.parent.remove_child(var)
+        var.parent.replace_child(var, expr)
         return True
     if len(expr.find(lambda node: node.kind == 'variable')) == 0:
         # Found "let A = 1 + 2 + 3"
-        var.parent.append_child(expr)
-        var.parent.remove_child(var)
+        var.parent.replace_child(var, expr)
         return True
     return False
 
@@ -78,7 +76,7 @@ def _fold_binary_expr(expr: Node):
         # n - 0 => n
         delta = True
         replacement = left
-    elif expr.kind == 'mul' and left.value == 0 or right.value == 0:
+    elif expr.kind == 'mul' and (left.value == 0 or right.value == 0):
         # 0 * n => 0
         # n * 0 => 0
         delta = True
@@ -111,8 +109,7 @@ def _fold_binary_expr(expr: Node):
         except ArithmeticError:
             raise YovecError('failed to fold constants in expression: {}'.format(expr))
     if delta:
-        expr.parent.append_child(replacement)
-        expr.parent.remove_child(expr)
+        expr.parent.replace_child(expr, replacement)
         return True
     else:
         return False
