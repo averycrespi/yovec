@@ -402,6 +402,12 @@ import long_name as n
 let variable A = $n + 1
 ```
 
+Multiple imports may exist on the same line.
+
+```
+import m, long_name as n, o, p
+```
+
 ## Exports
 
 The `export` statement export a variable to YOLOL.
@@ -410,19 +416,27 @@ Exported names must be valid [YOLOL identifiers](https://wiki.starbasegame.com/i
 
 ```
 let number N = 0
-export N as num
-// Result: num_0=0
+export N
+// Result: n = 0
 
 let vector V = [0, 1, 2]
-export V as vec
-// Result: vec_0=0 vec_1=1 vec_2=2
+export V
+// Result: v_e0=0 v_e1=1 v_e2=2
 
 let matrix M = [
     [0, 1, 2],
     [3, 4, 5]
 ]
-export M as mat
-// Result: mat_0_0=0 mat_0_1=1 mat_0_2=2 mat_1_0=3 mat_1_1=4 mat_1_2=5
+export M
+// Result: m_r0c0=0 m_r0c1=1 m_r0c2=2 m_r1c0=3 m_r1c1=4 m_r1c2=5
+```
+
+Exported names may be aliased.
+
+```
+let vector V = [0, 1, 2]
+export V as list
+// Result: list_e0=0 list_e1=1 list_e2=2
 ```
 
 ## Comments
