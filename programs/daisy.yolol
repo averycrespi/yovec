@@ -1,0 +1,3 @@
+a=abs vx b=abs vy c=abs vz d=a>=b and a>=c e=b>a and b>=c
+f=c>a and c>b g=-1^(vx<0) h=-1^(vy<0) i=-1^(vz<0) axis_e0=d*d*g
+axis_e1=e*e*h axis_e2=f*f*i

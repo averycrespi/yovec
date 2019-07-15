@@ -109,7 +109,6 @@ def _fold_binary_expr(expr: Node):
         except ArithmeticError:
             raise YovecError('failed to fold constants in expression: {}'.format(expr))
     if delta:
-        print(expr, replacement) #REMOVE
         expr.parent.replace_child(expr, replacement)
         return True
     else:

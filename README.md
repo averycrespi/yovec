@@ -25,22 +25,37 @@
 Turns this ...
 
 ```
-import n
+// Determine which axis a vector should be routed to.
 
-let matrix M = [
-    [$n, 1],
-    [2, 3]
+import vx, vy, vz
+
+let number X = abs $vx
+let number Y = abs $vy
+let number Z = abs $vz
+
+let vector MAG = [
+    (X >= Y) and (X >= Z),
+    (Y > X) and (Y >= Z),
+    (Z > X) and (Z > Y)
 ]
 
-let matrix N = M * M
+let vector SIGN = [
+    -1 ^ ($vx < 0),
+    -1 ^ ($vy < 0),
+    -1 ^ ($vz < 0)
+]
 
-export N as product
+let vector AXIS = apply * MAG SIGN
+
+export AXIS
 ```
 
 ... into this:
 
 ```
-product_r0c0=n*n+2 product_r0c1=3+n product_r1c0=2*n+6 product_r1c1=11
+a=abs vx b=abs vy c=abs vz d=a>=b and a>=c e=b>a and b>=c
+f=c>a and c>b g=-1^(vx<0) h=-1^(vy<0) i=-1^(vz<0) axis_e0=d*d*g
+axis_e1=e*e*h axis_e2=f*f*i
 ```
 
 ## Getting Started
