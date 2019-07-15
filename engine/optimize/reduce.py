@@ -1,12 +1,14 @@
 from engine.node import Node
 from engine.optimize.decimal import Decimal
 
-from engine.errors import YovecError
+from engine.errors import YovecError, Context
 
 
 def reduce_expressions(program: Node) -> Node:
     """Reduce expressions in a YOLOL program."""
     assert program.kind == 'program'
+    Context.statement = None
+    Context.local = None
     clone = program.clone()
     while _propagate_constants(clone) or _fold_constants(clone):
         pass
@@ -61,6 +63,7 @@ def _fold_constants(program: Node) -> bool:
 def _fold_binary_expr(expr: Node):
     """Fold constants in a binary expression."""
     assert len(expr.children) == 2 and expr.parent is not None
+    Context.local = expr.clone()
     left, right = expr.children
     delta = False
     replacement = None
@@ -107,7 +110,7 @@ def _fold_binary_expr(expr: Node):
             result = str(Decimal(left.value).binary(expr.kind, Decimal(right.value)))
             replacement = Node(kind='number', value=result)
         except ArithmeticError:
-            raise YovecError('failed to fold constants in expression: {}'.format(expr))
+            raise YovecError('failed to fold constants in binary expression')
     if delta:
         expr.parent.replace_child(expr, replacement)
         return True

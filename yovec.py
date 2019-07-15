@@ -4,14 +4,14 @@ from sys import stderr
 
 from lark import Lark # type: ignore
 
-from engine.errors import YovecError
+from engine.errors import YovecError, Context
 from engine.format.cylon import yolol_to_cylon
 from engine.format.text import yolol_to_text
 from engine.node import Node
 from engine.optimize.elim import eliminate_dead_code
 from engine.optimize.mangle import mangle_names
 from engine.optimize.reduce import reduce_expressions
-from engine.transpile.yolol import yovec_to_yolol, Context
+from engine.transpile.yolol import yovec_to_yolol
 
 
 __version__ = 'v1.6.0'
@@ -63,8 +63,7 @@ except Exception as e:
 try:
     yolol, imported, exported = yovec_to_yolol(yovec)
 except YovecError as e:
-    stderr.write('Transpilation error: {}\n'.format(str(e)))
-    stderr.write('\nContext:\n\n{}\n'.format(Context().node.pretty()))
+    stderr.write('Transpilation error: {}\n\n{}'.format(str(e), Context.format()))
     exit(1)
 
 # Optimize
@@ -77,7 +76,7 @@ try:
     if not args.no_mangle:
         yolol = mangle_names(yolol, imported, exported)
 except YovecError as e:
-    stderr.write('Optimization error: {}\n'.format(str(e)))
+    stderr.write('Optimization error: {}\n\n{}'.format(str(e), Context.format()))
     exit(1)
 
 # Output
