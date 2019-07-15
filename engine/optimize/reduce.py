@@ -63,7 +63,7 @@ def _fold_constants(program: Node) -> bool:
 def _fold_binary_expr(expr: Node):
     """Fold constants in a binary expression."""
     assert len(expr.children) == 2 and expr.parent is not None
-    Context.local = expr.clone()
+    Context.local = expr # don't clone
     left, right = expr.children
     delta = False
     replacement = None
