@@ -22,30 +22,27 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, Set[str], Set[str]]:
             imported.add(target)
 
     for alias, target in env.exports.items():
-        _, index = env.var(alias)
+        var, index = env.var(alias)
 
-        num_prefix = '{}{}'.format(Number.PREFIX, index)
-        num_variables = clone.find(lambda node: node.kind == 'variable' and node.value.startswith(num_prefix))
-        for var in num_variables:
-            var.value = var.value.replace(num_prefix, target) # type: ignore
-            exported.add(var.value)
-        if len(num_variables) > 0:
-            continue
+        if type(var) == Number:
+            num_prefix = '{}{}'.format(Number.PREFIX, index)
+            num_variables = clone.find(lambda node: node.kind == 'variable' and node.value.startswith(num_prefix))
+            for var in num_variables:
+                var.value = var.value.replace(num_prefix, target) # type: ignore
+                exported.add(var.value)
 
-        vec_prefix = '{}{}'.format(Vector.PREFIX, index)
-        vec_variables = clone.find(lambda node: node.kind == 'variable' and node.value.startswith(vec_prefix))
-        for var in vec_variables:
-            var.value = var.value.replace(vec_prefix, target) # type: ignore
-            exported.add(var.value)
-        if len(vec_variables) > 0:
-            continue
+        elif type(var) == Vector:
+            vec_prefix = '{}{}'.format(Vector.PREFIX, index)
+            vec_variables = clone.find(lambda node: node.kind == 'variable' and node.value.startswith(vec_prefix))
+            for var in vec_variables:
+                var.value = var.value.replace(vec_prefix, target) # type: ignore
+                exported.add(var.value)
 
-        mat_prefix = '{}{}'.format(Matrix.PREFIX, index)
-        mat_variables = clone.find(lambda node: node.kind == 'variable' and node.value.startswith(mat_prefix))
-        for var in mat_variables:
-            var.value = var.value.replace(mat_prefix, target) # type: ignore
-            exported.add(var.value)
-        if len(mat_variables) > 0:
-            continue
+        elif type(var) == Matrix:
+            mat_prefix = '{}{}'.format(Matrix.PREFIX, index)
+            mat_variables = clone.find(lambda node: node.kind == 'variable' and node.value.startswith(mat_prefix))
+            for var in mat_variables:
+                var.value = var.value.replace(mat_prefix, target) # type: ignore
+                exported.add(var.value)
 
     return clone, imported, exported
