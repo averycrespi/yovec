@@ -76,7 +76,7 @@ def _fold_binary_expr(expr: Node):
         # n - 0 => n
         delta = True
         replacement = left
-    elif expr.kind == 'mul' and left.value == 0 or right.value == 0:
+    elif expr.kind == 'mul' and (left.value == 0 or right.value == 0):
         # 0 * n => 0
         # n * 0 => 0
         delta = True
@@ -109,6 +109,7 @@ def _fold_binary_expr(expr: Node):
         except ArithmeticError:
             raise YovecError('failed to fold constants in expression: {}'.format(expr))
     if delta:
+        print(expr, replacement) #REMOVE
         expr.parent.replace_child(expr, replacement)
         return True
     else:
