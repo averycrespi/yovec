@@ -35,7 +35,7 @@ OPERATORS = {
 def yolol_to_cylon(program: Node) -> str:
     """Format a YOLOL program as Cylon JSON."""
     assert program.kind == 'program'
-    root = {'version': '0.1.0', 'program': _format_program(program)}
+    root = {'version': '0.2.0', 'program': _format_program(program)}
     return json.dumps(root, indent=4)
 
 
