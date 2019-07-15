@@ -33,19 +33,11 @@ let number X = abs $vx
 let number Y = abs $vy
 let number Z = abs $vz
 
-let vector MAG = [
-    (X >= Y) and (X >= Z),
-    (Y > X) and (Y >= Z),
-    (Z > X) and (Z > Y)
+let vector AXIS = [
+    $vx * ((X >= Y) and (X >= Z)),
+    $vy * ((Y > X) and (Y >= Z)),
+    $vz * ((Z > X) and (Z > Y))
 ]
-
-let vector SIGN = [
-    -1 ^ ($vx < 0),
-    -1 ^ ($vy < 0),
-    -1 ^ ($vz < 0)
-]
-
-let vector AXIS = apply * MAG SIGN
 
 export AXIS
 ```
@@ -53,9 +45,8 @@ export AXIS
 ... into this:
 
 ```
-a=abs vx b=abs vy c=abs vz d=a>=b and a>=c e=b>a and b>=c
-f=c>a and c>b g=-1^(vx<0) h=-1^(vy<0) i=-1^(vz<0) axis_e0=d*d*g
-axis_e1=e*e*h axis_e2=f*f*i
+a=abs vx b=abs vy c=abs vz axis_e0=vx*(a>=b and a>=c)
+axis_e1=vy*(b>a and b>=c) axis_e2=vz*(c>a and c>b)
 ```
 
 ## Getting Started

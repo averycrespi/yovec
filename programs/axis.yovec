@@ -1,0 +1,15 @@
+// Determine which axis a vector should be routed to.
+
+import vx, vy, vz
+
+let number X = abs $vx
+let number Y = abs $vy
+let number Z = abs $vz
+
+let vector AXIS = [
+    $vx * ((X >= Y) and (X >= Z)),
+    $vy * ((Y > X) and (Y >= Z)),
+    $vz * ((Z > X) and (Z > Y))
+]
+
+export AXIS
