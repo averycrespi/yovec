@@ -28,7 +28,7 @@ def _propagate_constants(program: Node) -> bool:
 
 
 def _propagate_var(program: Node, var: Node):
-    "Propagate constants in an variable."
+    "Propagate constants in a variable."
     # Look for "let number var = expr"
     assignments = program.find(lambda node: node.kind == 'assignment' and node.children[0].value == var.value)
     if len(assignments) == 0:
