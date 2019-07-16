@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Union, Dict, Tuple
 
 from engine.errors import YovecError
+
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.vector import Vector
