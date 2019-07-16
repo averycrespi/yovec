@@ -68,7 +68,7 @@ class Node:
         if predicate(self):
             found.append(self)
         if self.parent is not None:
-            self.parent.pfind(predicate, found)
+            self.parent.pfind(predicate, found) # type: ignore
         return found
 
     @staticmethod
