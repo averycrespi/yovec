@@ -42,7 +42,7 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     return yolol, imported, exported
 
 
-@context(stmt_index=1)
+@context(stmt='group')
 def _transpile_import_group(env: Env, group: Node) -> Env:
     """Transpile a group of import statements."""
     assert group.kind == 'import_group'
@@ -51,7 +51,7 @@ def _transpile_import_group(env: Env, group: Node) -> Env:
     return env
 
 
-@context(stmt_index=1)
+@context(stmt='import_')
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
@@ -63,7 +63,7 @@ def _transpile_import(env: Env, import_: Node) -> Env:
     return env.set_import(alias, target)
 
 
-@context(stmt_index=1)
+@context(stmt='export')
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
@@ -75,7 +75,7 @@ def _transpile_export(env: Env, export: Node):
     return env.set_export(alias, target)
 
 
-@context(stmt_index=2)
+@context(stmt='let')
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a number let statement to a line."""
     assert let.kind == 'num_let'
@@ -87,7 +87,7 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
     return env, num_index+1, line
 
 
-@context(stmt_index=2)
+@context(stmt='let')
 def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a vector let statement to a line."""
     assert let.kind == 'vec_let'
@@ -99,7 +99,7 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
     return env, vec_index+1, line
 
 
-@context(stmt_index=2)
+@context(stmt='let')
 def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a matrix let statement to a line."""
     assert let.kind == 'mat_let'
@@ -111,7 +111,7 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     return env, mat_index+1, line
 
 
-@context(expr_index=1)
+@context(expr='nexpr')
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
     if nexpr.kind == 'num_unary':
@@ -190,7 +190,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         raise AssertionError('unknown kind for nexpr: {}'.format(nexpr.kind))
 
 
-@context(expr_index=1)
+@context(expr='vexpr')
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
     """Transpile a vexpr to a vector."""
     if vexpr.kind == 'vec_map':
@@ -272,7 +272,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         raise AssertionError('unknown kind for vexpr: {}'.format(vexpr.kind))
 
 
-@context(expr_index=1)
+@context(expr='mexpr')
 def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
     """Transpile a mexpr to a matrix."""
     if mexpr.kind == 'mat_map':

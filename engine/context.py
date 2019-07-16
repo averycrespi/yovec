@@ -1,4 +1,5 @@
 from functools import wraps
+from inspect import getfullargspec as spec
 from typing import Optional
 
 
@@ -17,15 +18,15 @@ class Context:
         return s
 
 
-def context(stmt_index: Optional[int]=None, expr_index: Optional[int]=None):
+def context(stmt: Optional[str]=None, expr: Optional[str]=None):
     """Set the context of a function."""
     def outer(func):
         @wraps(func)
         def inner(*args, **kwargs):
-            if stmt_index is not None:
-                Context.stmt = args[stmt_index]
-            if expr_index is not None:
-                Context.expr = args[expr_index]
+            if stmt is not None:
+                Context.stmt = args[spec(func).args.index(stmt)]
+            if expr is not None:
+                Context.expr = args[spec(func).args.index(expr)]
             return func(*args, **kwargs)
         return inner
     return outer
