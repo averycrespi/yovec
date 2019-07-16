@@ -63,8 +63,6 @@ def _fold_constants(program: Node) -> bool:
 def _fold_binary_expr(expr: Node):
     """Fold constants in a binary expression."""
     assert len(expr.children) == 2 and expr.parent is not None
-    Context.statement = expr.pfind(lambda node: node.kind == 'assignment')[0]
-    Context.local = expr
     left, right = expr.children
     delta = False
     replacement = None
@@ -111,6 +109,8 @@ def _fold_binary_expr(expr: Node):
             result = str(Decimal(left.value).binary(expr.kind, Decimal(right.value)))
             replacement = Node(kind='number', value=result)
         except ArithmeticError:
+            Context.statement = expr.pfind(lambda node: node.kind == 'assignment')[0]
+            Context.local = expr
             raise YovecError('failed to fold constants in binary expression')
     if delta:
         expr.parent.replace_child(expr, replacement)
