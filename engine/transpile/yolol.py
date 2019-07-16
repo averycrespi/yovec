@@ -25,14 +25,14 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
             env = _transpile_import_group(env, child)
         elif child.kind == 'export':
             env = _transpile_export(env, child)
-        elif child.kind == 'num_let':
-            env, num_index, yolol_line = _transpile_num_let(env, num_index, child)
+        elif child.kind == 'let_num':
+            env, num_index, yolol_line = _transpile_let_num(env, num_index, child)
             yolol_lines.append(yolol_line)
-        elif child.kind == 'vec_let':
-            env, vec_index, yolol_line = _transpile_vec_let(env, vec_index, child)
+        elif child.kind == 'let_vec':
+            env, vec_index, yolol_line = _transpile_let_vec(env, vec_index, child)
             yolol_lines.append(yolol_line)
-        elif child.kind == 'mat_let':
-            env, mat_index, yolol_line = _transpile_mat_let(env, mat_index, child)
+        elif child.kind == 'let_mat':
+            env, mat_index, yolol_line = _transpile_let_mat(env, mat_index, child)
             yolol_lines.append(yolol_line)
         elif child.kind == 'comment':
             pass
@@ -76,9 +76,9 @@ def _transpile_export(env: Env, export: Node):
 
 
 @context(stmt='let')
-def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
-    """Transpile a number let statement to a line."""
-    assert let.kind == 'num_let'
+def _transpile_let_num(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
+    """Transpile a let number statement to a line."""
+    assert let.kind == 'let_num'
     ident = let.children[0].value
     env, num = _transpile_nexpr(env, let.children[1])
     assignment, num = num.assign(num_index)
@@ -88,9 +88,9 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
 
 
 @context(stmt='let')
-def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, Node]:
+def _transpile_let_vec(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a vector let statement to a line."""
-    assert let.kind == 'vec_let'
+    assert let.kind == 'let_vec'
     ident = let.children[0].value
     env, vec = _transpile_vexpr(env, let.children[1])
     assignments, vec = vec.assign(vec_index)
@@ -100,9 +100,9 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
 
 
 @context(stmt='let')
-def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
+def _transpile_let_mat(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a matrix let statement to a line."""
-    assert let.kind == 'mat_let'
+    assert let.kind == 'let_mat'
     ident = let.children[0].value
     env, mat = _transpile_mexpr(env, let.children[1])
     assignments, mat = mat.assign(mat_index)
