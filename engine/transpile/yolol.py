@@ -177,7 +177,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         ident = nexpr.children[0].value
         var, _ = env.var(ident)
         if type(var) != Number:
-            raise YovecError('expected variable {} to be number, but got {}'.format(ident, type(var)))
+            raise YovecError('expected variable {} to be number, but got {}'.format(ident, type(var).__name__.lower()))
         return env, var
 
     elif nexpr.kind == 'number':
@@ -258,7 +258,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         ident = vexpr.children[0].value
         var, _ = env.var(ident)
         if type(var) != Vector:
-            raise YovecError('expected variable {} to be vector, but got {}'.format(ident, type(var)))
+            raise YovecError('expected variable {} to be vector, but got {}'.format(ident, type(var).__name__.lower()))
         return env, var
 
     elif vexpr.kind == 'vector':
@@ -324,7 +324,7 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         ident = mexpr.children[0].value
         var, _ = env.var(ident)
         if type(var) != Matrix:
-            raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, type(var)))
+            raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, type(var).__name__.lower()))
         return env, var
 
     elif mexpr.kind == 'matrix':
