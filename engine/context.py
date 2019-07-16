@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class Context:
-    """Stores the global transpilation context."""
+    """Stores the global context."""
     stmt = None
     expr = None
 

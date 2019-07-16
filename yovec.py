@@ -80,7 +80,7 @@ try:
     if not args.no_mangle:
         yolol = mangle_names(yolol, imported, exported)
 except YovecError as e:
-    stderr.write('Optimization error: {}\n'.format(str(e)))
+    stderr.write('Optimization error: {}\n\n{}'.format(str(e), Context.format()))
     exit(1)
 
 # Output

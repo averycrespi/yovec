@@ -1,6 +1,7 @@
 from engine.node import Node
 from engine.optimize.decimal import Decimal
 
+from engine.context import context
 from engine.errors import YovecError
 
 
@@ -48,16 +49,27 @@ def _propagate_var(program: Node, var: Node):
 def _fold_constants(program: Node) -> bool:
     """Fold constants in a program."""
     assert program.kind == 'program'
-    numbers = program.find(lambda node: node.kind == 'number')
-    for num in numbers:
-        if len(num.parent.children) != 2 or num.parent.kind == 'assignment': # type: ignore
-            # Skip assignments and unary exprs
-            continue
-        if _fold_binary_expr(num.parent): # type: ignore
+    assignments = program.find(lambda node: node.kind == 'assignment')
+    for asn in assignments:
+        if _fold_assignment(asn):
             return True
     return False
 
 
+@context(stmt='assignment')
+def _fold_assignment(assignment: Node) -> bool:
+    """Fold constants in an assignment."""
+    assert assignment.kind == 'assignment'
+    numbers = assignment.find(lambda node: node.kind == 'number')
+    for num in numbers:
+        if num.parent == assignment: # type: ignore
+            continue
+        if len(num.parent.children) == 2 and _fold_binary_expr(num.parent): # type: ignore
+            return True
+    return False
+
+
+@context(expr='expr')
 def _fold_binary_expr(expr: Node):
     """Fold constants in a binary expression."""
     assert len(expr.children) == 2 and expr.parent is not None
