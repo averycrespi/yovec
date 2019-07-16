@@ -55,9 +55,9 @@ def _transpile_import_group(env: Env, group: Node) -> Env:
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
-    target = import_.children[0].children[0].value.lower()
+    target = import_.children[0].value.lower()
     if len(import_.children) == 2:
-        alias = import_.children[1].children[0].value.lower()
+        alias = import_.children[1].value.lower()
     else:
         alias = target
     return env.set_import(alias, target)
@@ -67,9 +67,9 @@ def _transpile_import(env: Env, import_: Node) -> Env:
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
-    alias = export.children[0].children[0].value
+    alias = export.children[0].value
     if len(export.children) == 2:
-        target = export.children[1].children[0].value.lower()
+        target = export.children[1].value.lower()
     else:
         target = alias.lower()
     return env.set_export(alias, target)
@@ -79,7 +79,7 @@ def _transpile_export(env: Env, export: Node):
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a number let statement to a line."""
     assert let.kind == 'num_let'
-    ident = let.children[0].children[0].value
+    ident = let.children[0].value
     env, num = _transpile_nexpr(env, let.children[1])
     assignment, num = num.assign(num_index)
     env = env.set_var(ident, num, num_index)
@@ -91,7 +91,7 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
 def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a vector let statement to a line."""
     assert let.kind == 'vec_let'
-    ident = let.children[0].children[0].value
+    ident = let.children[0].value
     env, vec = _transpile_vexpr(env, let.children[1])
     assignments, vec = vec.assign(vec_index)
     env = env.set_var(ident, vec, vec_index)
@@ -103,7 +103,7 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
 def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a matrix let statement to a line."""
     assert let.kind == 'mat_let'
-    ident = let.children[0].children[0].value
+    ident = let.children[0].value
     env, mat = _transpile_mexpr(env, let.children[1])
     assignments, mat = mat.assign(mat_index)
     env = env.set_var(ident, mat, mat_index)
@@ -153,7 +153,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 
     elif nexpr.kind == 'vec_elem':
         env, vec = _transpile_vexpr(env, nexpr.children[0])
-        index = nexpr.children[1].children[0].value
+        index = nexpr.children[1].value
         try:
             return env, vec.elem(int(index))
         except ValueError:
@@ -161,20 +161,20 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 
     elif nexpr.kind == 'mat_elem':
         env, mat = _transpile_mexpr(env, nexpr.children[0])
-        row = nexpr.children[1].children[0].value
-        col = nexpr.children[2].children[0].value
+        row = nexpr.children[1].value
+        col = nexpr.children[2].value
         try:
             return env, mat.elem(int(row), int(col))
         except ValueError:
             raise YovecError('invalid element indices: {}, {}'.format(row, col))
 
     elif nexpr.kind == 'external':
-        ident = nexpr.children[0].value
+        ident = nexpr.value
         _ = env.import_(ident)
         return env, Number(ident)
 
     elif nexpr.kind == 'variable':
-        ident = nexpr.children[0].value
+        ident = nexpr.value
         var, _ = env.var(ident)
         if type(var) != Number:
             raise YovecError('expected variable {} to be number, but got {}'.format(ident, type(var).__name__.lower()))
@@ -182,9 +182,9 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 
     elif nexpr.kind == 'number':
         try:
-            return env, Number(int(nexpr.children[0].value))
+            return env, Number(int(nexpr.value))
         except ValueError:
-            return env, Number(float(nexpr.children[0].value))
+            return env, Number(float(nexpr.value))
 
     else:
         raise AssertionError('unknown kind for nexpr: {}'.format(nexpr.kind))
@@ -231,7 +231,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
 
     elif vexpr.kind == 'mat_row':
         env, mat = _transpile_mexpr(env, vexpr.children[0])
-        row = vexpr.children[1].children[0].value
+        row = vexpr.children[1].value
         try:
             return env, mat.row(int(row))
         except ValueError:
@@ -239,7 +239,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
 
     elif vexpr.kind == 'mat_col':
         env, mat = _transpile_mexpr(env, vexpr.children[0])
-        col = vexpr.children[1].children[0].value
+        col = vexpr.children[1].value
         try:
             return env, mat.col(int(col))
         except ValueError:
@@ -255,7 +255,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         return env, lvec
 
     elif vexpr.kind == 'variable':
-        ident = vexpr.children[0].value
+        ident = vexpr.value
         var, _ = env.var(ident)
         if type(var) != Vector:
             raise YovecError('expected variable {} to be vector, but got {}'.format(ident, type(var).__name__.lower()))
@@ -321,7 +321,7 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         return env, lmat
 
     elif mexpr.kind == 'variable':
-        ident = mexpr.children[0].value
+        ident = mexpr.value
         var, _ = env.var(ident)
         if type(var) != Matrix:
             raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, type(var).__name__.lower()))
