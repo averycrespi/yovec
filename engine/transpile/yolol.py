@@ -1,7 +1,9 @@
 from typing import Tuple, Set
 
-from engine.errors import YovecError, Context
+from engine.context import context
+from engine.errors import YovecError
 from engine.node import Node
+
 from engine.transpile.env import Env
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
@@ -12,8 +14,6 @@ from engine.transpile.vector import Vector
 def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     """Transpile a Yovec program to YOLOL."""
     assert program.kind == 'program'
-    Context.statement = None
-    Context.local = None
     env = Env()
     num_index = 0
     vec_index = 0
@@ -42,19 +42,19 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     return yolol, imported, exported
 
 
+@context(stmt_index=1)
 def _transpile_import_group(env: Env, group: Node) -> Env:
     """Transpile a group of import statements."""
     assert group.kind == 'import_group'
-    Context.statement = group
     for import_ in group.children:
         env = _transpile_import(env, import_)
     return env
 
 
+@context(stmt_index=1)
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
-    Context.local = import_
     target = import_.children[0].children[0].value.lower()
     if len(import_.children) == 2:
         alias = import_.children[1].children[0].value.lower()
@@ -63,10 +63,10 @@ def _transpile_import(env: Env, import_: Node) -> Env:
     return env.set_import(alias, target)
 
 
+@context(stmt_index=1)
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
-    Context.statement = export
     alias = export.children[0].children[0].value
     if len(export.children) == 2:
         target = export.children[1].children[0].value.lower()
@@ -75,10 +75,10 @@ def _transpile_export(env: Env, export: Node):
     return env.set_export(alias, target)
 
 
+@context(stmt_index=2)
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a number let statement to a line."""
     assert let.kind == 'num_let'
-    Context.statement = let
     ident = let.children[0].children[0].value
     env, num = _transpile_nexpr(env, let.children[1])
     assignment, num = num.assign(num_index)
@@ -87,10 +87,10 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
     return env, num_index+1, line
 
 
+@context(stmt_index=2)
 def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a vector let statement to a line."""
     assert let.kind == 'vec_let'
-    Context.statement = let
     ident = let.children[0].children[0].value
     env, vec = _transpile_vexpr(env, let.children[1])
     assignments, vec = vec.assign(vec_index)
@@ -99,10 +99,10 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
     return env, vec_index+1, line
 
 
+@context(stmt_index=2)
 def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a matrix let statement to a line."""
     assert let.kind == 'mat_let'
-    Context.statement = let
     ident = let.children[0].children[0].value
     env, mat = _transpile_mexpr(env, let.children[1])
     assignments, mat = mat.assign(mat_index)
@@ -111,9 +111,9 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     return env, mat_index+1, line
 
 
+@context(expr_index=1)
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
-    Context.local = nexpr
     if nexpr.kind == 'num_unary':
         env, num = _transpile_nexpr(env, nexpr.children[-1])
         for op in reversed(nexpr.children[:-1]):
@@ -190,9 +190,9 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         raise AssertionError('unknown kind for nexpr: {}'.format(nexpr.kind))
 
 
+@context(expr_index=1)
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
     """Transpile a vexpr to a vector."""
-    Context.local = vexpr
     if vexpr.kind == 'vec_map':
         op = vexpr.children[0]
         env, vec = _transpile_vexpr(env, vexpr.children[1])
@@ -272,9 +272,9 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         raise AssertionError('unknown kind for vexpr: {}'.format(vexpr.kind))
 
 
+@context(expr_index=1)
 def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
     """Transpile a mexpr to a matrix."""
-    Context.local = mexpr
     if mexpr.kind == 'mat_map':
         op = mexpr.children[0]
         env, mat = _transpile_mexpr(env, mexpr.children[1])
