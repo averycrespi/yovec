@@ -4,7 +4,6 @@ from sys import stderr
 from engine.node import Node
 
 
-# Higher precedence is evaluated first
 Op = namedtuple('Op', ('symbol', 'precedence'))
 
 NOOP = Op('', 0)
@@ -92,4 +91,4 @@ def _format_expr(expr: Node, parent: Op) -> str:
             rparen=')' if parent.precedence > op.precedence else ''
         )
     else:
-        raise AssertionError('unrecognized expr: {}'.format(expr))
+        raise AssertionError('unexpected expression: {}'.format(expr))

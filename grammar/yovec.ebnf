@@ -23,9 +23,9 @@ import: external ("as" external)?
 
 export: "export" variable ("as" external)?
 
-?let: "let" "number" variable "=" nexpr     -> num_let
-    | "let" "vector" variable "=" vexpr     -> vec_let
-    | "let" "matrix" variable "=" mexpr     -> mat_let
+?let: "let" "number" variable "=" nexpr     -> let_num
+    | "let" "vector" variable "=" vexpr     -> let_vec
+    | "let" "matrix" variable "=" mexpr     -> let_mat
 
 comment: COMMENT
 

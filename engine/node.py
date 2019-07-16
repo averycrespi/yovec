@@ -61,9 +61,23 @@ class Node:
                 c.find(predicate, found)
         return found
 
+    def pfind(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
+        """Recursively find parents that satisfy a predicate."""
+        if found is None:
+            found = []
+        if predicate(self):
+            found.append(self)
+        if self.parent is not None:
+            self.parent.pfind(predicate, found) # type: ignore
+        return found
+
     @staticmethod
     def from_tree(tree: Tree) -> 'Node': # type: ignore
         """Make a node from a Lark parse tree."""
         if not hasattr(tree, 'data'):
-            return Node(kind=tree.type, value=tree.value)
-        return Node(kind=tree.data, children=[Node.from_tree(c) for c in tree.children])
+            raise AssertionError('naked token: {}'.format(tree))
+        elif len(tree.children) == 1 and not hasattr(tree.children[0], 'data'):
+            # Unwrap terminal
+            return Node(kind=tree.data, value=tree.children[0].value)
+        else:
+            return Node(kind=tree.data, children=[Node.from_tree(c) for c in tree.children])

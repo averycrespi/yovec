@@ -72,7 +72,7 @@ def _format_expression(expr: Node) -> Any:
         right = _format_expression(expr.children[1])
         return {'type': 'expression::binary_op', 'operator': OPERATORS[expr.kind], 'left': left, 'right': right} # type: ignore
     else:
-        raise AssertionError('unknown expression: {}'.format(expr))
+        raise AssertionError('unexpected expression: {}'.format(expr))
 
 
 def _format_value(value: Node) -> Any:
@@ -82,4 +82,4 @@ def _format_value(value: Node) -> Any:
     elif value.kind == 'number':
         return {'type': 'value::number', 'num': str(value.value)}
     else:
-        raise AssertionError('unknown value: {}'.format(value))
+        raise AssertionError('unexpected value: {}'.format(value))
