@@ -45,7 +45,7 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
 def _transpile_import_group(env: Env, group: Node) -> Env:
     """Transpile a group of import statements."""
     assert group.kind == 'import_group'
-    Context.statement = group.clone()
+    Context.statement = group
     for import_ in group.children:
         env = _transpile_import(env, import_)
     return env
@@ -54,7 +54,7 @@ def _transpile_import_group(env: Env, group: Node) -> Env:
 def _transpile_import(env: Env, import_: Node) -> Env:
     """Transpile an import statement."""
     assert import_.kind == 'import'
-    Context.local = import_.clone()
+    Context.local = import_
     target = import_.children[0].children[0].value.lower()
     if len(import_.children) == 2:
         alias = import_.children[1].children[0].value.lower()
@@ -66,7 +66,7 @@ def _transpile_import(env: Env, import_: Node) -> Env:
 def _transpile_export(env: Env, export: Node):
     """Transpile an export statement."""
     assert export.kind == 'export'
-    Context.statement = export.clone()
+    Context.statement = export
     alias = export.children[0].children[0].value
     if len(export.children) == 2:
         target = export.children[1].children[0].value.lower()
@@ -78,7 +78,7 @@ def _transpile_export(env: Env, export: Node):
 def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a number let statement to a line."""
     assert let.kind == 'num_let'
-    Context.statement = let.clone()
+    Context.statement = let
     ident = let.children[0].children[0].value
     env, num = _transpile_nexpr(env, let.children[1])
     assignment, num = num.assign(num_index)
@@ -90,7 +90,7 @@ def _transpile_num_let(env: Env, num_index: int, let: Node) -> Tuple[Env, int, N
 def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a vector let statement to a line."""
     assert let.kind == 'vec_let'
-    Context.statement = let.clone()
+    Context.statement = let
     ident = let.children[0].children[0].value
     env, vec = _transpile_vexpr(env, let.children[1])
     assignments, vec = vec.assign(vec_index)
@@ -102,7 +102,7 @@ def _transpile_vec_let(env: Env, vec_index: int, let: Node) -> Tuple[Env, int, N
 def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, Node]:
     """Transpile a matrix let statement to a line."""
     assert let.kind == 'mat_let'
-    Context.statement = let.clone()
+    Context.statement = let
     ident = let.children[0].children[0].value
     env, mat = _transpile_mexpr(env, let.children[1])
     assignments, mat = mat.assign(mat_index)
@@ -113,7 +113,7 @@ def _transpile_mat_let(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
 
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
-    Context.local = nexpr.clone()
+    Context.local = nexpr
     if nexpr.kind == 'num_unary':
         env, num = _transpile_nexpr(env, nexpr.children[-1])
         for op in reversed(nexpr.children[:-1]):
@@ -192,7 +192,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
     """Transpile a vexpr to a vector."""
-    Context.local = vexpr.clone()
+    Context.local = vexpr
     if vexpr.kind == 'vec_map':
         op = vexpr.children[0]
         env, vec = _transpile_vexpr(env, vexpr.children[1])
@@ -274,7 +274,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
 
 def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
     """Transpile a mexpr to a matrix."""
-    Context.local = mexpr.clone()
+    Context.local = mexpr
     if mexpr.kind == 'mat_map':
         op = mexpr.children[0]
         env, mat = _transpile_mexpr(env, mexpr.children[1])

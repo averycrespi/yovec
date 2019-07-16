@@ -61,6 +61,16 @@ class Node:
                 c.find(predicate, found)
         return found
 
+    def pfind(self, predicate: Callable[['Node'], bool], found: Optional[List['Node']]=None) -> List['Node']:
+        """Recursively find parents that satisfy a predicate."""
+        if found is None:
+            found = []
+        if predicate(self):
+            found.append(self)
+        if self.parent is not None:
+            self.parent.pfind(predicate, found)
+        return found
+
     @staticmethod
     def from_tree(tree: Tree) -> 'Node': # type: ignore
         """Make a node from a Lark parse tree."""
