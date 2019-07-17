@@ -41,6 +41,7 @@ NEXPRS = (
     'mat_elem',
     'external',
     'variable',
+    'call',
     'number'
 )
 
@@ -55,6 +56,7 @@ VEXPRS = (
     'mat_row',
     'mat_col',
     'variable',
+    'call',
     'vector'
 )
 
@@ -67,5 +69,6 @@ MEXPRS = (
     'transpose',
     'mat_mul',
     'variable',
+    'call',
     'matrix'
 )

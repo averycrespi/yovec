@@ -6,6 +6,7 @@ from engine.errors import YovecError
 from engine.node import Node
 
 from engine.transpile.env import Env
+from engine.transpile.function import Function
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.resolve import resolve_aliases
@@ -20,25 +21,43 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
     vec_index = 0
     mat_index = 0
     yolol_lines = []
+
     for line in program.children:
         child = line.children[0]
+
         if child.kind == 'import_group':
             env = _transpile_import_group(env, child)
+
         elif child.kind == 'export':
             env = _transpile_export(env, child)
+
         elif child.kind == 'let_num':
             env, num_index, yolol_line = _transpile_let_num(env, num_index, child)
             yolol_lines.append(yolol_line)
         elif child.kind == 'let_vec':
+
             env, vec_index, yolol_line = _transpile_let_vec(env, vec_index, child)
             yolol_lines.append(yolol_line)
+
         elif child.kind == 'let_mat':
             env, mat_index, yolol_line = _transpile_let_mat(env, mat_index, child)
             yolol_lines.append(yolol_line)
+
+        elif child.kind == 'def_num':
+            env = _transpile_def(env, child, 'number')
+
+        elif child.kind == 'def_vec':
+            env = _transpile_def(env, child, 'vector')
+
+        elif child.kind == 'def_mat':
+            env = _transpile_def(env, child, 'matrix')
+
         elif child.kind == 'comment':
             pass
+
         else:
-            raise AssertionError('unknown statement: {}'.format(child.kind))
+            raise AssertionError('statement fallthrough: {}'.format(child))
+
     yolol, imported, exported = resolve_aliases(env, Node(kind='program', children=yolol_lines))
     return yolol, imported, exported
 
@@ -112,11 +131,21 @@ def _transpile_let_mat(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
     return env, mat_index+1, line
 
 
+@context(stmt='def_')
+def _transpile_def(env: Env, def_: Node, return_type: str) -> Env:
+    """Transpile a function def_."""
+    assert def_.kind.startswith('def')
+    ident = def_.children[0].value
+    params = def_.children[1].children
+    body = def_.children[2]
+    func = Function(ident, params, return_type, body)
+    return env.set_func(ident, func)
+
 @context(expr='nexpr')
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
     if nexpr.kind not in NEXPRS:
-        raise Yovec('expected number expression, but got {}'.format(nexpr.kind))
+        raise YovecError('expected number expression, but got {}'.format(nexpr.kind))
 
     elif nexpr.kind == 'num_binary':
         env, lnum = _transpile_nexpr(env, nexpr.children[0])
@@ -183,6 +212,14 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         if type(var) != Number:
             raise YovecError('expected variable {} to be number, but got {}'.format(ident, var.class_name))
         return env, var
+
+    elif nexpr.kind == 'call':
+        ident = nexpr.children[0].value
+        func = env.func(ident)
+        if func.return_type != 'number':
+            raise YovecError('expected function to return number expression, but got {} expression'.format(func.return_type))
+        args = nexpr.children[1].children
+        return _transpile_nexpr(env, func.call(args))
 
     elif nexpr.kind == 'number':
         try:
@@ -268,6 +305,14 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
             raise YovecError('expected variable {} to be vector, but got {}'.format(ident, var.class_name))
         return env, var
 
+    elif vexpr.kind == 'call':
+        ident = vexpr.children[0].value
+        func = env.func(ident)
+        if func.return_type != 'vector':
+            raise YovecError('expected function to return vector expression, but got {} expression'.format(func.return_type))
+        args = vexpr.children[1].children
+        return _transpile_vexpr(env, func.call(args))
+
     elif vexpr.kind == 'vector':
         numums = []
         for nexpr in vexpr.children:
@@ -336,6 +381,14 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         if type(var) != Matrix:
             raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, var.class_name))
         return env, var
+
+    elif mexpr.kind == 'call':
+        ident = mexpr.children[0].value
+        func = env.func(ident)
+        if func.return_type != 'matrix':
+            raise YovecError('expected function to return matrix expression, but got {} expression'.format(func.return_type))
+        args = mexpr.children[1].children
+        return _transpile_mexpr(env, func.call(args))
 
     elif mexpr.kind == 'matrix':
         vecs = []

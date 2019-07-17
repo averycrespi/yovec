@@ -3,6 +3,7 @@ from typing import Union, Dict, Tuple
 
 from engine.errors import YovecError
 
+from engine.transpile.function import Function
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.vector import Vector
@@ -15,12 +16,17 @@ class Env:
     """Represents a program environment."""
     def __init__(self):
         self._variables = {}
+        self._functions = {}
         self._imports = {}
         self._exports = {}
 
     @property
     def variables(self) -> Dict[str, Tuple[Variable, int]]:
         return dict(self._variables)
+
+    @property
+    def functions(self) -> Dict[str, Function]:
+        return dict(self._functions)
 
     @property
     def imports(self) -> Dict[str, str]:
@@ -39,8 +45,25 @@ class Env:
     def set_var(self, ident: str, var: Variable, index: int) -> 'Env':
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
+        if ident in self.functions:
+            raise YovecError('conflict between function and variable: {}'.format(ident))
         clone = deepcopy(self)
         clone._variables[ident] = (var, index)
+        return clone
+
+    def func(self, ident: str) -> Function:
+        try:
+            return self.functions[ident]
+        except KeyError:
+            raise YovecError('undefined function: {}'.format(ident))
+
+    def set_func(self, ident: str, func: Function) -> 'Env':
+        if ident in self.functions:
+            raise YovecError('cannot redefine existing function: {}'.format(ident))
+        if ident in self.variables:
+            raise YovecError('conflict between function and variable: {}'.format(ident))
+        clone = deepcopy(self)
+        clone._functions[ident] = func
         return clone
 
     def import_(self, alias: str) -> str:
