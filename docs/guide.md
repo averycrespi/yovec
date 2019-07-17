@@ -4,9 +4,11 @@
 
 - [Terminology](#terminology)
 - [General Notes](#general-notes)
+- [Variables](#variables)
 - [Numbers](#numbers)
 - [Vectors](#vectors)
 - [Matrices](#matrices)
+- [Custom Functions](#custom-functions)
 - [Imports](#imports)
 - [Exports](#exports)
 - [Comments](#comments)
@@ -38,14 +40,6 @@ sin cos 0
 // Evaluates as 1 + (2 * (3 / 4))
 ```
 
-Yovec is a functional language, so all variables are immutable.
-
-```
-let number A = 0
-let number A = 1
-// Error: cannot redefine variable
-```
-
 Yovec is 0-indexed.
 
 ```
@@ -66,6 +60,28 @@ let number A = sin 90
 ```
 let number A = 0 or 47
 // A == 1
+```
+
+## Variables
+
+A variable stores a number, vector, or matrix.
+
+Variable names may contain uppercase letters and underscores.
+
+Variables can be assigned to with the `let` statement. The type of the variable must be specified.
+
+```
+let number A = 0
+let vector V = [1, 2]
+let matrix M = [[0, 1], [2, 3]]
+```
+
+Variables may not be assigned to twice.
+
+```
+let number A = 0
+let number A = 1
+// Error: cannot redefine variable A
 ```
 
 ## Numbers
@@ -378,6 +394,45 @@ col M 0
 // Returns [0, 3]
 ```
 
+## Custom Functions
+
+The `define` statement defines a custom function.
+
+A defined function must accept one or more arguments, and must return a number, vector, or matrix.
+
+Function names may contain letters and underscores.
+
+```
+define neg_sum (number A, number B) -> number = (neg A) + (neg B)
+// Accepts two numbers, and returns a number
+
+define second (matrix M) -> vector = row M 1
+// Accepts a matrix, and return a vector.
+```
+
+Defined functions may not access variables other than their parameters.
+
+```
+let number B = 1
+define add (number A) -> number = A + B
+// Error: variable B is not defined
+```
+
+Defined functions may be called with arguments. An exclamation point (`!`) must follow the name of the function. Arguments must be enclosed in parentheses.
+
+```
+define add (number A, number B) -> number = A + B
+let number C = add!(1, 2)
+// C == 3
+```
+
+Defined functions must not call themselves.
+
+```
+define add (number A, number B) -> number = foo!(A, B)
+// Error: recursion is not allowed
+```
+
 ## Imports
 
 The `import` statement imports an external value from YOLOL.
@@ -468,8 +523,9 @@ Undefined behaviour occurs when a program performs illegal operations at runtime
 
 ```
 // Yovec
-let variable A = 1 / 0
+import n
+let variable A = 1 / $n
 
-// YOLOL
-n0=1/0
+// YOLOL: assume n == 0
+n0=1/n
 ```

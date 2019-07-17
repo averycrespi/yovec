@@ -8,6 +8,7 @@
 COMMENT: /\/\/[^\n]*/
 LITERAL: /-?\d+(\.\d{1,4})?/
 VAR_IDENT: /[A-Z_]+/
+FUNC_IDENT: /[a-zA-Z_]+/
 YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
 
 // ==========
@@ -16,7 +17,7 @@ YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
 
 program: line*
 
-line: import_group | export | let | comment
+line: import_group | export | let | define | comment
 
 import_group: "import" (import ",")* import ("," import)*
 import: external ("as" external)?
@@ -27,6 +28,10 @@ export: "export" variable ("as" external)?
     | "let" "vector" variable "=" vexpr     -> let_vec
     | "let" "matrix" variable "=" mexpr     -> let_mat
 
+?define: "define" function param_group "->" "number" "=" nexpr  -> def_num
+       | "define" function param_group "->" "vector" "=" vexpr  -> def_vec
+       | "define" function param_group "->" "matrix" "=" mexpr  -> def_mat
+
 comment: COMMENT
 
 // =========
@@ -36,6 +41,25 @@ comment: COMMENT
 variable: VAR_IDENT
 
 external: YOLOL_IDENT
+
+// =========
+// Functions
+// =========
+
+function: FUNC_IDENT
+
+param_group: "(" (param ",")* param ("," param)* ")"
+param: type variable
+
+?type: "number"     -> type_num
+     | "vector"     -> type_vec
+     | "matrix"     -> type_mat
+
+call: function "!" args
+
+args: "(" (expr ",")* expr ("," expr)* ")"
+
+?expr: nexpr | vexpr | mexpr
 
 // =======
 // Numbers
@@ -95,6 +119,7 @@ number: LITERAL
       | "(" nexpr ")"
       | "$" external
       | variable
+      | call
       | number
 
 // =======
@@ -121,6 +146,7 @@ vector: "[" (nexpr ",")* nexpr ("," nexpr)* "]"
       | "col" mexpr number                  -> mat_col
       | "(" vexpr ")"
       | variable
+      | call
       | vector
 
 // ========
@@ -145,4 +171,5 @@ matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
       | mexpr ("*" mexpr)+                  -> mat_mul
       | "(" mexpr ")"
       | variable
+      | call
       | matrix

@@ -1,35 +1,8 @@
 import json
 from typing import Any
 
+from engine.grammar import OPERATORS
 from engine.node import Node
-
-
-OPERATORS = {
-    'neg': '-',
-    'not': 'not',
-    'abs': 'abs',
-    'sqrt': 'sqrt',
-    'sin': 'sin',
-    'cos': 'cos',
-    'tan': 'tan',
-    'arcsin': 'arcsin',
-    'arccos': 'arccos',
-    'arctan': 'arctan',
-    'exp': '^',
-    'mul': '*',
-    'div': '/',
-    'mod': '%',
-    'add': '+',
-    'sub': '-',
-    'lt': '<',
-    'le': '<=',
-    'gt': '>',
-    'ge': '>=',
-    'eq': '==',
-    'ne': '!=',
-    'or': 'or',
-    'and': 'and'
-}
 
 
 def yolol_to_cylon(program: Node) -> str:

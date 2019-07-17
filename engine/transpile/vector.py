@@ -16,6 +16,10 @@ class Vector:
         self.nums = nums
         self.length = len(nums)
 
+    @property
+    def class_name(self):
+        return 'vector'
+
     # Operations
 
     def vecbinary(self, op: str, other: 'Vector') -> 'Vector':
