@@ -523,8 +523,9 @@ Undefined behaviour occurs when a program performs illegal operations at runtime
 
 ```
 // Yovec
-let variable A = 1 / 0
+import n
+let variable A = 1 / $n
 
-// YOLOL
-n0=1/0
+// YOLOL: assume n == 0
+n0=1/n
 ```
