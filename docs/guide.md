@@ -4,6 +4,7 @@
 
 - [Terminology](#terminology)
 - [General Notes](#general-notes)
+- [Variables](#variables)
 - [Numbers](#numbers)
 - [Vectors](#vectors)
 - [Matrices](#matrices)
@@ -39,14 +40,6 @@ sin cos 0
 // Evaluates as 1 + (2 * (3 / 4))
 ```
 
-Yovec is a functional language, so all variables are immutable.
-
-```
-let number A = 0
-let number A = 1
-// Error: cannot redefine variable
-```
-
 Yovec is 0-indexed.
 
 ```
@@ -67,6 +60,28 @@ let number A = sin 90
 ```
 let number A = 0 or 47
 // A == 1
+```
+
+## Variables
+
+A variable stores a number, vector, or matrix.
+
+Variable names may contain uppercase letters and underscores.
+
+Variables can be assigned to with the `let` statement. The type of the variable must be specified.
+
+```
+let number A = 0
+let vector V = [1, 2]
+let matrix M = [[0, 1], [2, 3]]
+```
+
+Variables may not be assigned to twice.
+
+```
+let number A = 0
+let number A = 1
+// Error: cannot redefine variable A
 ```
 
 ## Numbers
