@@ -22,6 +22,10 @@ class Matrix:
         self._rows = len(self.vecs)
         self._cols = self.vecs[0].length
 
+    @property
+    def class_name(self):
+        return 'matrix'
+
     # Operations
 
     def matbinary(self, op: str, other: 'Matrix') -> 'Matrix':

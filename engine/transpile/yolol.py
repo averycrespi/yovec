@@ -1,6 +1,7 @@
 from typing import Tuple, Set
 
 from engine.context import context
+from engine.grammar import NEXPRS, VEXPRS, MEXPRS
 from engine.errors import YovecError
 from engine.node import Node
 
@@ -114,11 +115,8 @@ def _transpile_let_mat(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
 @context(expr='nexpr')
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
-    if nexpr.kind == 'num_unary':
-        env, num = _transpile_nexpr(env, nexpr.children[-1])
-        for op in reversed(nexpr.children[:-1]):
-            num = num.unary(op.kind)
-        return env, num
+    if nexpr.kind not in NEXPRS:
+        raise Yovec('expected number expression, but got {}'.format(nexpr.kind))
 
     elif nexpr.kind == 'num_binary':
         env, lnum = _transpile_nexpr(env, nexpr.children[0])
@@ -128,6 +126,12 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
             env, rnum = _transpile_nexpr(env, rnum)
             lnum = lnum.binary(op.kind, rnum)
         return env, lnum
+
+    elif nexpr.kind == 'num_unary':
+        env, num = _transpile_nexpr(env, nexpr.children[-1])
+        for op in reversed(nexpr.children[:-1]):
+            num = num.unary(op.kind)
+        return env, num
 
     elif nexpr.kind == 'reduce':
         op = nexpr.children[0]
@@ -177,7 +181,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
         ident = nexpr.value
         var, _ = env.var(ident)
         if type(var) != Number:
-            raise YovecError('expected variable {} to be number, but got {}'.format(ident, type(var).__name__.lower()))
+            raise YovecError('expected variable {} to be number, but got {}'.format(ident, var.class_name))
         return env, var
 
     elif nexpr.kind == 'number':
@@ -187,13 +191,25 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
             return env, Number(float(nexpr.value))
 
     else:
-        raise AssertionError('unknown kind for nexpr: {}'.format(nexpr.kind))
+        raise AssertionError('nexpr fallthrough: {}'.format(nexpr))
 
 
 @context(expr='vexpr')
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
     """Transpile a vexpr to a vector."""
-    if vexpr.kind == 'vec_map':
+    if vexpr.kind not in VEXPRS:
+        raise YovecError('expected vector expression, but got {}'.format(vexpr.kind))
+
+    elif vexpr.kind == 'vec_binary':
+        env, lvec = _transpile_vexpr(env, vexpr.children[0])
+        ops = vexpr.children[1::2]
+        rvecs = vexpr.children[2::2]
+        for op, rvec in zip(ops, rvecs):
+            env, rvec = _transpile_vexpr(env, rvec)
+            lvec = lvec.vecbinary(op.kind, rvec)
+        return env, lvec
+
+    elif vexpr.kind == 'vec_map':
         op = vexpr.children[0]
         env, vec = _transpile_vexpr(env, vexpr.children[1])
         return env, vec.map(op.kind)
@@ -245,20 +261,11 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         except ValueError:
             raise YovecError('invald column index: {}'.format(col))
 
-    elif vexpr.kind == 'vec_binary':
-        env, lvec = _transpile_vexpr(env, vexpr.children[0])
-        ops = vexpr.children[1::2]
-        rvecs = vexpr.children[2::2]
-        for op, rvec in zip(ops, rvecs):
-            env, rvec = _transpile_vexpr(env, rvec)
-            lvec = lvec.vecbinary(op.kind, rvec)
-        return env, lvec
-
     elif vexpr.kind == 'variable':
         ident = vexpr.value
         var, _ = env.var(ident)
         if type(var) != Vector:
-            raise YovecError('expected variable {} to be vector, but got {}'.format(ident, type(var).__name__.lower()))
+            raise YovecError('expected variable {} to be vector, but got {}'.format(ident, var.class_name))
         return env, var
 
     elif vexpr.kind == 'vector':
@@ -269,13 +276,25 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         return env, Vector(numums)
 
     else:
-        raise AssertionError('unknown kind for vexpr: {}'.format(vexpr.kind))
+        raise AssertionError('vexpr fallthrough: {}'.format(vexpr))
 
 
 @context(expr='mexpr')
 def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
     """Transpile a mexpr to a matrix."""
-    if mexpr.kind == 'mat_map':
+    if mexpr.kind not in MEXPRS:
+        raise YovecError('expected matrix expression, but got {}'.format(mexpr.kind))
+
+    elif mexpr.kind == 'mat_binary':
+        env, lmat = _transpile_mexpr(env, mexpr.children[0])
+        ops = mexpr.children[1::2]
+        rmats = mexpr.children[2::2]
+        for op, rmat in zip(ops, rmats):
+            env, rmat = _transpile_mexpr(env, rmat)
+            lmat = lmat.matbinary(op.kind, rmat)
+        return env, lmat
+
+    elif mexpr.kind == 'mat_map':
         op = mexpr.children[0]
         env, mat = _transpile_mexpr(env, mexpr.children[1])
         return env, mat.map(op.kind)
@@ -311,20 +330,11 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
             lmat = lmat.matmul(rmat)
         return env, lmat
 
-    elif mexpr.kind == 'mat_binary':
-        env, lmat = _transpile_mexpr(env, mexpr.children[0])
-        ops = mexpr.children[1::2]
-        rmats = mexpr.children[2::2]
-        for op, rmat in zip(ops, rmats):
-            env, rmat = _transpile_mexpr(env, rmat)
-            lmat = lmat.matbinary(op.kind, rmat)
-        return env, lmat
-
     elif mexpr.kind == 'variable':
         ident = mexpr.value
         var, _ = env.var(ident)
         if type(var) != Matrix:
-            raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, type(var).__name__.lower()))
+            raise YovecError('expected variable {} to be matrix, but got {}'.format(ident, var.class_name))
         return env, var
 
     elif mexpr.kind == 'matrix':
@@ -335,4 +345,4 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         return env, Matrix(vecs)
 
     else:
-        raise AssertionError('unknown kind for mexpr: {}'.format(mexpr.kind))
+        raise AssertionError('mexpr fallthrough: {}'.format(mexpr))

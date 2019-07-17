@@ -12,6 +12,10 @@ class Number:
         self.initial = n
         self.queue = []
 
+    @property
+    def class_name(self):
+        return 'number'
+
     # Operations
 
     def unary(self, op: str) -> 'Number':
