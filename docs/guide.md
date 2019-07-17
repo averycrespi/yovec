@@ -7,6 +7,7 @@
 - [Numbers](#numbers)
 - [Vectors](#vectors)
 - [Matrices](#matrices)
+- [Custom Functions](#custom-functions)
 - [Imports](#imports)
 - [Exports](#exports)
 - [Comments](#comments)
@@ -376,6 +377,45 @@ let matrix M = [
 
 col M 0
 // Returns [0, 3]
+```
+
+## Custom Functions
+
+The `define` statement defines a custom function.
+
+A defined function must accept one or more arguments, and must return a number, vector, or matrix.
+
+Function names may contain letters and underscores.
+
+```
+define neg_sum (number A, number B) -> number = (neg A) + (neg B)
+// Accepts two numbers, and returns a number
+
+define second (matrix M) -> vector = row M 1
+// Accepts a matrix, and return a vector.
+```
+
+Defined functions may not access variables other than their parameters.
+
+```
+let number B = 1
+define add (number A) -> number = A + B
+// Error: variable B is not defined
+```
+
+Defined functions may be called with arguments. An exclamation point (`!`) must follow the name of the function. Arguments must be enclosed in parentheses.
+
+```
+define add (number A, number B) -> number = A + B
+let number C = add!(1, 2)
+// C == 3
+```
+
+Defined functions must not call themselves.
+
+```
+define add (number A, number B) -> number = foo!(A, B)
+// Error: recursion is not allowed
 ```
 
 ## Imports
