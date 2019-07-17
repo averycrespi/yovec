@@ -25,6 +25,7 @@ def context(stmt: Optional[str]=None, expr: Optional[str]=None):
         def inner(*args, **kwargs):
             if stmt is not None:
                 Context.stmt = args[spec(func).args.index(stmt)]
+                Context.expr = None
             if expr is not None:
                 Context.expr = args[spec(func).args.index(expr)]
             return func(*args, **kwargs)
