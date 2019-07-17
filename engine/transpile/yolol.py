@@ -134,7 +134,7 @@ def _transpile_let_mat(env: Env, mat_index: int, let: Node) -> Tuple[Env, int, N
 @context(stmt='def_')
 def _transpile_def(env: Env, def_: Node, return_type: str) -> Env:
     """Transpile a function def_."""
-    assert def_.kind.startswith('def')
+    assert def_.kind.startswith('def') # type: ignore
     ident = def_.children[0].value
     params = def_.children[1].children
     body = def_.children[2]

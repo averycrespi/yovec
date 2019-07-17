@@ -44,5 +44,5 @@ class Function:
         variables = clone.find(lambda node: node.kind == 'variable')
         for var in variables:
             index = self.param_idents.index(var.value)
-            var.parent.replace_child(var, args[index])
+            var.parent.replace_child(var, args[index]) # type: ignore
         return clone
