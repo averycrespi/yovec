@@ -22,18 +22,6 @@ class Number:
         """Apply a unary operation to a number."""
         if op == 'ln':
             return self._ln()
-        elif op == 'csc':
-            return Number(1).binary('div', self.unary('sin'))
-        elif op == 'sec':
-            return Number(1).binary('div', self.unary('cos'))
-        elif op == 'cot':
-            return Number(1).binary('div', self.unary('tan'))
-        elif op == 'arccsc':
-            return Number(1).binary('div', self.unary('arcsin'))
-        elif op == 'arcsec':
-            return Number(1).binary('div', self.unary('arccos'))
-        elif op == 'arccot':
-            return Number(1).binary('div', self.unary('arctan'))
         else:
             clone = deepcopy(self)
             clone.queue.append((op,))
