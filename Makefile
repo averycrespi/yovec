@@ -14,4 +14,4 @@ check:
 	pyre check
 
 test:
-	@python3 utils/test.py
+	@python3 tools/test.py
