@@ -9,6 +9,7 @@
 - [Vectors](#vectors)
 - [Matrices](#matrices)
 - [Custom Functions](#custom-functions)
+- [Libraries](#libraries)
 - [Imports](#imports)
 - [Exports](#exports)
 - [Comments](#comments)
@@ -491,6 +492,24 @@ Multiple externals may be imported in a single `import` statement.
 ```
 import m, long_name as n, o, p
 ```
+
+## Libraries
+
+Libraries are special Yovec files that only contain `define` statements (and comments).
+
+Library identifiers may contain letters, numbers, and underscores.
+
+Library files must have the extension `.lib.yovec`
+
+The `using` statement loads functions from a library.
+
+```
+using trig
+
+let number A = sec!(90)
+```
+
+Yovec will recursively search for library files in the current working directory.
 
 ## Exports
 
