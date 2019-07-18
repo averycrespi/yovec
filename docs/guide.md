@@ -119,12 +119,6 @@ Unary functions operate on a single number:
 - `arcsin A`: calculate the inverse sine of `A` (in degrees)
 - `arccos A`: calculate the inverse cosine of `A` (in degrees)
 - `arctan A`: calculate the inverse tangent of `A` (in degrees)
-- `csc A`: calculate the cosecant of `A` (in degrees)
-- `sec A`: calculate the secant of `A` (in degrees)
-- `cot A`: calculate the cotangent of `A` (in degrees)
-- `arccsc A`: calculate the inverse cosecant of `A` (in degrees)
-- `arcsec A`: calculate the inverse secant of `A` (in degrees)
-- `arccot A`: calculate the inverse cotangent of `A` (in degrees)
 - `ln A`: approximate the natural logarithm of `A`
 
 Certain unary functions may cause [undefined behaviour](#errors):

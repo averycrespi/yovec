@@ -81,12 +81,6 @@ number: LITERAL
              | "arcsin"     -> arcsin
              | "arccos"     -> arccos
              | "arctan"     -> arctan
-             | "csc"        -> csc
-             | "sec"        -> sec
-             | "cot"        -> cot
-             | "arccsc"     -> arccsc
-             | "arcsec"     -> arcsec
-             | "arccot"     -> arccot
              | "ln"         -> ln
 
 ?num_binary_op: "+"     -> add
