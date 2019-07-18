@@ -21,17 +21,24 @@ class Node:
     def children(self):
         return self._children
 
+    def append_child(self, child: 'Node'):
+        """Append a child to a node."""
+        if self.children is None:
+            self._children = []
+        self._children.append(child)
+        child.parent = self
+
+    def remove_child(self, child: 'Node'):
+        """Remove the child of a node."""
+        self._children.remove(child)
+        child.parent = None
+
     def replace_child(self, original: 'Node', replacement: 'Node'):
         """Replace the child of a node."""
         index = self.children.index(original)
         self._children[index] = replacement
         original.parent = None
         replacement.parent = self
-
-    def remove_child(self, child: 'Node'):
-        """Remove the child of a node."""
-        self._children.remove(child)
-        child.parent = None
 
     def __str__(self) -> str:
         if self.children is None:

@@ -1,3 +1,5 @@
+using vectors
+
 import n
 import longname as short
 import x, y, z

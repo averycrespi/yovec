@@ -1,0 +1,2 @@
+// Calculate the magnitude of a vector
+define mag (vector V) -> number = sqrt (reduce + (map ^2 V))
