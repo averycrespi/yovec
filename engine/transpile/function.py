@@ -33,11 +33,11 @@ class Function:
 
         for i, arg in enumerate(args):
             type_ = self.param_types[i]
-            if type_ == 'number' and not is_nexpr(arg.kind):
+            if type_ == 'number' and not is_nexpr(arg.kind): # type: ignore
                 raise YovecError('expected argument to be number expression, but got {}'.format(arg.kind))
-            elif type_ == 'vector' and not is_vexpr(arg.kind):
+            elif type_ == 'vector' and not is_vexpr(arg.kind): # type: ignore
                 raise YovecError('expected argument to be vector expression, but got {}'.format(arg.kind))
-            elif type_ == 'matrix' and not is_mexpr(arg.kind):
+            elif type_ == 'matrix' and not is_mexpr(arg.kind): # type: ignore
                 raise YovecError('expected argument to be matrix expression, but got {}'.format(arg.kind))
 
         clone = self.body.clone()

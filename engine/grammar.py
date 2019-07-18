@@ -74,13 +74,13 @@ _MEXPRS = (
 )
 
 
-def is_nexpr(kind: str):
+def is_nexpr(kind: str) -> bool:
     return kind in _NEXPRS
 
 
-def is_vexpr(kind: str):
+def is_vexpr(kind: str) -> bool:
     return kind in _VEXPRS
 
 
-def is_mexpr(kind: str):
+def is_mexpr(kind: str) -> bool:
     return kind in _MEXPRS
