@@ -1,7 +1,7 @@
 from typing import Tuple, Set
 
 from engine.context import context
-from engine.grammar import NEXPRS, VEXPRS, MEXPRS
+from engine.grammar import is_nexpr, is_vexpr, is_mexpr
 from engine.errors import YovecError
 from engine.node import Node
 
@@ -34,8 +34,8 @@ def yovec_to_yolol(program: Node) -> Tuple[Node, Set[str], Set[str]]:
         elif child.kind == 'let_num':
             env, num_index, yolol_line = _transpile_let_num(env, num_index, child)
             yolol_lines.append(yolol_line)
-        elif child.kind == 'let_vec':
 
+        elif child.kind == 'let_vec':
             env, vec_index, yolol_line = _transpile_let_vec(env, vec_index, child)
             yolol_lines.append(yolol_line)
 
@@ -144,7 +144,7 @@ def _transpile_def(env: Env, def_: Node, return_type: str) -> Env:
 @context(expr='nexpr')
 def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
     """Transpile a nexpr to a number."""
-    if nexpr.kind not in NEXPRS:
+    if not is_nexpr(nexpr.kind):
         raise YovecError('expected number expression, but got {}'.format(nexpr.kind))
 
     elif nexpr.kind == 'num_binary':
@@ -234,7 +234,7 @@ def _transpile_nexpr(env: Env, nexpr: Node) -> Tuple[Env, Number]:
 @context(expr='vexpr')
 def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
     """Transpile a vexpr to a vector."""
-    if vexpr.kind not in VEXPRS:
+    if not is_vexpr(vexpr.kind):
         raise YovecError('expected vector expression, but got {}'.format(vexpr.kind))
 
     elif vexpr.kind == 'vec_binary':
@@ -327,7 +327,7 @@ def _transpile_vexpr(env: Env, vexpr: Node) -> Tuple[Env, Vector]:
 @context(expr='mexpr')
 def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
     """Transpile a mexpr to a matrix."""
-    if mexpr.kind not in MEXPRS:
+    if not is_mexpr(mexpr.kind):
         raise YovecError('expected matrix expression, but got {}'.format(mexpr.kind))
 
     elif mexpr.kind == 'mat_binary':
