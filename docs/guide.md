@@ -430,7 +430,7 @@ The `define` statement defines a custom function.
 
 A custom function must accept one or more arguments, and must return a number, vector, or matrix.
 
-Function identifiers may contain letters and underscores.
+Function identifiers may contain letters, numbers, underscores.
 
 ```
 define neg_sum (number A, number B) -> number = (neg A) + (neg B)
@@ -463,11 +463,29 @@ define add (number A, number B) -> number = foo!(A, B)
 // Error: recursion is not allowed
 ```
 
+## Libraries
+
+Libraries are special Yovec files that only contain `define` statements (and comments).
+
+Library identifiers may contain letters, numbers, and underscores.
+
+Library files must have the extension `.lib.yovec`
+
+The `using` statement loads functions from a library.
+
+```
+using trig
+
+let number A = sec!(90)
+```
+
+Yovec will recursively search for library files in the current working directory.
+
 ## Imports
 
 The `import` statement imports an external value from YOLOL.
 
-An external value must be a valid number (i.e. Yovec literal). Importing a string causes [undefined behaviour](#errors).
+An external value must be a valid number (i.e. Yovec literal). Importing a string causes [undefined behaviour](#errors). Data fields cannot be imported.
 
 External identifiers must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
@@ -492,24 +510,6 @@ Multiple externals may be imported in a single `import` statement.
 ```
 import m, long_name as n, o, p
 ```
-
-## Libraries
-
-Libraries are special Yovec files that only contain `define` statements (and comments).
-
-Library identifiers may contain letters, numbers, and underscores.
-
-Library files must have the extension `.lib.yovec`
-
-The `using` statement loads functions from a library.
-
-```
-using trig
-
-let number A = sec!(90)
-```
-
-Yovec will recursively search for library files in the current working directory.
 
 ## Exports
 
