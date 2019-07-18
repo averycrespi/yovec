@@ -21,7 +21,7 @@ def use_library(ident: str) -> Sequence[Node]:
     if len(matches) == 0:
         raise YovecError('library not found: {}'.format(ident))
     if len(matches) > 1:
-        raise YovecError('ambiguous library: {}'.format(ident))
+        raise YovecError('multiple files found for {}: {}'.format(ident, str([str(p) for p in matches])))
     lib = matches[0]
 
     try:
