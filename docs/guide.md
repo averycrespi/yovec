@@ -346,10 +346,10 @@ transpose M
 // Returns [[0, 3], [1, 4], [2, 5]]
 ```
 
-The `*` function [multiplies two matrices](https://en.wikipedia.org/wiki/Matrix_multiplication). The number of columns in the first matrix must be equal to the number of rows in the second matrix.
+The `@` function [multiplies two matrices](https://en.wikipedia.org/wiki/Matrix_multiplication). The number of columns in the first matrix must be equal to the number of rows in the second matrix.
 
 ```
-M * N
+M @ N
 ```
 
 The `rows` function returns the number of rows in a matrix.
