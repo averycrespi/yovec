@@ -5,7 +5,7 @@ import longname as short
 import x, y, z
 
 let number A = 0
-let number UNARY = neg not abs sin cos tan arcsin arccos arctan csc sec cot arccsc arcsec arccot ln 1
+let number UNARY = neg not abs sin cos tan arcsin arccos arctan ln 1
 let number BINARY = 0 + 1 - 2 * 3 / 4 % 5 and 6 or 7 nand 8 nor 9 xor 10
 
 let vector V = [0, 1, 2]
@@ -32,7 +32,7 @@ let matrix MAT_PREMAP = map +1 M
 let matrix MAT_POSTMAP = map 1+ M
 let matrix MAT_APPLY = apply + M M
 let matrix TRANSPOSE = transpose M
-let matrix MAT_MUL = M * M
+let matrix MAT_MUL = M @ M
 
 export A as number
 export V as vector

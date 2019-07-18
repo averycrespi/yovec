@@ -374,10 +374,8 @@ def _transpile_mexpr(env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
 
     elif mexpr.kind == 'mat_mul':
         env, lmat = _transpile_mexpr(env, mexpr.children[0])
-        for rmat in mexpr.children[1:]:
-            env, rmat = _transpile_mexpr(env, rmat)
-            lmat = lmat.matmul(rmat)
-        return env, lmat
+        env, rmat = _transpile_mexpr(env, mexpr.children[1])
+        return env, lmat.matmul(rmat)
 
     elif mexpr.kind == 'variable':
         ident = mexpr.value

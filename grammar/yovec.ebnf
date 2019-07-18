@@ -166,7 +166,7 @@ matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
       | "map" nexpr num_binary_op mexpr     -> mat_postmap
       | "apply" num_binary_op mexpr+        -> mat_apply
       | "transpose" mexpr                   -> transpose
-      | mexpr ("*" mexpr)+                  -> mat_mul
+      | mexpr "@" mexpr                     -> mat_mul
       | "(" mexpr ")"
       | variable
       | call
