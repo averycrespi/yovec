@@ -8,8 +8,9 @@
 COMMENT: /\/\/[^\n]*/
 LITERAL: /-?\d+(\.\d{1,4})?/
 VAR_IDENT: /[A-Z_]+/
-FUNC_IDENT: /[a-zA-Z_]+/
-YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
+FUNC_IDENT: /[a-zA-Z0-9_]+/
+LIB_IDENT: /[a-zA-Z0-9_]+/
+YOLOL_IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
 
 // ==========
 // Statements
@@ -17,7 +18,7 @@ YOLOL_IDENT: /[a-zA-Z][a-zA-Z0-9]*|:[a-zA-Z0-9]+/
 
 program: line*
 
-line: import_group | export | let | define | comment
+line: import_group | export | let | define | using | comment
 
 import_group: "import" (import ",")* import ("," import)*
 import: external ("as" external)?
@@ -31,6 +32,9 @@ export: "export" variable ("as" external)?
 ?define: "define" function param_group "->" "number" "=" nexpr  -> def_num
        | "define" function param_group "->" "vector" "=" vexpr  -> def_vec
        | "define" function param_group "->" "matrix" "=" mexpr  -> def_mat
+
+using: "using" library
+library: LIB_IDENT
 
 comment: COMMENT
 
@@ -78,12 +82,6 @@ number: LITERAL
              | "arccos"     -> arccos
              | "arctan"     -> arctan
              | "ln"         -> ln
-             | "csc"        -> csc
-             | "sec"        -> sec
-             | "cot"        -> cot
-             | "arccsc"     -> arccsc
-             | "arcsec"     -> arcsec
-             | "arccot"     -> arccot
 
 ?num_binary_op: "+"     -> add
               | "-"     -> sub
@@ -168,7 +166,7 @@ matrix: "[" (vexpr ",")* vexpr ("," vexpr)* "]"
       | "map" nexpr num_binary_op mexpr     -> mat_postmap
       | "apply" num_binary_op mexpr+        -> mat_apply
       | "transpose" mexpr                   -> transpose
-      | mexpr ("*" mexpr)+                  -> mat_mul
+      | mexpr "@" mexpr                     -> mat_mul
       | "(" mexpr ")"
       | variable
       | call

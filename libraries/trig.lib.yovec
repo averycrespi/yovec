@@ -1,0 +1,7 @@
+// Reciprocal trig functions
+define csc (number A) -> number = 1 / sin A
+define sec (number A) -> number = 1 / cos A
+define cot (number A) -> number = 1 / tan A
+define arccsc (number A) -> number = 1 / arcsin A
+define arcsec (number A) -> number = 1 / arccos A
+define arccot (number A) -> number = 1 / arctan A

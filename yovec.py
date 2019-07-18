@@ -1,8 +1,6 @@
 from argparse import ArgumentParser
-from pathlib import Path
+from os.path import realpath, dirname
 from sys import stderr
-
-from lark import Lark # type: ignore
 
 from engine.context import Context
 from engine.errors import YovecError
@@ -11,14 +9,17 @@ from engine.node import Node
 from engine.format.cylon import yolol_to_cylon
 from engine.format.text import yolol_to_text
 
+from engine.parse.yovec import parse_yovec
+
 from engine.optimize.elim import eliminate_dead_code
 from engine.optimize.mangle import mangle_names
 from engine.optimize.reduce import reduce_expressions
 
+from engine.transpile.library import Root
 from engine.transpile.yolol import yovec_to_yolol
 
 
-__version__ = 'v1.8.0'
+__version__ = 'v2.0.0'
 
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
@@ -32,8 +33,6 @@ parser.add_argument('--no-reduce', action='store_true', help='disable expression
 parser.add_argument('--version', action='store_true', help='print version info')
 args = parser.parse_args()
 
-# Input
-
 if args.version:
     print(__version__)
     exit(0)
@@ -41,6 +40,10 @@ if args.version:
 if args.infile is None:
     parser.print_help()
     exit(1)
+
+Root.set(dirname(realpath(__file__)))
+
+# Parsing
 
 try:
     with open(args.infile) as f:
@@ -50,19 +53,12 @@ except IOError as e:
     exit(1)
 
 try:
-    with open(Path('grammar') / 'yovec.ebnf') as f:
-        grammar = f.read()
-except IOError as e:
-    stderr.write('Input error: {}\n'.format(str(e)))
+    yovec = parse_yovec(text)
+except YovecError as e:
+    stderr.write('Parse error: {}\n'.format(str(e)))
     exit(1)
 
 # Transpilation
-
-try:
-    yovec = Node.from_tree(Lark(grammar, start='program').parse(text))
-except Exception as e:
-    stderr.write('Parse error: {}\n'.format(str(e)))
-    exit(1)
 
 try:
     yolol, imported, exported = yovec_to_yolol(yovec)
@@ -70,7 +66,7 @@ except YovecError as e:
     stderr.write('Transpilation error: {}\n\n{}'.format(str(e), Context.format()))
     exit(1)
 
-# Optimize
+# Optimization
 
 try:
     if not args.no_reduce:

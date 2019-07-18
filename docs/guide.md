@@ -9,6 +9,7 @@
 - [Vectors](#vectors)
 - [Matrices](#matrices)
 - [Custom Functions](#custom-functions)
+- [Libraries](#libraries)
 - [Imports](#imports)
 - [Exports](#exports)
 - [Comments](#comments)
@@ -16,9 +17,10 @@
 
 ## Terminology
 
-- An **alias** is an alternative identifier for an external or variable
-- An **external** is an imported value
+- An **alias** is an alternative identifier for a variable or external
+- An **external** is a value that has been imported from YOLOL
 - A **function** performs an operation on values
+- An **identifier** is a name given to a variable, external, or function
 - A **literal** is a fixed numeric value, such as `0`
 - A **matrix** is a non-empty sequence of vectors
 - A **number** is a limited-precision decimal
@@ -44,8 +46,9 @@ Yovec is 0-indexed.
 
 ```
 let vector V = [4, 5, 6]
-let number A = elem V 1
-// A == 5
+
+elem V 1
+// Returns 5
 ```
 
 Trig. functions operate on degrees, not radians.
@@ -66,9 +69,14 @@ let number A = 0 or 47
 
 A variable stores a number, vector, or matrix.
 
-Variable names may contain uppercase letters and underscores.
+Variable identifiers may contain uppercase letters and underscores.
 
-Variables can be assigned to with the `let` statement. The type of the variable must be specified.
+```
+A
+LONG_NAME
+```
+
+The `let` statement assigns a value to a variable. The type of the variable must be specified.
 
 ```
 let number A = 0
@@ -76,7 +84,7 @@ let vector V = [1, 2]
 let matrix M = [[0, 1], [2, 3]]
 ```
 
-Variables may not be assigned to twice.
+Variables cannot be redefined.
 
 ```
 let number A = 0
@@ -112,25 +120,19 @@ Unary functions operate on a single number:
 - `arcsin A`: calculate the inverse sine of `A` (in degrees)
 - `arccos A`: calculate the inverse cosine of `A` (in degrees)
 - `arctan A`: calculate the inverse tangent of `A` (in degrees)
-- `csc A`: calculate the cosecant of `A` (in degrees)
-- `sec A`: calculate the secant of `A` (in degrees)
-- `cot A`: calculate the cotangent of `A` (in degrees)
-- `arccsc A`: calculate the inverse cosecant of `A` (in degrees)
-- `arcsec A`: calculate the inverse secant of `A` (in degrees)
-- `arccot A`: calculate the inverse cotangent of `A` (in degrees)
 - `ln A`: approximate the natural logarithm of `A`
 
-Certain unary functions may cause undefined behaviour:
+Certain unary functions may cause [undefined behaviour](#errors):
 
 - `sqrt A` where `A < 0`
-- `ln A` where `A < 0`
+- `ln A` where `A <= 0`
 - Trig. functions where the operand is outside of the domain
 
 Binary functions operate on two numbers:
 
-- `A + B`: add `A` and `B` (commutative)
+- `A + B`: add `A` and `B`
 - `A - B`: subtract `B` from `A`
-- `A * B`: multiply `A` by `B` (commutative)
+- `A * B`: multiply `A` by `B`
 - `A / B`: divide `A` by `B`
 - `A % B`: calculate the modulus of `A` and `B`
 - `A ^ B`: raise `A` to the power of `B`
@@ -138,15 +140,15 @@ Binary functions operate on two numbers:
 - `A <= B`: return true if `A` is less than or equal to `B`, otherwise false
 - `A > B`: return true if `A` is greater than `B`, otherwise false
 - `A >= B`: return true if `A` is greater than or equal to `B`, otherwise false
-- `A == B`: return true if `A` is equal to `B`, otherwise false (commutative)
-- `A != B`: return true if `A` is not equal to `B`, otherwise false (commutative)
+- `A == B`: return true if `A` is equal to `B`, otherwise false
+- `A != B`: return true if `A` is not equal to `B`, otherwise false
 - `A and B`: return true if `A` is true and `B` is true, otherwise false
 - `A or B`: return true if `A` is true or `B` is true, otherwise false
 - `A nand B`: return false if `A` is true and `B` is true, otherwise true
 - `A nor B`: return false if `A` is true or `B` is true, otherwise true
 - `A xor B`: return true if `A` and `B` have different boolean values, otherwise false
 
-Certain binary functions may cause undefined behaviour:
+Certain binary functions may cause [undefined behaviour](#errors):
 
 - `A / 0`
 - `A % 0`
@@ -260,6 +262,10 @@ let vector V = [0, 1, 2]
 
 elem V 0
 // Returns 0
+
+let number A = 0
+elem V A
+// Error: index is not a literal
 ```
 
 ## Matrices
@@ -278,6 +284,7 @@ let matrix M = [
 	[0, 1, 2],
 	[3, 4, 5]
 ]
+// Creates a 2 (rows) by 3 (columns) matrix
 ```
 
 The `map` function maps a function element-wise to a matrix.
@@ -301,9 +308,20 @@ map ^2 M
 The `apply` function applies a binary function element-wise to two or more matrices. All matrices must have the same size.
 
 ```
-apply + M N
+let matrix M = [
+    [0, 1],
+    [2, 3]
+]
+let matrix N = [
+    [4, 5],
+    [6, 7]
+]
 
-apply * M N O
+apply + M N
+// Returns [[4, 6], [8, 10]]
+
+apply * M M N
+// Returns [[0, 5], [24, 147]]
 ```
 
 The `+` and `-` functions provide shorthands for `apply +` and `apply -` respectively.
@@ -328,10 +346,10 @@ transpose M
 // Returns [[0, 3], [1, 4], [2, 5]]
 ```
 
-The `*` function multiples two matrices. The number of columns in the first matrix must be equal to the number of rows in the second matrix.
+The `@` function [multiplies two matrices](https://en.wikipedia.org/wiki/Matrix_multiplication). The number of columns in the first matrix must be equal to the number of rows in the second matrix.
 
 ```
-M * N
+M @ N
 ```
 
 The `rows` function returns the number of rows in a matrix.
@@ -368,6 +386,10 @@ let matrix M = [
 
 elem M 1 2
 // Returns 5
+
+let number A = 1
+elem M A 2
+// Error: index is not a literal
 ```
 
 The `row` function gets a row of a matrix by index. The index must be a literal.
@@ -380,6 +402,10 @@ let matrix M = [
 
 row M 0
 // Returns [0, 1, 2]
+
+let number A = 0
+row M A
+// Error: index is not a literal
 ```
 
 The `col` function gets a column of a matrix by index. The index must be a literal.
@@ -392,15 +418,19 @@ let matrix M = [
 
 col M 0
 // Returns [0, 3]
+
+let number A = 0
+col M A
+// Error: index is not a literal
 ```
 
 ## Custom Functions
 
 The `define` statement defines a custom function.
 
-A defined function must accept one or more arguments, and must return a number, vector, or matrix.
+A custom function must accept one or more arguments, and must return a number, vector, or matrix.
 
-Function names may contain letters and underscores.
+Function identifiers may contain letters, numbers, underscores.
 
 ```
 define neg_sum (number A, number B) -> number = (neg A) + (neg B)
@@ -410,7 +440,7 @@ define second (matrix M) -> vector = row M 1
 // Accepts a matrix, and return a vector.
 ```
 
-Defined functions may not access variables other than their parameters.
+Custom functions may not access variables other than their parameters.
 
 ```
 let number B = 1
@@ -418,7 +448,7 @@ define add (number A) -> number = A + B
 // Error: variable B is not defined
 ```
 
-Defined functions may be called with arguments. An exclamation point (`!`) must follow the name of the function. Arguments must be enclosed in parentheses.
+Custom functions may be called with arguments. An exclamation point (`!`) must follow the name of the function. Arguments must be enclosed in parentheses.
 
 ```
 define add (number A, number B) -> number = A + B
@@ -426,22 +456,40 @@ let number C = add!(1, 2)
 // C == 3
 ```
 
-Defined functions must not call themselves.
+Custom functions must not call themselves.
 
 ```
 define add (number A, number B) -> number = foo!(A, B)
 // Error: recursion is not allowed
 ```
 
+## Libraries
+
+Libraries are special Yovec files that only contain `define` statements (and comments).
+
+Library identifiers may contain letters, numbers, and underscores.
+
+Library files must have the extension `.lib.yovec`
+
+The `using` statement loads functions from a library.
+
+```
+using trig
+
+let number A = sec!(90)
+```
+
+Yovec will recursively search for library files in the current working directory.
+
 ## Imports
 
 The `import` statement imports an external value from YOLOL.
 
-An external value must be a valid number. Importing a string causes undefined behaviour.
+An external value must be a valid number (i.e. Yovec literal). Importing a string causes [undefined behaviour](#errors). Data fields cannot be imported.
 
-Imported names must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
+External identifiers must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
-Imported names must be prefixed with `$` when used.
+External identifiers must be prefixed with `$` when used.
 
 ```
 import n
@@ -449,7 +497,7 @@ import n
 let variable A = $n + 1
 ```
 
-Imported names may be aliased.
+External identifiers may be aliased.
 
 ```
 import long_name as n
@@ -457,7 +505,7 @@ import long_name as n
 let variable A = $n + 1
 ```
 
-Multiple imports may exist on the same line.
+Multiple externals may be imported in a single `import` statement.
 
 ```
 import m, long_name as n, o, p
@@ -465,38 +513,42 @@ import m, long_name as n, o, p
 
 ## Exports
 
-The `export` statement export a variable to YOLOL.
+The `export` statement exports a variable to YOLOL.
 
-Exported names must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
+Exported identifiers must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
+
+Vectors and matrices will be expanded to multiple YOLOL variables.
 
 ```
 let number N = 0
 export N
-// Result: n = 0
+// Result in YOLOL: n=0
 
 let vector V = [0, 1, 2]
 export V
-// Result: v_e0=0 v_e1=1 v_e2=2
+// Result in YOLOL: v_e0=0 v_e1=1 v_e2=2
 
 let matrix M = [
     [0, 1, 2],
     [3, 4, 5]
 ]
 export M
-// Result: m_r0c0=0 m_r0c1=1 m_r0c2=2 m_r1c0=3 m_r1c1=4 m_r1c2=5
+// Result in YOLOL: m_r0c0=0 m_r0c1=1 m_r0c2=2 m_r1c0=3 m_r1c1=4 m_r1c2=5
 ```
 
-Exported names may be aliased.
+Exported identifiers may be aliased.
 
 ```
 let vector V = [0, 1, 2]
 export V as list
-// Result: list_e0=0 list_e1=1 list_e2=2
+// Result in YOLOL: list_e0=0 list_e1=1 list_e2=2
 ```
 
 ## Comments
 
 A comment must start with `//` and must be on its own line.
+
+Inline comments are not allowed.
 
 ```
 // This is a comment
@@ -504,11 +556,11 @@ A comment must start with `//` and must be on its own line.
 
 ## Errors
 
-Syntax errors occur when a program has invalid Yovec syntax.
+Syntax errors occur when a Yovec program has invalid syntax.
 
 ```
 let vector V = [0, 1, 2
-// Missing closing bracket
+// Error: missing closing bracket
 ```
 
 Transpilation errors occur when a program performs illegal operations during transpilation.
@@ -516,7 +568,7 @@ Transpilation errors occur when a program performs illegal operations during tra
 ```
 let number A = 0
 let vector V = A
-// Cannot assign number to vector
+// Error: cannot assign number to vector
 ```
 
 Undefined behaviour occurs when a program performs illegal operations at runtime. Anything may happen!
@@ -524,8 +576,10 @@ Undefined behaviour occurs when a program performs illegal operations at runtime
 ```
 // Yovec
 import n
-let variable A = 1 / $n
+let variable A = 1/$n
+export A
 
 // YOLOL: assume n == 0
-n0=1/n
+a=1/n
+// Uh oh!
 ```

@@ -29,7 +29,7 @@ OPERATORS = {
     'and': Operator('and', 20)
 }
 
-NEXPRS = (
+_NEXPRS = (
     'num_binary',
     'num_unary',
     'reduce',
@@ -45,7 +45,7 @@ NEXPRS = (
     'number'
 )
 
-VEXPRS = (
+_VEXPRS = (
     'vec_binary',
     'vec_map',
     'vec_premap',
@@ -60,7 +60,7 @@ VEXPRS = (
     'vector'
 )
 
-MEXPRS = (
+_MEXPRS = (
     'mat_binary',
     'mat_map',
     'mat_premap',
@@ -72,3 +72,15 @@ MEXPRS = (
     'call',
     'matrix'
 )
+
+
+def is_nexpr(kind: str) -> bool:
+    return kind in _NEXPRS
+
+
+def is_vexpr(kind: str) -> bool:
+    return kind in _VEXPRS
+
+
+def is_mexpr(kind: str) -> bool:
+    return kind in _MEXPRS
