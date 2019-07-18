@@ -19,7 +19,7 @@ from engine.transpile.library import Root
 from engine.transpile.yolol import yovec_to_yolol
 
 
-__version__ = 'v1.8.0'
+__version__ = 'v2.0.0'
 
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
