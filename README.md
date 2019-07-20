@@ -22,7 +22,7 @@
 - Supports numbers, vectors, and matrices
 - Interoperable with YOLOL
 
-![Yovec GUI](images/gui.png)
+![Yovec GUI](images/gui.png | width=400)
 
 ## Installation
 
