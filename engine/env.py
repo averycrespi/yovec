@@ -64,7 +64,7 @@ class Env:
             index = self._mat_index
             self._mat_index += 1
         else:
-            raise AssertionError('fallthrough: {}'.format(type(value)))
+            raise AssertionError('unexpected value type: {}'.format(type(value)))
         assignments, value = value.assign(index)
         clone = deepcopy(self)
         clone._variables[ident] = (value, index)

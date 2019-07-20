@@ -43,7 +43,7 @@ class Transpiler:
             elif statement.kind == 'comment':
                 pass
             else:
-                raise AssertionError('fallthrough: {}'.format(statement.kind))
+                raise AssertionError('unexpected statement kind: {}'.format(statement.kind))
         return resolve_aliases(env, yolol)
 
     @context(statement='group')
@@ -89,7 +89,7 @@ class Transpiler:
         elif let.kind == 'let_mat':
             env, value = self.mexpr(env, expr)
         else:
-            raise AssertionError('fallthrough: {}'.format(let.kind))
+            raise AssertionError('unexpected let kind: {}'.format(let.kind))
         env, assignments = env.let(ident, value)
         line = Node(kind='line', children=assignments)
         return env, line
@@ -108,7 +108,7 @@ class Transpiler:
         elif definition.kind == 'def_mat':
             return_type = 'matrix'
         else:
-            raise AssertionError('fallthrough: {}'.format(definition.kind))
+            raise AssertionError('unexpected definition kind: {}'.format(definition.kind))
         func = Function(ident, params, return_type, body)
         return env.define(ident, func)
 
@@ -209,7 +209,7 @@ class Transpiler:
                 return env, Number(float(nexpr.value))
 
         else:
-            raise AssertionError('fallthrough: {}'.format(nexpr.kind))
+            raise AssertionError('unexpected nexpr kind: {}'.format(nexpr.kind))
 
     @context(expression='vexpr')
     def vexpr(self, env: Env, vexpr: Node) -> Tuple[Env, Vector]:
@@ -301,7 +301,7 @@ class Transpiler:
             return env, Vector(numums)
 
         else:
-            raise AssertionError('fallthrough: {}'.format(vexpr.kind))
+            raise AssertionError('unexpected vexpr kind: {}'.format(vexpr.kind))
 
     @context(expression='mexpr')
     def mexpr(self, env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
@@ -375,4 +375,4 @@ class Transpiler:
             return env, Matrix(vecs)
 
         else:
-            raise AssertionError('fallthrough: {}'.format(mexpr.kind))
+            raise AssertionError('unexpected mexpr kind: {}'.format(mexpr.kind))

@@ -47,4 +47,4 @@ def _format_expression(expr: Node) -> Any:
         right = _format_expression(expr.children[1])
         return {'type': 'expression::binary_op', 'operator': OPERATORS[expr.kind], 'left': left, 'right': right} # type: ignore
     else:
-        raise AssertionError('fallthrough: {}'.format(expr))
+        raise AssertionError('unexpected expression: {}'.format(expr))
