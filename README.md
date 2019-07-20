@@ -73,7 +73,7 @@ python3 yovec.py
 python3 yovec-cli.py -i source.yovec -o out.yolol
 ```
 
-#### Learning
+## Learning
 
 To learn the Yovec language, check out some [example programs](programs/) or read the [language guide](docs/guide.md).
 
