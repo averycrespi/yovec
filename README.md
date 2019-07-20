@@ -107,7 +107,7 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
 
---
+---
 
 **Q**: Why doesn't Yovec have executable for Windows and Mac OS?
 
