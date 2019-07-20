@@ -23,7 +23,7 @@
 - Interoperable with YOLOL
 
 <p>
-    <img src="https://raw.githubusercontent.com/averycrespi/yovec/dev/images/gui.png" width="400"</img>
+    <img src="https://raw.githubusercontent.com/averycrespi/yovec/master/images/gui.png" width="400"</img>
 </p>
 
 ## Installation
