@@ -1,13 +1,15 @@
-.PHONY: install develop check test
+.PHONY: build clean install check test
 
-all:
-	@echo "Please specify a target: install, develop, check, test"
+all: build
+
+build:
+	pyinstaller -F yovec.py
+
+clean:
+	rm -rf build dist yovec.spec
 
 install:
-	pip3 install --user -r requirements.txt
-
-develop:
-	pip3 install --user pyre-check
+	pip3 install --user lark-parser pyre-check pyinstaller
 	pip3 install -e .
 
 check:
