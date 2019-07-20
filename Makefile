@@ -1,7 +1,7 @@
 .PHONY: build clean install develop check test
 
 all:
-	@echo 'Please choose a make target from: build, clean, install, develop, check test'
+	@echo 'Please choose a make target from: build, clean, install, develop, check, test'
 
 build:
 	pyinstaller yovec.spec
