@@ -4,39 +4,33 @@ from typing import Sequence
 from engine.errors import YovecError
 from engine.node import Node
 
-from engine.parse.yovec import parse_yovec
 
-
-class Root:
-    """Store the root directory."""
-    dir_ = None
-    @classmethod
-    def set(cls, dir_):
-        cls.dir_ = dir_
-
-
-def use_library(ident: str) -> Sequence[Node]:
+def use_library(ident: str, parser, root: str) -> Sequence[Node]:
     """Use definitions from a library."""
-    matches = list(Path(Root.dir_).glob('**/{}.lib.yovec'.format(ident))) # type: ignore
+    matches = list(Path(root).glob('**/{}.lib.yovec'.format(ident))) # type: ignore
     if len(matches) == 0:
         raise YovecError('library not found: {}'.format(ident))
     if len(matches) > 1:
-        raise YovecError('multiple files found for {}: {}'.format(ident, str([str(p) for p in matches])))
-    lib = matches[0]
+        raise YovecError('multiple files found for library {}: {}'.format(ident, [str(p) for p in matches]))
 
     try:
-        with open(lib) as f:
+        with open(matches[0]) as f:
             text = f.read()
     except IOError as e:
-        raise YovecError('unable to load library: {}'.format(str(e)))
+        raise YovecError('unable to load library {}: {}'.format(ident, str(e)))
 
-    program = parse_yovec(text)
-    statements = []
-    for line in program.children:
-        statement = line.children[0]
+    try:
+        program = Node.from_tree(parser.parse(text))
+    except Exception as e:
+        raise YovecError('failed to parse library {}: {}'.format(ident, str(e)))
+
+    statements = [line.children[0] for line in program.children]
+    definitions = []
+    for statement in statements:
         if statement.kind == 'comment':
             continue
-        if not statement.kind.startswith('def_'):
-            raise YovecError('invalid statement in library: {}'.format(statement.kind))
-        statements.append(statement)
-    return statements
+        elif statement.kind.startswith('def_'): # type: ignore
+            definitions.append(statement)
+        else:
+            raise YovecError('invalid statement in library {}: {}'.format(ident, statement))
+    return definitions

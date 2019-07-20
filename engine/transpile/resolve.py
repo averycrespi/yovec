@@ -3,7 +3,7 @@ from typing import Tuple, Optional, Set
 from engine.errors import YovecError
 from engine.node import Node
 
-from engine.transpile.env import Env
+from engine.env import Env
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.vector import Vector

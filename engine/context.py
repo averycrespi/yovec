@@ -5,29 +5,26 @@ from typing import Optional
 
 class Context:
     """Stores the global context."""
-    stmt = None
-    expr = None
+    statement = None
+    expression = None
 
     @classmethod
     def format(cls):
-        s = ''
-        if cls.stmt is not None:
-            s += 'In statement:\n\n{}\n'.format(cls.stmt.pretty())
-        if cls.expr is not None:
-            s += 'With expression:\n\n{}\n'.format(cls.expr.pretty())
-        return s
+        return '{}{}'.format(
+            'In statement:\n\n{}\n'.format(cls.statement.pretty()) if cls.statement is not None else '',
+            'With expression:\n\n{}\n'.format(cls.expression.pretty()) if cls.expression is not None else ''
+        )
 
-
-def context(stmt: Optional[str]=None, expr: Optional[str]=None):
+def context(statement: Optional[str]=None, expression: Optional[str]=None):
     """Set the context of a function."""
     def outer(func):
         @wraps(func)
         def inner(*args, **kwargs):
-            if stmt is not None:
-                Context.stmt = args[spec(func).args.index(stmt)]
-                Context.expr = None
-            if expr is not None:
-                Context.expr = args[spec(func).args.index(expr)]
+            if statement is not None:
+                Context.statement = args[spec(func).args.index(statement)]
+                Context.expression = None
+            if expression is not None:
+                Context.expression = args[spec(func).args.index(expression)]
             return func(*args, **kwargs)
         return inner
     return outer

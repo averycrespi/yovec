@@ -1,26 +1,29 @@
 from argparse import ArgumentParser
 from os.path import realpath, dirname
+from pathlib import Path
 from sys import stderr
+
+from lark import Lark # type: ignore
 
 from engine.context import Context
 from engine.errors import YovecError
+from engine.grammar import YOVEC_EBNF
 from engine.node import Node
 
 from engine.format.cylon import yolol_to_cylon
 from engine.format.text import yolol_to_text
 
-from engine.parse.yovec import parse_yovec
-
 from engine.optimize.elim import eliminate_dead_code
 from engine.optimize.mangle import mangle_names
 from engine.optimize.reduce import reduce_expressions
 
-from engine.transpile.library import Root
-from engine.transpile.yolol import yovec_to_yolol
+from engine.transpile.transpiler import Transpiler
 
 
-__version__ = 'v2.0.0'
+__version__ = 'v2.1.0'
 
+
+# Arguments
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
 parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
@@ -41,8 +44,6 @@ if args.infile is None:
     parser.print_help()
     exit(1)
 
-Root.set(dirname(realpath(__file__)))
-
 # Parsing
 
 try:
@@ -53,15 +54,18 @@ except IOError as e:
     exit(1)
 
 try:
-    yovec = parse_yovec(text)
-except YovecError as e:
+    parser = Lark(YOVEC_EBNF, start='program') # type: ignore
+    yovec = Node.from_tree(parser.parse(text))
+except Exception as e:
     stderr.write('Parse error: {}\n'.format(str(e)))
     exit(1)
 
 # Transpilation
 
+root = Path(dirname(realpath(__file__)))
+transpiler = Transpiler(parser, root)
 try:
-    yolol, imported, exported = yovec_to_yolol(yovec)
+    yolol, imported, exported = transpiler.program(yovec)
 except YovecError as e:
     stderr.write('Transpilation error: {}\n\n{}'.format(str(e), Context.format()))
     exit(1)

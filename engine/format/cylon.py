@@ -8,7 +8,7 @@ from engine.node import Node
 def yolol_to_cylon(program: Node) -> str:
     """Format a YOLOL program as Cylon JSON."""
     assert program.kind == 'program'
-    root = {'version': '0.2.0', 'program': _format_program(program)}
+    root = {'version': '0.3.0', 'program': _format_program(program)}
     return json.dumps(root, indent=4)
 
 
@@ -35,24 +35,17 @@ def _format_assignment(assignment: Node) -> Any:
 
 def _format_expression(expr: Node) -> Any:
     """Format an expression."""
-    if expr.children is None:
-        return {'type': 'expression::value', 'value': _format_value(expr)}
+    metadata = {'type': {'version': '1.0.0', 'types': ['number', 'error']}}
+    if expr.kind == 'variable':
+        return {'type': 'expression::identifier', 'name': expr.value, 'metadata': metadata}
+    elif expr.kind == 'number':
+        return {'type': 'expression::number', 'num': str(expr.value), 'metadata': metadata}
     elif len(expr.children) == 1:
         operand = _format_expression(expr.children[0])
-        return {'type': 'expression::unary_op', 'operator': OPERATORS[expr.kind], 'operand': operand} # type: ignore
+        return {'type': 'expression::unary_op', 'operator': OPERATORS[expr.kind], 'operand': operand, 'metadata': metadata} # type: ignore
     elif len(expr.children) == 2:
         left = _format_expression(expr.children[0])
         right = _format_expression(expr.children[1])
-        return {'type': 'expression::binary_op', 'operator': OPERATORS[expr.kind], 'left': left, 'right': right} # type: ignore
+        return {'type': 'expression::binary_op', 'operator': OPERATORS[expr.kind], 'left': left, 'right': right, 'metadata': metadata} # type: ignore
     else:
         raise AssertionError('unexpected expression: {}'.format(expr))
-
-
-def _format_value(value: Node) -> Any:
-    """Format a value."""
-    if value.kind == 'variable':
-        return {'type': 'value::identifier', 'name': value.value}
-    elif value.kind == 'number':
-        return {'type': 'value::number', 'num': str(value.value)}
-    else:
-        raise AssertionError('unexpected value: {}'.format(value))

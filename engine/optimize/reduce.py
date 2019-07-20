@@ -56,7 +56,7 @@ def _fold_constants(program: Node) -> bool:
     return False
 
 
-@context(stmt='assignment')
+@context(statement='assignment')
 def _fold_assignment(assignment: Node) -> bool:
     """Fold constants in an assignment."""
     assert assignment.kind == 'assignment'
@@ -69,7 +69,7 @@ def _fold_assignment(assignment: Node) -> bool:
     return False
 
 
-@context(expr='expr')
+@context(expression='expr')
 def _fold_binary_expr(expr: Node):
     """Fold constants in a binary expression."""
     assert len(expr.children) == 2 and expr.parent is not None
