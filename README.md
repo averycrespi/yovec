@@ -53,7 +53,7 @@ axis_e1=vy*(b>a and b>=c) axis_e2=vz*(c>a and c>b)
 
 #### Linux
 
-- Download and run the latest Linux [release](https://github.com/averycrespi/yovec/releases/latest)
+Download and run the latest Linux [release](https://github.com/averycrespi/yovec/releases/latest).
 
 #### Windows, Mac OS, or Linux
 
@@ -106,6 +106,12 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 **Q**: Why is there no `filter` function?
 
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
+
+--
+
+**Q**: Why doesn't Yovec have executable for Windows and Mac OS?
+
+**A**: Pyinstaller cannot cross-compile. A Windows executable may be added soon.
 
 ## License
 
