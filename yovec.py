@@ -7,6 +7,7 @@ from lark import Lark # type: ignore
 
 from engine.context import Context
 from engine.errors import YovecError
+from engine.grammar import YOVEC_EBNF
 from engine.node import Node
 
 from engine.format.cylon import yolol_to_cylon
@@ -20,7 +21,6 @@ from engine.transpile.transpiler import Transpiler
 
 
 __version__ = 'v2.0.0'
-GRAMMAR_FILE = Path('grammar') / 'yovec.ebnf'
 
 
 # Arguments
@@ -54,8 +54,7 @@ except IOError as e:
     exit(1)
 
 try:
-    with open(GRAMMAR_FILE) as f:
-        parser = Lark(f.read(), start='program') # type: ignore
+    parser = Lark(YOVEC_EBNF, start='program') # type: ignore
     yovec = Node.from_tree(parser.parse(text))
 except Exception as e:
     stderr.write('Parse error: {}\n'.format(str(e)))
