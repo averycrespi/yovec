@@ -20,7 +20,7 @@ from engine.optimize.reduce import reduce_expressions
 from engine.transpile.transpiler import Transpiler
 
 
-__version__ = 'v2.0.0'
+__version__ = 'v2.1.0'
 
 
 # Arguments
