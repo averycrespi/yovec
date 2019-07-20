@@ -22,7 +22,9 @@
 - Supports numbers, vectors, and matrices
 - Interoperable with YOLOL
 
-<img src="https://raw.githubusercontent.com/averycrespi/yovec/dev/images/gui.png" width="400"</img>
+<p align="center">
+    <img src="https://raw.githubusercontent.com/averycrespi/yovec/dev/images/gui.png" width="400"</img>
+</p>
 
 ## Installation
 
