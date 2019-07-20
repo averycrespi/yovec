@@ -10,9 +10,9 @@
 
 <p align="center">
     <a href="#features">Features</a> •
-    <a href="#getting-started">Getting Started</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#learning">Learning</a> •
     <a href="#faq">FAQ</a> •
-	<a href="#development">Development</a> •
 	<a href="#license">License</a>
 </p>
 
@@ -49,9 +49,15 @@ a=abs vx b=abs vy c=abs vz axis_e0=vx*(a>=b and a>=c)
 axis_e1=vy*(b>a and b>=c) axis_e2=vz*(c>a and c>b)
 ```
 
-## Getting Started
+## Installation
 
-To run Yovec, you'll need [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), and [Python 3.5](https://www.python.org/) (or newer).
+#### Linux
+
+- Download and run the latest Linux [release](https://github.com/averycrespi/yovec/releases/latest)
+
+#### Windows, Mac OS, or Linux
+
+Requires [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), and [Python 3.5](https://www.python.org/) (or newer).
 
 ```bash
 # Clone the repository
@@ -60,9 +66,14 @@ git clone https://github.com/averycrespi/yovec.git && cd yovec
 # Install dependencies
 make install
 
-# Run Yovec
-python3 yovec.py -i in.yovec -o out.yolol
+# Run the Yovec GUI
+python3 yovec.py
+
+# Alterative: run the Yovec CLI
+python3 yovec-cli.py -i source.yovec -o out.yolol
 ```
+
+#### Learning
 
 To learn the Yovec language, check out some [example programs](programs/) or read the [language guide](docs/guide.md).
 
@@ -95,12 +106,6 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 **Q**: Why is there no `filter` function?
 
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
-
-## Development
-
-After cloning the repository, run `make develop` to setup a development environment.
-
-Run `make test` to run tests, and `make check` to check type annotations.
 
 ## License
 
