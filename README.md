@@ -22,32 +22,13 @@
 - Supports numbers, vectors, and matrices
 - Interoperable with YOLOL
 
-Turns this ...
-
-```
-// Determine which axis a vector should be routed to.
-
-import vx, vy, vz
-
-let number X = abs $vx
-let number Y = abs $vy
-let number Z = abs $vz
-
-let vector AXIS = [
-    $vx * ((X >= Y) and (X >= Z)),
-    $vy * ((Y > X) and (Y >= Z)),
-    $vz * ((Z > X) and (Z > Y))
-]
-
-export AXIS
-```
-
-... into this:
-
-```
-a=abs vx b=abs vy c=abs vz axis_e0=vx*(a>=b and a>=c)
-axis_e1=vy*(b>a and b>=c) axis_e2=vz*(c>a and c>b)
-```
+<h1 align="center">
+    <br>
+    <img src="https://raw.githubusercontent.com/averycrespi/yovec/master/images/gui.png"</img>
+    <br>
+    Yovec GUI
+    <br>
+</h1>
 
 ## Installation
 
