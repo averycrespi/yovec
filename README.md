@@ -109,9 +109,9 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 
 ---
 
-**Q**: Why doesn't Yovec have executable for Windows and Mac OS?
+**Q**: Why doesn't Yovec have executables for Windows and Mac OS?
 
-**A**: Pyinstaller cannot cross-compile. A Windows executable may be added soon.
+**A**: Pyinstaller cannot cross-compile executables. A Windows executable may be added soon.
 
 ## License
 
