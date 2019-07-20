@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Union, Any, Tuple
+from typing import Union, Any, Tuple, List
 
 from engine.node import Node
 
@@ -76,10 +76,10 @@ class Number:
                 raise AssertionError('unrecognized item in queue: {}, {}'.format(op, args))
         return node
 
-    def assign(self, index: int) -> Tuple[Node, 'Number']:
-        """Generate a YOLOL assignment statement."""
+    def assign(self, index: int) -> Tuple[List[Node], 'Number']:
+        """Generate YOLOL assignment statements."""
         ident = '{}{}'.format(Number.PREFIX, index)
         var = Node(kind='variable', value=ident)
         expr = self.evaluate()
         asn = Node(kind='assignment', children=[var, expr])
-        return asn, Number(ident)
+        return [asn], Number(ident)
