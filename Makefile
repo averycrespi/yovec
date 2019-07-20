@@ -3,10 +3,10 @@
 all: build
 
 build:
-	pyinstaller -F yovec.py
+	pyinstaller yovec.spec
 
 clean:
-	rm -rf build dist yovec.spec
+	rm -rf build dist
 
 install:
 	pip3 install --user lark-parser pyre-check pyinstaller
