@@ -7,6 +7,7 @@ from tkinter.scrolledtext import ScrolledText
 
 from engine.errors import YovecError
 from engine.run import run_yovec
+from engine.version import VERSION
 
 
 class GUI:
@@ -17,7 +18,7 @@ class GUI:
     def _init_root(self):
         """Initialize the root object."""
         self.root = Tk()
-        self.root.title('Yovec')
+        self.root.title('Yovec v{}'.format(VERSION))
         self.root.rowconfigure(0, weight=1) # source
         self.root.rowconfigure(5, weight=1) # log
         self.root.rowconfigure(6, weight=1) # output

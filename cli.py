@@ -5,12 +5,8 @@ from sys import stderr, exit
 
 from engine.errors import YovecError
 from engine.run import run_yovec
+from engine.version import VERSION
 
-
-__version__ = 'v2.1.0'
-
-
-# Arguments
 
 parser = ArgumentParser(description='Transpile Yovec to YOLOL')
 parser.add_argument('-i', action='store', dest='infile', default=None, help='Yovec source file')
@@ -24,7 +20,7 @@ parser.add_argument('--version', action='store_true', help='print version info')
 args = parser.parse_args()
 
 if args.version:
-    print(__version__)
+    print(VERSION)
     exit(0)
 
 if args.infile is None:
