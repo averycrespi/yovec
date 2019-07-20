@@ -35,16 +35,17 @@ def _format_assignment(assignment: Node) -> Any:
 
 def _format_expression(expr: Node) -> Any:
     """Format an expression."""
+    metadata = {'type': {'version': '1.0.0', 'types': ['number', 'error']}}
     if expr.kind == 'variable':
-        return {'type': 'expression::identifier', 'name': expr.value}
+        return {'type': 'expression::identifier', 'name': expr.value, 'metadata': metadata}
     elif expr.kind == 'number':
-        return {'type': 'expression::number', 'num': str(expr.value)}
+        return {'type': 'expression::number', 'num': str(expr.value), 'metadata': metadata}
     elif len(expr.children) == 1:
         operand = _format_expression(expr.children[0])
-        return {'type': 'expression::unary_op', 'operator': OPERATORS[expr.kind], 'operand': operand} # type: ignore
+        return {'type': 'expression::unary_op', 'operator': OPERATORS[expr.kind], 'operand': operand, 'metadata': metadata} # type: ignore
     elif len(expr.children) == 2:
         left = _format_expression(expr.children[0])
         right = _format_expression(expr.children[1])
-        return {'type': 'expression::binary_op', 'operator': OPERATORS[expr.kind], 'left': left, 'right': right} # type: ignore
+        return {'type': 'expression::binary_op', 'operator': OPERATORS[expr.kind], 'left': left, 'right': right, 'metadata': metadata} # type: ignore
     else:
         raise AssertionError('unexpected expression: {}'.format(expr))
