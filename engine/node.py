@@ -48,10 +48,13 @@ class Node:
 
     def pretty(self, indent=0) -> str:
         """Pretty-format a node."""
-        if self.children is None:
+        if self.kind == 'program' and self.children is None:
+            return 'program'
+        elif self.children is None:
             return '{}{} {}\n'.format(Node.sep * indent, self.kind, self.value)
-        s = ''.join(c.pretty(indent=indent+1) for c in self.children)
-        return '{}{}\n{}'.format(Node.sep * indent, self.kind, s)
+        else:
+            s = ''.join(c.pretty(indent=indent+1) for c in self.children)
+            return '{}{}\n{}'.format(Node.sep * indent, self.kind, s)
 
     def clone(self) -> 'Node':
         """Clone a node."""

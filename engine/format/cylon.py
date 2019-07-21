@@ -15,7 +15,10 @@ def yolol_to_cylon(program: Node) -> str:
 def _format_program(program: Node) -> Any:
     """Format a program."""
     assert program.kind == 'program'
-    return {'type': 'program', 'lines': [_format_line(line) for line in program.children]}
+    if program.children is None:
+        return {'type': 'program', 'lines': []}
+    else:
+        return {'type': 'program', 'lines': [_format_line(line) for line in program.children]}
 
 
 def _format_line(line: Node) -> Any:
