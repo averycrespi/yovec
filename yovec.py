@@ -19,28 +19,23 @@ class GUI:
         """Initialize the root object."""
         self.root = Tk()
         self.root.title('Yovec v{}'.format(VERSION))
-        self.root.rowconfigure(0, weight=1) # source
-        self.root.rowconfigure(5, weight=1) # log
-        self.root.rowconfigure(6, weight=1) # output
-        self.root.columnconfigure(0, weight=1) # optimizations
-        self.root.columnconfigure(1, weight=1) # format
-        self.root.columnconfigure(2, weight=4) # buttons
+        self.root.resizable(False, False)
         self._init_content()
 
     def _init_content(self):
         """Initialize the content frame."""
-        self.content = Frame(self.root).grid()
+        self.content = Frame(self.root)
+        self.content.grid()
         self._init_source()
         self._init_optimizations()
         self._init_format()
         self._init_run()
-        self._init_log()
         self._init_output()
         self._init_copy()
 
     def _init_source(self):
         """Initialize the source box."""
-        self.source_text = ScrolledText(self.content, height=20)
+        self.source_text = ScrolledText(self.content, width=70, height=20 )
         self.source_text.grid(row=0, column=0, columnspan=3, sticky='NEWS')
 
     def _init_optimizations(self):
@@ -81,22 +76,16 @@ class GUI:
         self.run_button = Button(self.content, text='Run', command=self.run)
         self.run_button.grid(row=1, column=2, rowspan=4, sticky='SE')
 
-    def _init_log(self):
-        """Initialize the logging box."""
-        self.log_text = ScrolledText(self.content, height=10)
-        self.log_text.grid(row=5, column=0, columnspan=3, sticky='NEWS')
-        self.log_text.configure(state='disabled')
-
     def _init_output(self):
         """Initialize the output box."""
-        self.output_text = ScrolledText(self.content, height=20)
-        self.output_text.grid(row=6, column=0, columnspan=3, sticky='NEWS')
+        self.output_text = ScrolledText(self.content, width=70, height=20)
+        self.output_text.grid(row=5, column=0, columnspan=3, sticky='NEWS')
         self.output_text.configure(state='disabled')
 
     def _init_copy(self):
         """Initialize the copy button."""
         self.copy_button = Button(self.content, text='Copy', command=self.copy)
-        self.copy_button.grid(row=7, column=2, sticky='SE')
+        self.copy_button.grid(row=6, column=2, sticky='SE')
 
     def clear(self, box):
         """Clear a text box."""
@@ -107,12 +96,11 @@ class GUI:
     def fill(self, box, text):
         """Fill a text box."""
         box.configure(state='normal')
-        box.insert('end', '{}\n'.format(text))
+        box.insert('end', text)
         box.configure(state='disabled')
 
     def run(self):
         """Run Yovec."""
-        self.clear(self.log_text)
         self.clear(self.output_text)
         try:
             output = run_yovec(
@@ -125,9 +113,9 @@ class GUI:
                 cylon=bool(self.format_var.get() == 2)
             )
         except YovecError as e:
-            self.fill(self.log_text, str(e))
+            self.fill(self.output_text, str(e))
         except Exception as e:
-            self.fill(self.log_text, 'Unexpected error: {}'.format(str(e)))
+            self.fill(self.output_text, 'Unexpected error: {}'.format(str(e)))
         else:
             self.fill(self.output_text, output)
 
