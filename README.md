@@ -55,7 +55,7 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 
 **Q**: Why is the output of Yovec empty?
 
-**A**: If no variables are exported, Yovec will eliminate the entire program. Export a variable, or use `--no-elim` to disable dead code elimination.
+**A**: If no variables are exported, Yovec will eliminate the entire program. Export a variable or disable dead code elimination.
 
 ---
 
@@ -80,6 +80,12 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 **Q**: Why is there no `filter` function?
 
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
+
+---
+
+**Q**: Why is the GUI only available for Linux?
+
+**A**: PyInstaller cannot cross-compile executables. For Windows and Mac OS, use the CLI instead.
 
 ## License
 
