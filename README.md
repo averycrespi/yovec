@@ -34,14 +34,14 @@ Download and run the latest Linux [release](https://github.com/averycrespi/yovec
 
 #### Windows, Mac OS, or Linux
 
-Requires [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), and [Python 3.5](https://www.python.org/) (or newer).
+Requires [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), [Python 3.5+](https://www.python.org/), and [Tcl/Tk 8.5+](https://www.tcl.tk/).
 
 ```bash
 # Clone the repository
 git clone https://github.com/averycrespi/yovec.git && cd yovec
 
-# Install dependencies
-make install
+# Install parser
+pip3 install --user lark-parser
 
 # Run the Yovec GUI
 python3 yovec.py
