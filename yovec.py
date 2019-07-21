@@ -3,7 +3,7 @@ from pathlib import Path
 
 from tkinter import Tk, IntVar
 from tkinter.ttk import Frame, Label, Checkbutton, Radiobutton, Button
-from tkinter.scrolledtext import ScrolledText
+from tkinter.scrolledtext import ScrolledText # type: ignore
 
 from engine.errors import YovecError
 from engine.run import run_yovec
@@ -19,29 +19,28 @@ class GUI:
         """Initialize the root object."""
         self.root = Tk()
         self.root.title('Yovec v{}'.format(VERSION))
-        self.root.rowconfigure(0, weight=1) # source
-        self.root.rowconfigure(5, weight=1) # log
-        self.root.rowconfigure(6, weight=1) # output
-        self.root.columnconfigure(0, weight=1) # optimizations
-        self.root.columnconfigure(1, weight=1) # format
-        self.root.columnconfigure(2, weight=4) # buttons
+        self.root.resizable(False, False)
         self._init_content()
 
     def _init_content(self):
         """Initialize the content frame."""
-        self.content = Frame(self.root).grid()
+        self.content = Frame(self.root)
+        self.content.grid()
         self._init_source()
         self._init_optimizations()
         self._init_format()
+        self._init_help()
         self._init_run()
-        self._init_log()
         self._init_output()
         self._init_copy()
 
     def _init_source(self):
         """Initialize the source box."""
-        self.source_text = ScrolledText(self.content, height=20)
+        self.source_text = ScrolledText(self.content, width=70, height=20 )
         self.source_text.grid(row=0, column=0, columnspan=3, sticky='NEWS')
+        self.source_text.bind('<Shift-Return>', self.run)
+        self.source_text.bind('<Control-Key-a>', self.select_source)
+        self.source_text.bind('<Control-Key-A>', self.select_source)
 
     def _init_optimizations(self):
         """Initialize the optimization options."""
@@ -76,44 +75,62 @@ class GUI:
         self.cylon_radio = Radiobutton(self.content, text='Cylon AST', var=self.format_var, value=2)
         self.cylon_radio.grid(row=4, column=1, sticky='W')
 
+    def _init_help(self):
+        """Initialize the help button."""
+        self.help_button = Button(self.content, text='Help', command=self.help)
+        self.help_button.grid(row=1, column=2, sticky='NE')
+
     def _init_run(self):
         """Initialize the run button."""
         self.run_button = Button(self.content, text='Run', command=self.run)
-        self.run_button.grid(row=1, column=2, rowspan=4, sticky='SE')
-
-    def _init_log(self):
-        """Initialize the logging box."""
-        self.log_text = ScrolledText(self.content, height=10)
-        self.log_text.grid(row=5, column=0, columnspan=3, sticky='NEWS')
-        self.log_text.configure(state='disabled')
+        self.run_button.grid(row=4, column=2, sticky='SE')
 
     def _init_output(self):
         """Initialize the output box."""
-        self.output_text = ScrolledText(self.content, height=20)
-        self.output_text.grid(row=6, column=0, columnspan=3, sticky='NEWS')
+        self.output_text = ScrolledText(self.content, width=70, height=20)
+        self.output_text.grid(row=5, column=0, columnspan=3, sticky='NEWS')
         self.output_text.configure(state='disabled')
 
     def _init_copy(self):
         """Initialize the copy button."""
         self.copy_button = Button(self.content, text='Copy', command=self.copy)
-        self.copy_button.grid(row=7, column=2, sticky='SE')
+        self.copy_button.grid(row=6, column=2, sticky='SE')
 
-    def clear(self, box):
-        """Clear a text box."""
-        box.configure(state='normal')
-        box.delete('1.0', 'end')
-        box.configure(state='disabled')
+    def select_source(self, *args):
+        """Select the source."""
+        self.source_text.tag_add('sel', '1.0', 'end')
+        self.source_text.mark_set('insert', '1.0')
+        self.source_text.see('insert')
+        return 'break'
 
-    def fill(self, box, text):
-        """Fill a text box."""
-        box.configure(state='normal')
-        box.insert('end', '{}\n'.format(text))
-        box.configure(state='disabled')
+    def clear_output(self):
+        """Clear the output."""
+        self.output_text.configure(state='normal')
+        self.output_text.delete('1.0', 'end')
+        self.output_text.configure(state='disabled')
 
-    def run(self):
+    def fill_output(self, text):
+        """Fill the output with text."""
+        self.output_text.configure(state='normal')
+        self.output_text.insert('end', text)
+        self.output_text.configure(state='disabled')
+
+    def help(self):
+        """Show a help message."""
+        msg = 'Welcome to the Yovec guided user interface!\n'
+        msg += '\nStart by entering some Yovec code in the source box above.\n'
+        msg += 'Click the Run button to run the transpiler.\n'
+        msg += 'Click the Copy button to copy the output to your clipboard.\n'
+        msg += '\nShortcuts:\n'
+        msg += '- Shift-Enter: run the transpiler\n'
+        msg += '- Ctrl-A: select the source code\n'
+        msg += '\nSee https://github.com/averycrespi/yovec for more information.'
+        self.clear_output()
+        self.fill_output(msg)
+
+    def run(self, *args):
         """Run Yovec."""
-        self.clear(self.log_text)
-        self.clear(self.output_text)
+        self.clear_output()
         try:
             output = run_yovec(
                 self.source_text.get('1.0', 'end'),
@@ -125,11 +142,11 @@ class GUI:
                 cylon=bool(self.format_var.get() == 2)
             )
         except YovecError as e:
-            self.fill(self.log_text, str(e))
+            self.fill_output(str(e))
         except Exception as e:
-            self.fill(self.log_text, 'Unexpected error: {}'.format(str(e)))
+            self.fill_output('Unexpected error: {}'.format(str(e)))
         else:
-            self.fill(self.output_text, output)
+            self.fill_output(output)
 
     def copy(self):
         """Copy the output to the clipboard."""

@@ -28,26 +28,23 @@
 
 ## Installation
 
-#### Linux
+#### Guided User Interface (GUI): Linux only
 
-Download and run the latest Linux [release](https://github.com/averycrespi/yovec/releases/latest).
+Download and run the latest Linux GUI [release](https://github.com/averycrespi/yovec/releases/latest).
 
-#### Windows, Mac OS, or Linux
+#### Command Line Interface (CLI): Windows, Mac OS, or Linux
 
-Requires [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), and [Python 3.5](https://www.python.org/) (or newer).
+Requires [Git](https://git-scm.com/) and [Python 3.5+](https://www.python.org/).
 
 ```bash
 # Clone the repository
 git clone https://github.com/averycrespi/yovec.git && cd yovec
 
-# Install dependencies
-make install
+# Install parser
+pip3 install --user lark-parser
 
-# Run the Yovec GUI
-python3 yovec.py
-
-# Alterative: run the Yovec CLI
-python3 yovec-cli.py -i source.yovec -o out.yolol
+# Run the Yovec CLI
+python3 yovec-cli.py
 ```
 
 ## Learning
@@ -58,7 +55,7 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 
 **Q**: Why is the output of Yovec empty?
 
-**A**: If no variables are exported, Yovec will eliminate the entire program. Export a variable, or use `--no-elim` to disable dead code elimination.
+**A**: If no variables are exported, Yovec will eliminate the entire program. Export a variable or disable dead code elimination.
 
 ---
 
@@ -86,9 +83,9 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 
 ---
 
-**Q**: Why doesn't Yovec have executables for Windows and Mac OS?
+**Q**: Why is the GUI only available for Linux?
 
-**A**: Pyinstaller cannot cross-compile executables. A Windows executable may be added soon.
+**A**: PyInstaller cannot cross-compile executables. For Windows and Mac OS, use the CLI instead.
 
 ## License
 

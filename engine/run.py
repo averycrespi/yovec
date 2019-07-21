@@ -25,7 +25,7 @@ def run_yovec(source: str, root: str, no_elim: bool, no_reduce: bool, no_mangle:
         raise YovecError('Parse error: {}'.format(str(e)))
 
     try:
-        transpiler = Transpiler(parser, root)
+        transpiler = Transpiler(parser, root) # type: ignore
         yolol, imported, exported = transpiler.program(yovec)
     except YovecError as e:
         raise YovecError('Transpilation error: {}\n\n{}'.format(str(e), Context.format()))
@@ -34,9 +34,9 @@ def run_yovec(source: str, root: str, no_elim: bool, no_reduce: bool, no_mangle:
         if not no_reduce:
             yolol = reduce_expressions(yolol)
         if not no_elim:
-            yolol = eliminate_dead_code(yolol, exported)
+            yolol = eliminate_dead_code(yolol, exported) # type: ignore
         if not no_mangle:
-            yolol = mangle_names(yolol, imported, exported)
+            yolol = mangle_names(yolol, imported, exported) # type: ignore
     except YovecError as e:
         raise YovecError('Optimization error: {}\n\n{}'.format(str(e), Context.format()))
 
