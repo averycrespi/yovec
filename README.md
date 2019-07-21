@@ -28,13 +28,13 @@
 
 ## Installation
 
-#### Linux
+#### Guided User Interface: Linux only
 
-Download and run the latest Linux [release](https://github.com/averycrespi/yovec/releases/latest).
+Download and run the latest Linux GUI [release](https://github.com/averycrespi/yovec/releases/latest).
 
-#### Windows, Mac OS, or Linux
+#### Command Line Interface: Windows, Mac OS, or Linux
 
-Requires [Git](https://git-scm.com/), [Make](https://www.gnu.org/software/make), [Python 3.5+](https://www.python.org/), and [Tcl/Tk 8.5+](https://www.tcl.tk/).
+Requires [Git](https://git-scm.com/) and [Python 3.5+](https://www.python.org/).
 
 ```bash
 # Clone the repository
@@ -43,10 +43,7 @@ git clone https://github.com/averycrespi/yovec.git && cd yovec
 # Install parser
 pip3 install --user lark-parser
 
-# Run the Yovec GUI
-python3 yovec.py
-
-# Alterative: run the Yovec CLI
+# Run the Yovec CLI
 python3 yovec-cli.py -i source.yovec -o out.yolol
 ```
 
@@ -83,12 +80,6 @@ To learn the Yovec language, check out some [example programs](programs/) or rea
 **Q**: Why is there no `filter` function?
 
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
-
----
-
-**Q**: Why doesn't Yovec have executables for Windows and Mac OS?
-
-**A**: Pyinstaller cannot cross-compile executables. A Windows executable may be added soon.
 
 ## License
 
