@@ -28,11 +28,11 @@
 
 ## Installation
 
-#### Guided User Interface: Linux only
+#### Guided User Interface (GUI): Linux only
 
 Download and run the latest Linux GUI [release](https://github.com/averycrespi/yovec/releases/latest).
 
-#### Command Line Interface: Windows, Mac OS, or Linux
+#### Command Line Interface (CLI): Windows, Mac OS, or Linux
 
 Requires [Git](https://git-scm.com/) and [Python 3.5+](https://www.python.org/).
 
