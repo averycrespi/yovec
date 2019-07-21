@@ -37,6 +37,9 @@ class GUI:
         """Initialize the source box."""
         self.source_text = ScrolledText(self.content, width=70, height=20 )
         self.source_text.grid(row=0, column=0, columnspan=3, sticky='NEWS')
+        self.source_text.bind('<Shift-Return>', self.run)
+        self.source_text.bind('<Control-Key-a>', self.select_source)
+        self.source_text.bind('<Control-Key-A>', self.select_source)
 
     def _init_optimizations(self):
         """Initialize the optimization options."""
@@ -87,21 +90,28 @@ class GUI:
         self.copy_button = Button(self.content, text='Copy', command=self.copy)
         self.copy_button.grid(row=6, column=2, sticky='SE')
 
-    def clear(self, box):
-        """Clear a text box."""
-        box.configure(state='normal')
-        box.delete('1.0', 'end')
-        box.configure(state='disabled')
+    def select_source(self, *args):
+        """Select the source."""
+        self.source_text.tag_add('sel', '1.0', 'end')
+        self.source_text.mark_set('insert', '1.0')
+        self.source_text.see('insert')
+        return 'break'
 
-    def fill(self, box, text):
-        """Fill a text box."""
-        box.configure(state='normal')
-        box.insert('end', text)
-        box.configure(state='disabled')
+    def clear_output(self):
+        """Clear the output."""
+        self.output_text.configure(state='normal')
+        self.output_text.delete('1.0', 'end')
+        self.output_text.configure(state='disabled')
 
-    def run(self):
+    def fill_output(self, text):
+        """Fill the output with text."""
+        self.output_text.configure(state='normal')
+        self.output_text.insert('end', text)
+        self.output_text.configure(state='disabled')
+
+    def run(self, *args):
         """Run Yovec."""
-        self.clear(self.output_text)
+        self.clear_output()
         try:
             output = run_yovec(
                 self.source_text.get('1.0', 'end'),
@@ -113,11 +123,11 @@ class GUI:
                 cylon=bool(self.format_var.get() == 2)
             )
         except YovecError as e:
-            self.fill(self.output_text, str(e))
+            self.fill_output(str(e))
         except Exception as e:
-            self.fill(self.output_text, 'Unexpected error: {}'.format(str(e)))
+            self.fill_output('Unexpected error: {}'.format(str(e)))
         else:
-            self.fill(self.output_text, output)
+            self.fill_output(output)
 
     def copy(self):
         """Copy the output to the clipboard."""
