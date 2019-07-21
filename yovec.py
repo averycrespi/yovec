@@ -3,7 +3,7 @@ from pathlib import Path
 
 from tkinter import Tk, IntVar
 from tkinter.ttk import Frame, Label, Checkbutton, Radiobutton, Button
-from tkinter.scrolledtext import ScrolledText
+from tkinter.scrolledtext import ScrolledText # type: ignore
 
 from engine.errors import YovecError
 from engine.run import run_yovec
