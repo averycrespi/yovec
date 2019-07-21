@@ -44,7 +44,7 @@ git clone https://github.com/averycrespi/yovec.git && cd yovec
 pip3 install --user lark-parser
 
 # Run the Yovec CLI
-python3 yovec-cli.py -i source.yovec -o out.yolol
+python3 yovec-cli.py
 ```
 
 ## Learning
