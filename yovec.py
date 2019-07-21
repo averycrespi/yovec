@@ -29,6 +29,7 @@ class GUI:
         self._init_source()
         self._init_optimizations()
         self._init_format()
+        self._init_help()
         self._init_run()
         self._init_output()
         self._init_copy()
@@ -74,10 +75,15 @@ class GUI:
         self.cylon_radio = Radiobutton(self.content, text='Cylon AST', var=self.format_var, value=2)
         self.cylon_radio.grid(row=4, column=1, sticky='W')
 
+    def _init_help(self):
+        """Initialize the help button."""
+        self.help_button = Button(self.content, text='Help', command=self.help)
+        self.help_button.grid(row=1, column=2, sticky='NE')
+
     def _init_run(self):
         """Initialize the run button."""
         self.run_button = Button(self.content, text='Run', command=self.run)
-        self.run_button.grid(row=1, column=2, rowspan=4, sticky='SE')
+        self.run_button.grid(row=4, column=2, sticky='SE')
 
     def _init_output(self):
         """Initialize the output box."""
@@ -108,6 +114,19 @@ class GUI:
         self.output_text.configure(state='normal')
         self.output_text.insert('end', text)
         self.output_text.configure(state='disabled')
+
+    def help(self):
+        """Show a help message."""
+        msg = 'Welcome to the Yovec guided user interface!\n'
+        msg += '\nStart by entering some Yovec code in the source box above.\n'
+        msg += 'Click the Run button to run the transpiler.\n'
+        msg += 'Click the Copy button to copy the output to your clipboard.\n'
+        msg += '\nShortcuts:\n'
+        msg += '- Shift-Enter: run the transpiler\n'
+        msg += '- Ctrl-A: select the source code\n'
+        msg += '\nSee https://github.com/averycrespi/yovec for more information.'
+        self.clear_output()
+        self.fill_output(msg)
 
     def run(self, *args):
         """Run Yovec."""
