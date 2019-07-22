@@ -47,6 +47,9 @@ try:
 except YovecError as e:
     stderr.write('{}\n'.format(str(e)))
     exit(1)
+except Exception as e:
+    stderr.write('Unexpected error: {}\n'.format(str(e)))
+    exit(1)
 
 if args.outfile is None:
     print(output)

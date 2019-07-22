@@ -1,4 +1,4 @@
-# Yovec Language Guide
+# Yovec Language Specification
 
 ## Table of Contents
 
