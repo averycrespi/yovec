@@ -40,8 +40,8 @@ Requires [Git](https://git-scm.com/) and [Python 3.5+](https://www.python.org/).
 # Clone the repository
 git clone https://github.com/averycrespi/yovec.git && cd yovec
 
-# Install parser
-pip3 install --user lark-parser
+# Install dependencies
+pip3 install --user -r requirements.txt
 
 # Run the Yovec CLI
 python3 yovec-cli.py
