@@ -18,7 +18,7 @@
 
 ## What is Yovec?
 
-Yovec is a specialized language for working with arrays of numbers. These arrays are called **vectors**. Vectors are extremely useful in Starbase for navigation and targeting.
+Yovec is a specialized language for working with vectors (arrays of numbers). Vectors are useful in Starbase for navigation and targeting.
 
 ## Why should I use Yovec?
 
