@@ -18,13 +18,17 @@
 
 ## What is Yovec?
 
-Yovec is a specialized language for working with vectors (arrays of numbers). Vectors are useful in Starbase for navigation and targeting.
+Yovec is a specialized language for working with vectors (arrays of numbers).
+
+Vectors are extremely useful in [Starbase](https://starbasegame.com/) for navigation and targeting.
 
 ## Why should I use Yovec?
 
 #### Simplicity
 
-Complex YOLOL code can be difficult to understand. Yovec has simple, declarative syntax that's friendly to beginners.
+Complex YOLOL code can be difficult to understand.
+
+Yovec has simple, declarative syntax that's friendly to beginners.
 
 ```
 // Reads like English
@@ -36,7 +40,9 @@ export A
 
 #### Convenience
 
-YOLOL doesn't support arrays, so each array element must be a separate variable. Yovec handles vector expansion so that you don't have to.
+YOLOL doesn't support arrays, so each array element must be a separate variable.
+
+Yovec handles vector expansion so that you don't have to.
 
 ```
 // YOLOL
@@ -48,7 +54,9 @@ let vector V = [1, 2, 4, 8, 16, 32]
 
 #### Efficiency
 
-YOLOL chips execute slowly and have a limited amount of space. Yovec aggressively optimizes your code to make it faster and smaller.
+YOLOL chips execute slowly and have a limited amount of space.
+
+Yovec aggressively optimizes your code to make it faster and smaller.
 
 ```
 // Without optimization: 255 characters
