@@ -31,7 +31,6 @@ Complex YOLOL code can be difficult to understand.
 Yovec has simple, declarative syntax that's friendly to beginners.
 
 ```
-// Reads like English
 import n
 let vector V = [$n, $n + 1, $n + 2]
 let number A = V dot V
