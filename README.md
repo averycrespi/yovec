@@ -32,7 +32,7 @@ Yovec has simple, declarative syntax that's friendly to beginners.
 
 ```
 import n
-let vector V = [$n, $n + 1, $n + 2]
+let vector V = [$n, 2, 3]
 let number A = V dot V
 export A
 ```
