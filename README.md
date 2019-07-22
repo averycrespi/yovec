@@ -49,7 +49,7 @@ python3 yovec-cli.py
 
 ## Learning
 
-To learn the Yovec language, check out some [example programs](programs/) or read the [language guide](docs/guide.md).
+To learn the Yovec language, check out some [example programs](programs/) or read the [language specification](docs/spec.md).
 
 ## FAQ
 
