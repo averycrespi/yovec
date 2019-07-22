@@ -9,30 +9,64 @@
 <h4 align="center">A functional, vector-based language that transpiles to <a href="https://wiki.starbasegame.com/index.php/YOLOL">YOLOL</a>.</h4>
 
 <p align="center">
-    <a href="#features">Features</a> •
-    <a href="#installation">Installation</a> •
-    <a href="#learning">Learning</a> •
+    <a href="#what-is-yovec">What</a> •
+    <a href="#why-should-i-use-yovec">Why</a> •
+    <a href="#how-do-i-get-started">How</a> •
     <a href="#faq">FAQ</a> •
 	<a href="#license">License</a>
 </p>
 
-## Features
+## What is Yovec?
 
-- Simple, declarative syntax
-- Supports numbers, vectors, and matrices
-- Interoperable with YOLOL
+Yovec is a specialized language for working with arrays of numbers. These arrays are called **vectors**. Vectors are extremely useful in Starbase for navigation and targeting.
 
-<p>
-    <img src="https://raw.githubusercontent.com/averycrespi/yovec/master/images/gui.png" width="400"</img>
-</p>
+## Why should I use Yovec?
 
-## Installation
+#### Simplicity
 
-#### Guided User Interface (GUI): Linux only
+Complex YOLOL code can be difficult to understand. Yovec has simple, declarative syntax that's friendly to beginners.
 
-Download and run the latest Linux GUI [release](https://github.com/averycrespi/yovec/releases/latest).
+```
+// Reads like English
+import n
+let vector V = [$n, $n + 1, $n + 2]
+let number A = V dot V
+export A
+```
 
-#### Command Line Interface (CLI): Windows, Mac OS, or Linux
+#### Convenience
+
+YOLOL doesn't support arrays, so each array element must be a separate variable. Yovec handles vector expansion so that you don't have to.
+
+```
+// YOLOL
+v0=1 v1=2 v2=4 v3=8 v4=16 v5=32
+
+// Yovec
+let vector V = [1, 2, 4, 8, 16, 32]
+```
+
+#### Efficiency
+
+YOLOL chips execute slowly and have a limited amount of space. Yovec aggressively optimizes your code to make it faster and smaller.
+
+```
+// Without optimization: 255 characters
+> python3 yovec-cli.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
+255
+
+// With optimization: 105 characters
+$ python3 yovec-cli.py -i programs/axis.yovec | wc -c
+105
+```
+
+## How do I get started?
+
+#### Install the guided user interface: Linux only
+
+Download and run the latest [release](https://github.com/averycrespi/yovec/releases/latest).
+
+#### Install the command line interface: Windows, Mac OS, and Linux
 
 Requires [Git](https://git-scm.com/) and [Python 3.5+](https://www.python.org/).
 
@@ -47,7 +81,7 @@ pip3 install --user -r requirements.txt
 python3 yovec-cli.py
 ```
 
-## Learning
+#### Learn Yovec
 
 To learn the Yovec language, check out some [example programs](programs/) or read the [language specification](docs/spec.md).
 
