@@ -1,5 +1,6 @@
 from os.path import realpath, dirname
 from pathlib import Path
+from webbrowser import open_new
 
 from tkinter import Tk, IntVar
 from tkinter.ttk import Frame, Label, Checkbutton, Radiobutton, Button
@@ -32,6 +33,7 @@ class GUI:
         self._init_help()
         self._init_run()
         self._init_output()
+        self._init_link()
         self._init_copy()
 
     def _init_source(self):
@@ -91,10 +93,18 @@ class GUI:
         self.output_text.grid(row=5, column=0, columnspan=3, sticky='NEWS')
         self.output_text.configure(state='disabled')
 
+    def _init_link(self):
+        """Iniitalize the GitHub link."""
+        self.link = Label(self.content, text='github.com/averycrespi/yovec')
+        self.link.grid(row=6, column=0, sticky='W', padx=10, pady=10)
+        self.link.bind('<Button-1>', lambda e: open_new('https://github.com/averycrespi/yovec'))
+        self.link.configure(foreground='blue')
+        self.link.configure(cursor='hand2')
+
     def _init_copy(self):
         """Initialize the copy button."""
         self.copy_button = Button(self.content, text='Copy', command=self.copy)
-        self.copy_button.grid(row=6, column=2, sticky='SE', padx=10, pady=10)
+        self.copy_button.grid(row=6, column=2, sticky='E', padx=10, pady=10)
 
     def select_source(self, *args):
         """Select the source."""
@@ -124,7 +134,6 @@ class GUI:
         msg += '\nShortcuts:\n'
         msg += '- Shift-Enter: run the transpiler\n'
         msg += '- Ctrl-A: select the source code\n'
-        msg += '\nSee https://github.com/averycrespi/yovec for more information.'
         self.clear_output()
         self.fill_output(msg)
 
