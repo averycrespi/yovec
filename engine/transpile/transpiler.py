@@ -21,7 +21,7 @@ class Transpiler:
         self.parser = parser
         self.root = root
 
-    def program(self, program: Node, env: Optional[Env]=None) -> Tuple[Node, Set[str], Set[str]]:
+    def program(self, program: Node, env: Optional[Env]=None) -> Tuple[Env, Node]:
         """Transpile a program to YOLOL."""
         assert program.kind == 'program'
         if env is None:
@@ -44,7 +44,7 @@ class Transpiler:
                 pass
             else:
                 raise AssertionError('unexpected statement kind: {}'.format(statement.kind))
-        return resolve_aliases(env, yolol)
+        return env, yolol
 
     @context(statement='group')
     def import_group(self, env: Env, group: Node) -> Env:
