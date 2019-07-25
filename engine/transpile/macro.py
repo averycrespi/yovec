@@ -5,9 +5,10 @@ from engine.grammar import is_nexpr, is_vexpr, is_mexpr
 from engine.node import Node
 
 
-class Function:
-    """Represents a function."""
+class Macro:
+    """Represents a macro."""
     def __init__(self, ident: str, params: Sequence[Node], return_type: str, body: Node):
+        self.arity = len(params)
         self.param_types = [p.children[0].value for p in params]
         self.param_idents = [p.children[1].value for p in params]
         self.return_type = return_type
@@ -27,9 +28,9 @@ class Function:
                 raise YovecError('recursion is not allowed')
 
     def call(self, args: Sequence[Node]) -> Node:
-        """Call a function with arguments."""
-        if len(args) != len(self.param_idents):
-            raise YovecError('expected {} arguments, but got {}'.format(len(self.param_idents), len(args)))
+        """Call a macro with arguments."""
+        if len(args) != self.arity:
+            raise YovecError('expected {} arguments, but got {}'.format(self.arity, len(args)))
 
         for i, arg in enumerate(args):
             type_ = self.param_types[i]

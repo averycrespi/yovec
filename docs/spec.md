@@ -8,7 +8,7 @@
 - [Numbers](#numbers)
 - [Vectors](#vectors)
 - [Matrices](#matrices)
-- [Custom Functions](#custom-functions)
+- [Macros](#macros)
 - [Libraries](#libraries)
 - [Imports](#imports)
 - [Exports](#exports)
@@ -22,6 +22,7 @@
 - A **function** performs an operation on values
 - An **identifier** is a name given to a variable, external, or function
 - A **literal** is a fixed numeric value, such as `0`
+- A **macro** is a limited, user-defined function
 - A **matrix** is a non-empty sequence of vectors
 - A **number** is a limited-precision decimal
 - A **variable** stores a number, vector, or matrix
@@ -122,11 +123,12 @@ Unary functions operate on a single number:
 - `arctan A`: calculate the inverse tangent of `A` (in degrees)
 - `ln A`: approximate the natural logarithm of `A`
 
-Certain unary functions may cause [undefined behaviour](#errors):
+Unary functions may cause [undefined behaviour](#errors):
 
 - `sqrt A` where `A < 0`
 - `ln A` where `A <= 0`
 - Trig. functions where the operand is outside of the domain
+- Any unary function that causes out-of-bounds
 
 Binary functions operate on two numbers:
 
@@ -148,12 +150,12 @@ Binary functions operate on two numbers:
 - `A nor B`: return false if `A` is true or `B` is true, otherwise true
 - `A xor B`: return true if `A` and `B` have different boolean values, otherwise false
 
-Certain binary functions may cause [undefined behaviour](#errors):
+Binary functions may cause [undefined behaviour](#errors):
 
 - `A / 0`
 - `A % 0`
 - `0 ^ -1`
-- Any function that causes out-of-bounds
+- Any binary function that causes out-of-bounds
 
 ## Vectors
 
@@ -171,6 +173,8 @@ let vector V = [0, 1, 2]
 ```
 
 The `map` function maps a function element-wise to a vector.
+
+`map` may apply a unary function with no arguments provided, or a binary function with one argument provided.
 
 ```
 let vector V = [0, 1, 2]
@@ -190,10 +194,11 @@ The `apply` function applies a binary function element-wise to two or more vecto
 ```
 let vector V = [0, 1, 2]
 let vector W = [3, 4, 5]
-let vector X = [6, 7, 8]
 
 apply + V W
 // Returns [3, 5, 7]
+
+let vector X = [6, 7, 8]
 
 apply * V W X
 // Returns [0, 28, 80]
@@ -289,6 +294,8 @@ let matrix M = [
 ```
 
 The `map` function maps a function element-wise to a matrix.
+
+`map` may apply a unary function with no arguments provided, or a binary function with one argument provided.
 
 ```
 let matrix M = [
@@ -425,13 +432,13 @@ col M A
 // Error: index is not a literal
 ```
 
-## Custom Functions
+## Macros
 
-The `define` statement defines a custom function.
+The `define` statement defines a macro.
 
-A custom function must accept one or more arguments, and must return a number, vector, or matrix.
+A macro must accept one or more arguments, and must return a number, vector, or matrix.
 
-Function identifiers may contain letters, numbers, underscores.
+Macro identifiers may contain letters, numbers, underscores.
 
 ```
 define neg_sum (number A, number B) -> number = (neg A) + (neg B)
@@ -441,7 +448,7 @@ define second (matrix M) -> vector = row M 1
 // Accepts a matrix, and return a vector.
 ```
 
-Custom functions may not access variables other than their parameters.
+Macros may not access variables other than their parameters.
 
 ```
 let number B = 1
@@ -449,7 +456,7 @@ define add (number A) -> number = A + B
 // Error: variable B is not defined
 ```
 
-Custom functions may be called with arguments. An exclamation point (`!`) must follow the name of the function. Arguments must be enclosed in parentheses.
+Macros may be called with arguments. An exclamation point (`!`) must follow the name of the macro. Arguments must be enclosed in parentheses.
 
 ```
 define add (number A, number B) -> number = A + B
@@ -457,7 +464,7 @@ let number C = add!(1, 2)
 // C == 3
 ```
 
-Custom functions must not call themselves.
+Macros must not call themselves.
 
 ```
 define add (number A, number B) -> number = foo!(A, B)
@@ -472,7 +479,7 @@ Library identifiers may contain letters, numbers, and underscores.
 
 Library files must have the extension `.lib.yovec`
 
-The `using` statement loads functions from a library.
+The `using` statement loads macros from a library.
 
 ```
 using trig

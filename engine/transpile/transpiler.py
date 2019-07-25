@@ -7,7 +7,7 @@ from engine.grammar import is_nexpr, is_vexpr, is_mexpr
 from engine.errors import YovecError
 from engine.node import Node
 
-from engine.transpile.function import Function
+from engine.transpile.macro import Macro
 from engine.transpile.library import use_library
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
@@ -96,7 +96,7 @@ class Transpiler:
 
     @context(statement='definition')
     def define(self, env: Env, definition: Node) -> Env:
-        """Transpile a function definition to YOLOL."""
+        """Transpile a macro definition to YOLOL."""
         assert definition.kind.startswith('def') # type: ignore
         ident = definition.children[0].value
         params = definition.children[1].children
@@ -109,8 +109,8 @@ class Transpiler:
             return_type = 'matrix'
         else:
             raise AssertionError('unexpected definition kind: {}'.format(definition.kind))
-        func = Function(ident, params, return_type, body)
-        return env.define(ident, func)
+        macro = Macro(ident, params, return_type, body)
+        return env.define(ident, macro)
 
     @context(statement='using')
     def using(self, env: Env, using: Node) -> Env:
@@ -196,11 +196,11 @@ class Transpiler:
 
         elif nexpr.kind == 'call':
             ident = nexpr.children[0].value
-            func = env.func(ident)
-            if func.return_type != 'number':
-                raise YovecError('expected function to return number expression, but got {} expression'.format(func.return_type))
+            macro = env.macro(ident)
+            if macro.return_type != 'number':
+                raise YovecError('expected macro to return number expression, but got {} expression'.format(macro.return_type))
             args = nexpr.children[1].children
-            return self.nexpr(env, func.call(args))
+            return self.nexpr(env, macro.call(args))
 
         elif nexpr.kind == 'number':
             try:
@@ -287,11 +287,11 @@ class Transpiler:
 
         elif vexpr.kind == 'call':
             ident = vexpr.children[0].value
-            func = env.func(ident)
-            if func.return_type != 'vector':
-                raise YovecError('expected function to return vector expression, but got {} expression'.format(func.return_type))
+            macro = env.macro(ident)
+            if macro.return_type != 'vector':
+                raise YovecError('expected macro to return vector expression, but got {} expression'.format(macro.return_type))
             args = vexpr.children[1].children
-            return self.vexpr(env, func.call(args))
+            return self.vexpr(env, macro.call(args))
 
         elif vexpr.kind == 'vector':
             numums = []
@@ -361,11 +361,11 @@ class Transpiler:
 
         elif mexpr.kind == 'call':
             ident = mexpr.children[0].value
-            func = env.func(ident)
-            if func.return_type != 'matrix':
-                raise YovecError('expected function to return matrix expression, but got {} expression'.format(func.return_type))
+            macro= env.macro(ident)
+            if macro.return_type != 'matrix':
+                raise YovecError('expected macro to return matrix expression, but got {} expression'.format(macro.return_type))
             args = mexpr.children[1].children
-            return self.mexpr(env, func.call(args))
+            return self.mexpr(env, macro.call(args))
 
         elif mexpr.kind == 'matrix':
             vecs = []

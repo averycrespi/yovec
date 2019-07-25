@@ -4,7 +4,7 @@ from typing import Union, Dict, Tuple, List
 from engine.errors import YovecError
 from engine.node import Node
 
-from engine.transpile.function import Function
+from engine.transpile.macro import Macro
 from engine.transpile.matrix import Matrix
 from engine.transpile.number import Number
 from engine.transpile.vector import Vector
@@ -21,7 +21,7 @@ class Env:
         self._mat_index = 0
 
         self._variables = {}
-        self._functions = {}
+        self._macros = {}
         self._imports = {}
         self._exports = {}
 
@@ -30,8 +30,8 @@ class Env:
         return dict(self._variables)
 
     @property
-    def functions(self) -> Dict[str, Function]:
-        return dict(self._functions)
+    def macros(self) -> Dict[str, Macro]:
+        return dict(self._macros)
 
     @property
     def imports(self) -> Dict[str, str]:
@@ -52,8 +52,8 @@ class Env:
         """Assign a value to a variable."""
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
-        elif ident in self.functions:
-            raise YovecError('conflict between function and variable: {}'.format(ident))
+        elif ident in self.macros:
+            raise YovecError('conflict between macro and variable: {}'.format(ident))
         if type(value) == Number:
             index = self._num_index
             self._num_index += 1
@@ -70,21 +70,21 @@ class Env:
         clone._variables[ident] = (value, index)
         return clone, assignments
 
-    def func(self, ident: str) -> Function:
-        """Get a function."""
+    def macro(self, ident: str) -> Macro:
+        """Get a macro."""
         try:
-            return self.functions[ident]
+            return self.macros[ident]
         except KeyError:
-            raise YovecError('undefined function: {}'.format(ident))
+            raise YovecError('undefined macro: {}'.format(ident))
 
-    def define(self, ident: str, func: Function) -> 'Env':
-        """Define a function."""
-        if ident in self.functions:
-            raise YovecError('cannot redefine existing function: {}'.format(ident))
+    def define(self, ident: str, macro: Macro) -> 'Env':
+        """Define a macro."""
+        if ident in self.macros:
+            raise YovecError('cannot redefine existing macro: {}'.format(ident))
         elif ident in self.variables:
-            raise YovecError('conflict between function and variable: {}'.format(ident))
+            raise YovecError('conflict between macro and variable: {}'.format(ident))
         clone = deepcopy(self)
-        clone._functions[ident] = func
+        clone._macros[ident] = macro
         return clone
 
     def target(self, alias: str) -> str:
