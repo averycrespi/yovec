@@ -1,4 +1,3 @@
-from functools import wraps
 from typing import Tuple
 
 from engine.context import context
@@ -25,36 +24,34 @@ def _propagate_constants(program: Node) -> bool:
     assert program.kind == 'program'
     variables = program.find(lambda node: node.kind == 'variable')
     for var in variables:
-        if var.parent.kind == 'assignment' and var.parent.children.index(var) == 0: # type: ignore
-            # Ignore "A" in "let A = expr"
-            continue
-        if _propagate_var(program, var):
+        replacement, delta = _propagate_var(program, var)
+        if delta:
+            var.parent.replace_child(var, replacement) # type: ignore
             return True
     return False
 
 
-def _propagate_var(program: Node, var: Node) -> bool:
+def _propagate_var(program: Node, var: Node) -> Tuple[Node, bool]:
     """Propagate constants in a variable.
 
     Returns True if a constant was propagated.
     """
-    # Look for assignment that corresponds to variable
+    if var.parent.kind == 'assignment' and var.parent.children.index(var) == 0: #$ type: ignore
+        # Found "A" in "let A = expr"
+        return var, False
     assignments = program.find(lambda node: node.kind == 'assignment' and node.children[0].value == var.value)
     if len(assignments) == 0:
         # Found external variable; cannot propagate
-        return False
+        return var, False
     expr = assignments[0].children[1].clone()
     if expr.kind == 'variable':
         # Found assignment of single variable
-        var.parent.replace_child(var, expr)
-        return True
+        return expr, True
     elif len(expr.find(lambda node: node.kind == 'variable')) == 0:
         # Found assignment of constant expression
-        var.parent.replace_child(var, expr)
-        return True
+        return expr, True
     else:
-        # Cannot propagate
-        return False
+        return var, False
 
 
 def _fold_constants(program: Node) -> bool:
@@ -78,36 +75,33 @@ def _fold_assignment(assignment: Node) -> bool:
     assert assignment.kind == 'assignment'
     numbers = assignment.find(lambda node: node.kind == 'number')
     for num in numbers:
-        assert num.parent is not None
         expr = num.parent
-        for transform in TRANSFORMS:
+        for transform in Transform().functions:
             replacement, delta = transform(expr)
             if delta:
-                expr.parent.replace_child(expr, replacement)
+                expr.parent.replace_child(expr, replacement) # type: ignore
                 return True
     return False
 
 
-TRANSFORMS = []
-
-
-def transformation(func):
-    """Mark a function as a transformation."""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if func not in TRANSFORMS:
-            TRANSFORMS.append(func)
-        return func(*args, **kwargs)
-    return wrapper
-
-
 class Transform:
     """Store constant folding transformations."""
-    def is_binary_expr(self, expr: Node) -> bool:
-        return len(expr.children == 2) and (expr.parent is None or expr.parent.kind != 'assignment')
+    def __init__(self):
+        self.functions = (
+            Transform.add_zero,
+            Transform.sub_zero,
+            Transform.mul_zero, Transform.mul_one,
+            Transform.div_one,
+            Transform.exp_zero, Transform.exp_one,
+            Transform.binary_op
+        )
 
+    @staticmethod
+    def is_binary_expr(expr: Node) -> bool:
+        return len(expr.children) == 2 and expr.kind != 'assignment'
+
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def add_zero(expr: Node) -> Tuple[Node, bool]:
         """Reduce (0+n) and (n+0) to (n)."""
         if not Transform.is_binary_expr(expr):
@@ -119,8 +113,8 @@ class Transform:
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def sub_zero(expr: Node) -> Tuple[Node, bool]:
         """Reduce (n-0) to (0)."""
         if not Transform.is_binary_expr(expr):
@@ -130,21 +124,21 @@ class Transform:
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def mul_zero(expr: Node) -> Tuple[Node, bool]:
         """Reduce (0*n) and (n*0) to (0)."""
         if not Transform.is_binary_expr(expr):
             return expr, False
         elif expr.kind == 'mul' and expr.children[0].value == 0:
-            return Node(kind='number', value=0), True
+            return Node(kind='number', value='0'), True
         elif expr.kind == 'mul' and expr.children[1].value == 0:
-            return Node(kind='number', value=0), True
+            return Node(kind='number', value='0'), True
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def mul_one(expr: Node) -> Tuple[Node, bool]:
         """Reduce (1*n) and (n*1) to (n)."""
         if not Transform.is_binary_expr(expr):
@@ -156,8 +150,8 @@ class Transform:
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def div_one(expr: Node) -> Tuple[Node, bool]:
         """Reduce (n/1) to (n)."""
         if not Transform.is_binary_expr(expr):
@@ -167,34 +161,34 @@ class Transform:
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def exp_zero(expr: Node) -> Tuple[Node, bool]:
         """Reduce (0^n) to (0) and (n^0) to (1) for (n!=0)."""
         if not Transform.is_binary_expr(expr):
             return expr, False
         elif expr.kind == 'exp' and expr.children[0].value == 0 and expr.children[1].value != 0:
-            return Node(kind='number', value=0), True
+            return Node(kind='number', value='0'), True
         elif expr.kind == 'exp' and expr.children[0].value != 0 and expr.children[1].value == 0:
-            return Node(kind='number', value=1), True
+            return Node(kind='number', value='1'), True
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def exp_one(expr: Node) -> Tuple[Node, bool]:
         """Reduce (1^n) to (1) and (n^1) to (n)."""
         if not Transform.is_binary_expr(expr):
             return expr, False
         elif expr.kind == 'exp' and expr.children[0].value == 1:
-            return Node(kind='number', value=1), True
+            return Node(kind='number', value='1'), True
         elif expr.kind == 'exp' and expr.children[1].value == 1:
             return expr.children[0], True
         else:
             return expr, False
 
+    @staticmethod
     @context(expression='expr')
-    @transformation
     def binary_op(expr: Node) -> Tuple[Node, bool]:
         """Reduce a binary operation."""
         if not Transform.is_binary_expr(expr):
@@ -203,7 +197,7 @@ class Transform:
             try:
                 left = Decimal(expr.children[0].value)
                 right = Decimal(expr.children[1].value)
-                result = str(left.binary(expr.kind, right))
+                result = str(left.binary(expr.kind, right)) # type: ignore
                 return Node(kind='number', value=result), True
             except ArithmeticError:
                 raise YovecError('failed to fold constants in binary expression')
