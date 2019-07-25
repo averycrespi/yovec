@@ -491,9 +491,9 @@ Yovec will recursively search for library files in the current working directory
 
 ## Imports
 
-The `import` statement imports an external value from YOLOL.
+The `import` statement imports a variable from YOLOL. Imported variables are called externals.
 
-An external value must be a valid number (i.e. Yovec literal). Importing a string causes [undefined behaviour](#errors). Data fields cannot be imported.
+The value of an external must be a valid number (i.e. Yovec literal). Importing a string causes [undefined behaviour](#errors). Data fields cannot be imported.
 
 External identifiers must be valid [YOLOL identifiers](https://wiki.starbasegame.com/index.php/YOLOL#Variables).
 
