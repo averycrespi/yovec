@@ -14,6 +14,7 @@ from engine.optimize.mangle import mangle_names
 from engine.optimize.reduce import reduce_expressions
 
 from engine.transpile.transpiler import Transpiler
+from engine.transpile.resolve import resolve_aliases
 
 
 def run_yovec(source: str, root: str, no_elim: bool, no_reduce: bool, no_mangle: bool, ast: bool, cylon: bool) -> str:
@@ -26,7 +27,8 @@ def run_yovec(source: str, root: str, no_elim: bool, no_reduce: bool, no_mangle:
 
     try:
         transpiler = Transpiler(parser, root) # type: ignore
-        yolol, imported, exported = transpiler.program(yovec)
+        env, yolol = transpiler.program(yovec)
+        yolol, imported, exported = resolve_aliases(env, yolol)
     except YovecError as e:
         raise YovecError('Transpilation error: {}\n\n{}'.format(str(e), Context.format()))
 

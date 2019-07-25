@@ -12,9 +12,9 @@ from engine.transpile.vector import Vector
 def resolve_aliases(env: Env, program: Node) -> Tuple[Node, Set[str], Set[str]]:
     """Resolve aliases to their targets in a YOLOL program."""
     assert program.kind == 'program'
+    clone = program.clone()
     imported = set()
     exported = set()
-    clone = program.clone()
 
     for alias, target in env.imports.items():
         variables = clone.find(lambda node: node.kind == 'variable' and node.value == alias)
@@ -45,5 +45,8 @@ def resolve_aliases(env: Env, program: Node) -> Tuple[Node, Set[str], Set[str]]:
             for var in mat_variables:
                 var.value = var.value.replace(mat_prefix, target) # type: ignore
                 exported.add(var.value)
+
+        else:
+            raise AssertionError('unexpected variable type: {}'.format(type(var)))
 
     return clone, imported, exported

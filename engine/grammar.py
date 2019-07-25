@@ -12,7 +12,7 @@ YOVEC_EBNF = r"""
 COMMENT: /\/\/[^\n]*/
 LITERAL: /-?\d+(\.\d{1,4})?/
 VAR_IDENT: /[A-Z_]+/
-FUNC_IDENT: /[a-zA-Z0-9_]+/
+MACRO_IDENT: /[a-zA-Z0-9_]+/
 LIB_IDENT: /[a-zA-Z0-9_]+/
 YOLOL_IDENT: /[a-zA-Z_][a-zA-Z0-9_]*/
 
@@ -33,9 +33,9 @@ export: "export" variable ("as" external)?
     | "let" "vector" variable "=" vexpr     -> let_vec
     | "let" "matrix" variable "=" mexpr     -> let_mat
 
-?define: "define" function param_group "->" "number" "=" nexpr  -> def_num
-       | "define" function param_group "->" "vector" "=" vexpr  -> def_vec
-       | "define" function param_group "->" "matrix" "=" mexpr  -> def_mat
+?define: "define" macro param_group "->" "number" "=" nexpr     -> def_num
+       | "define" macro param_group "->" "vector" "=" vexpr     -> def_vec
+       | "define" macro param_group "->" "matrix" "=" mexpr     -> def_mat
 
 using: "using" library
 library: LIB_IDENT
@@ -50,11 +50,11 @@ variable: VAR_IDENT
 
 external: YOLOL_IDENT
 
-// =========
-// Functions
-// =========
+// ======
+// Macros
+// ======
 
-function: FUNC_IDENT
+macro: MACRO_IDENT
 
 param_group: "(" (param ",")* param ("," param)* ")"
 param: type variable
@@ -63,7 +63,7 @@ param: type variable
      | "vector"     -> type_vec
      | "matrix"     -> type_mat
 
-call: function "!" args
+call: macro "!" args
 
 args: "(" (expr ",")* expr ("," expr)* ")"
 

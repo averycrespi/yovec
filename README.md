@@ -6,7 +6,7 @@
     <br>
 </h1>
 
-<h4 align="center">A functional, vector-based language that transpiles to <a href="https://wiki.starbasegame.com/index.php/YOLOL">YOLOL</a>.</h4>
+<h4 align="center">A vector-based language that transpiles to <a href="https://wiki.starbasegame.com/index.php/YOLOL">YOLOL</a>.</h4>
 
 <p align="center">
     <a href="#what-is-yovec">What</a> •
@@ -57,13 +57,13 @@ YOLOL chips execute slowly and have a limited amount of space.
 
 Yovec aggressively optimizes your code to make it faster and smaller.
 
-```
-// Without optimization: 255 characters
-> python3 yovec-cli.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
+``` bash
+# Without optimization: 255 characters
+python3 yovec-cli.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
 255
 
-// With optimization: 105 characters
-$ python3 yovec-cli.py -i programs/axis.yovec | wc -c
+# With optimization: 105 characters
+python3 yovec-cli.py -i programs/axis.yovec | wc -c
 105
 ```
 
@@ -97,6 +97,12 @@ To learn the Yovec language, check out some [example programs](programs/), follo
 **Q**: Why is the output of Yovec empty?
 
 **A**: If no variables are exported, Yovec will eliminate the entire program. Export a variable or disable dead code elimination.
+
+---
+
+**Q**: Why are variables immutable?
+
+**A**: Yovec uses [single static assignment form](https://en.wikipedia.org/wiki/Static_single_assignment_form). This restriction allows powerful optimization strategies.
 
 ---
 
