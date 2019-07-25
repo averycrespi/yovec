@@ -100,6 +100,12 @@ To learn the Yovec language, check out some [example programs](programs/), follo
 
 ---
 
+**Q**: Why are variables immutable?
+
+**A**: Yovec uses [single static assignment form](https://en.wikipedia.org/wiki/Static_single_assignment_form). This restriction allows powerful optimization strategies.
+
+---
+
 **Q**: What's the difference between `map` and `apply`?
 
 **A**: `map` works with unary functions (e.g. `map neg`), and with binary functions where one operand is "empty" (e.g. `map 1+`). `apply` works with binary functions where both operands are "empty" (e.g. `apply +`)
