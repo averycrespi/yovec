@@ -153,6 +153,7 @@ Certain binary functions may cause [undefined behaviour](#errors):
 - `A / 0`
 - `A % 0`
 - `0 ^ -1`
+- Any function that causes out-of-bounds
 
 ## Vectors
 
