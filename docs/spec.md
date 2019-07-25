@@ -192,7 +192,7 @@ let vector W = [3, 4, 5]
 let vector X = [6, 7, 8]
 
 apply + V W
-// Returns [9, 12, 15]
+// Returns [3, 5, 7]
 
 apply * V W X
 // Returns [0, 28, 80]
