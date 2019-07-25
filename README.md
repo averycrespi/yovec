@@ -57,13 +57,13 @@ YOLOL chips execute slowly and have a limited amount of space.
 
 Yovec aggressively optimizes your code to make it faster and smaller.
 
-```
-// Without optimization: 255 characters
-> python3 yovec-cli.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
+``` bash
+# Without optimization: 255 characters
+python3 yovec-cli.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
 255
 
-// With optimization: 105 characters
-$ python3 yovec-cli.py -i programs/axis.yovec | wc -c
+# With optimization: 105 characters
+python3 yovec-cli.py -i programs/axis.yovec | wc -c
 105
 ```
 
