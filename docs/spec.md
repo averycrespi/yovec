@@ -13,6 +13,7 @@
 - [Imports](#imports)
 - [Exports](#exports)
 - [Comments](#comments)
+- [Whitespace](#whitespace)
 - [Errors](#errors)
 
 ## Terminology
@@ -560,6 +561,37 @@ Inline comments are not allowed.
 
 ```
 // This is a comment
+```
+
+## Whitespace
+
+Arbitrary whitespace may be inserted between tokens.
+
+```
+let number A = 0
+   ^      ^ ^ ^
+// Valid whitespace locations
+
+let   number   A   =   0
+
+let
+number
+A
+=
+0
+```
+
+Whitespace must not be inserted inside a token.
+
+```
+l e t number A = 0
+// Error: invalid syntax
+```
+
+Separating statements with newlines is recommended, but not required.
+
+```
+let number A = 0 let number B = 1
 ```
 
 ## Errors
