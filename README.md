@@ -85,7 +85,7 @@ git clone https://github.com/averycrespi/yovec.git && cd yovec
 pip3 install --user -r requirements.txt
 
 # Run the Yovec CLI
-python3 yovec-cli.py
+python3 yovec-cli.py --help
 ```
 
 #### Learn Yovec
