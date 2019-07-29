@@ -1,4 +1,8 @@
+from logging import getLogger
 from typing import Tuple, Optional, Set
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.errors import YovecError
 from engine.node import Node
@@ -12,6 +16,8 @@ from engine.transpile.vector import Vector
 def resolve_aliases(env: Env, program: Node) -> Tuple[Node, Set[str], Set[str]]:
     """Resolve aliases to their targets in a YOLOL program."""
     assert program.kind == 'program'
+    logger.debug('resolving aliases')
+
     clone = program.clone()
     imported = set()
     exported = set()

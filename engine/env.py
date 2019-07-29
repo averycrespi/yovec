@@ -1,8 +1,10 @@
 from copy import deepcopy
+from logging import getLogger
 from typing import Union, Dict, Tuple, List
 
 from engine.errors import YovecError
 from engine.node import Node
+from engine.log import LOGGER_NAME
 
 from engine.transpile.macro import Macro
 from engine.transpile.matrix import Matrix
@@ -11,15 +13,16 @@ from engine.transpile.vector import Vector
 
 
 Value = Union[Number, Vector, Matrix]
+logger = getLogger(LOGGER_NAME)
 
 
 class Env:
     """Represents a program environment."""
     def __init__(self):
+        logger.debug('creating environment')
         self._num_index = 0
         self._vec_index = 0
         self._mat_index = 0
-
         self._variables = {}
         self._macros = {}
         self._imports = {}
@@ -50,6 +53,7 @@ class Env:
 
     def let(self, ident: str, value: Value) -> Tuple['Env', List[Node]]:
         """Assign a value to a variable."""
+        logger.debug('assigning variable - {}'.format(ident))
         if ident in self.variables:
             raise YovecError('cannot redefine existing variable: {}'.format(ident))
         elif ident in self.macros:
@@ -79,6 +83,7 @@ class Env:
 
     def define(self, ident: str, macro: Macro) -> 'Env':
         """Define a macro."""
+        logger.debug('defining macro - {}'.format(ident))
         if ident in self.macros:
             raise YovecError('cannot redefine existing macro: {}'.format(ident))
         elif ident in self.variables:
@@ -98,6 +103,7 @@ class Env:
 
     def import_(self, alias: str, target: str) -> 'Env':
         """Import an alias to a target."""
+        logger.debug('importing alias with target - {}, {}'.format(alias, target))
         if alias in self.imports:
             raise YovecError('cannot redefine existing import: {}'.format(alias))
         elif target in self.imports.values() or target in self.exports.values():
@@ -108,6 +114,7 @@ class Env:
 
     def export(self, alias: str, target: str) -> 'Env':
         """Export an alias to a target."""
+        logger.debug('exporting alias with target - {}, {}'.format(alias, target))
         if alias not in self.variables:
             raise YovecError('cannot export undefined variable: {}'.format(alias))
         elif alias in self.exports:

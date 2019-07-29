@@ -1,4 +1,8 @@
+from logging import getLogger
 from typing import Dict, Sequence, Set, Optional
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.node import Node
 
@@ -6,6 +10,7 @@ from engine.node import Node
 def eliminate_dead_code(program: Node, keep: Sequence[str]) -> Node:
     """Eliminate dead code from a YOLOL program."""
     assert program.kind == 'program'
+    logger.debug('eliminating dead code')
     graph = _graph_deps(program)
     alive = _find_alive(graph, keep)
     return _remove_dead(program, alive)
@@ -14,6 +19,7 @@ def eliminate_dead_code(program: Node, keep: Sequence[str]) -> Node:
 def _graph_deps(program: Node) -> Dict[str, Set[str]]:
     """Graph variable dependencies."""
     assert program.kind == 'program'
+    logger.debug('graphing variable dependencies')
     graph = {}
     assignments = program.find(lambda node: node.kind == 'assignment')
     for asn in assignments:
@@ -26,6 +32,7 @@ def _graph_deps(program: Node) -> Dict[str, Set[str]]:
 
 def _find_alive(graph: Dict[str, Set[str]], keep: Sequence[str]) -> Set[str]:
     """Find living variables."""
+    logger.debug('finding living variables')
     queue = list(keep)
     alive = set()
     while len(queue) > 0:
@@ -43,6 +50,7 @@ def _find_alive(graph: Dict[str, Set[str]], keep: Sequence[str]) -> Set[str]:
 def _remove_dead(program: Node, alive: Set[str]) -> Node:
     """Remove dead assignments."""
     assert program.kind == 'program'
+    logger.debug('removing dead assignments')
     clone = program.clone()
     assignments = clone.find(lambda node: node.kind == 'assignment')
     for asn in assignments:

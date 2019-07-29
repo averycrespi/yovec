@@ -1,4 +1,8 @@
+from logging import getLogger
 from typing import Tuple
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.context import context
 from engine.errors import YovecError
@@ -10,6 +14,7 @@ from engine.optimize.decimal import Decimal
 def reduce_expressions(program: Node) -> Node:
     """Reduce expressions in a YOLOL program."""
     assert program.kind == 'program'
+    logger.debug('reducing expressions')
     clone = program.clone()
     while _propagate_constants(clone) or _fold_constants(clone):
         pass

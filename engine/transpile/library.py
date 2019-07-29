@@ -1,5 +1,9 @@
+from logging import getLogger
 from pathlib import Path
 from typing import Sequence
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.errors import YovecError
 from engine.node import Node
@@ -7,6 +11,7 @@ from engine.node import Node
 
 def use_library(ident: str, parser, root: str) -> Sequence[Node]:
     """Use definitions from a library."""
+    logger.debug('using definitions from library - {}'.format(ident))
     matches = list(Path(root).glob('**/{}.lib.yovec'.format(ident))) # type: ignore
     if len(matches) == 0:
         raise YovecError('library not found: {}'.format(ident))

@@ -1,6 +1,10 @@
 from collections import namedtuple
+from logging import getLogger
 from sys import stderr
 from typing import Optional
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.grammar import Operator, OPERATORS
 from engine.node import Node
@@ -32,6 +36,7 @@ def yolol_to_text(program: Node) -> str:
 def _format_assignment(assignment: Node) -> str:
     """Format an assignment."""
     assert assignment.kind == 'assignment'
+    logger.debug('formatting assignment - {}'.format(assignment))
     variable = assignment.children[0].value
     expr = _format_expr(assignment.children[1]).strip()
     expr = expr.replace(' (', '(').replace('( ', '(')
@@ -42,6 +47,7 @@ def _format_assignment(assignment: Node) -> str:
 
 def _format_expr(expr: Node, parent: Optional[Operator]=None) -> str:
     """Format an expression."""
+    logger.debug('formatting expression - {}'.format(expr))
     if parent is None:
         parent = Operator('NOOP', -1)
     if expr.children is None:
