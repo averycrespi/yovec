@@ -1,5 +1,9 @@
+from logging import getLogger
 from pathlib import Path
 from typing import Tuple, Set, Optional
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.context import context
 from engine.env import Env
@@ -18,12 +22,14 @@ from engine.transpile.vector import Vector
 class Transpiler:
     """Transpile Yovec to YOLOL."""
     def __init__(self, parser, root: Path):
+        logger.debug('creating transpiler with root - {}'.format(root))
         self.parser = parser
         self.root = root
 
     def program(self, program: Node, env: Optional[Env]=None) -> Tuple[Env, Node]:
         """Transpile a program to YOLOL."""
         assert program.kind == 'program'
+        logger.debug('transpiling program')
         if env is None:
             env = Env()
         yolol = Node(kind='program')
@@ -50,6 +56,7 @@ class Transpiler:
     def import_group(self, env: Env, group: Node) -> Env:
         """Transpile an import group to YOLOL."""
         assert group.kind == 'import_group'
+        logger.debug('transpiling import group - {}'.format(group))
         for import_ in group.children:
             env = self.import_(env, import_)
         return env
@@ -58,6 +65,7 @@ class Transpiler:
     def import_(self, env: Env, import_: Node) -> Env:
         """Transpile an import statement to YOLOL."""
         assert import_.kind == 'import'
+        logger.debug('transpiling import statement - {}'.format(import_))
         target = import_.children[0].value.lower()
         if len(import_.children) == 2:
             alias = import_.children[1].value.lower()
@@ -69,6 +77,7 @@ class Transpiler:
     def export(self, env: Env, export: Node):
         """Transpile an export statement to YOLOL."""
         assert export.kind == 'export'
+        logger.debug('transpiling export statement - {}'.format(export))
         alias = export.children[0].value
         if len(export.children) == 2:
             target = export.children[1].value.lower()
@@ -78,8 +87,9 @@ class Transpiler:
 
     @context(statement='let')
     def let(self, env: Env, let: Node) -> Tuple[Env, Node]:
-        """Transpile a let number statement to YOLOL."""
+        """Transpile a let statement to YOLOL."""
         assert let.kind.startswith('let') # type: ignore
+        logger.debug('transpiling let statement - {}'.format(let))
         ident = let.children[0].value
         expr = let.children[1]
         if let.kind == 'let_num':
@@ -98,6 +108,7 @@ class Transpiler:
     def define(self, env: Env, definition: Node) -> Env:
         """Transpile a macro definition to YOLOL."""
         assert definition.kind.startswith('def') # type: ignore
+        logger.debug('transpiling macro definition - {}'.format(definition))
         ident = definition.children[0].value
         params = definition.children[1].children
         body = definition.children[2]
@@ -115,6 +126,7 @@ class Transpiler:
     @context(statement='using')
     def using(self, env: Env, using: Node) -> Env:
         """Transpile a using statement to YOLOL."""
+        logger.debug('transpiling using statement - {}'.format(using))
         assert using.kind == 'using'
         ident = using.children[0].value
         definitions = use_library(ident, self.parser, self.root)
@@ -125,6 +137,8 @@ class Transpiler:
     @context(expression='nexpr')
     def nexpr(self, env: Env, nexpr: Node) -> Tuple[Env, Number]:
         """Transpile a number expression to YOLOL."""
+        logger.debug('transpiling number expression - {}'.format(nexpr))
+
         if not is_nexpr(nexpr.kind):
             raise YovecError('expected number expression, but got {}'.format(nexpr.kind))
 
@@ -209,11 +223,13 @@ class Transpiler:
                 return env, Number(float(nexpr.value))
 
         else:
-            raise AssertionError('unexpected nexpr kind: {}'.format(nexpr.kind))
+            raise AssertionError('nexpr fallthough: {}'.format(nexpr))
 
     @context(expression='vexpr')
     def vexpr(self, env: Env, vexpr: Node) -> Tuple[Env, Vector]:
         """Transpile a vector expression to YOLOL."""
+        logger.debug('transpiling vector expression - {}'.format(vexpr))
+
         if not is_vexpr(vexpr.kind):
             raise YovecError('expected vector expression, but got {}'.format(vexpr.kind))
 
@@ -301,11 +317,13 @@ class Transpiler:
             return env, Vector(numums)
 
         else:
-            raise AssertionError('unexpected vexpr kind: {}'.format(vexpr.kind))
+            raise AssertionError('vexpr fallthough: {}'.format(vexpr))
 
     @context(expression='mexpr')
     def mexpr(self, env: Env, mexpr: Node) -> Tuple[Env, Matrix]:
         """Transpile a matrix expression to YOLOL."""
+        logger.debug('transpiling matrix expression - {}'.format(mexpr))
+
         if not is_mexpr(mexpr.kind):
             raise YovecError('expected matrix expression, but got {}'.format(mexpr.kind))
 
@@ -375,4 +393,4 @@ class Transpiler:
             return env, Matrix(vecs)
 
         else:
-            raise AssertionError('unexpected mexpr kind: {}'.format(mexpr.kind))
+            raise AssertionError('mexpr fallthough: {}'.format(mexpr))

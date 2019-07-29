@@ -1,5 +1,9 @@
 import json
+from logging import getLogger
 from typing import Any
+
+from engine.log import LOGGER_NAME
+logger = getLogger(LOGGER_NAME)
 
 from engine.grammar import OPERATORS
 from engine.node import Node
@@ -24,12 +28,14 @@ def _format_program(program: Node) -> Any:
 def _format_line(line: Node) -> Any:
     """Format a line."""
     assert line.kind == 'line'
+    logger.debug('formatting line - {}'.format(line))
     return {'type': 'line', 'code': [_format_assignment(asn) for asn in line.children]}
 
 
 def _format_assignment(assignment: Node) -> Any:
     """Format an assignment."""
     assert assignment.kind == 'assignment'
+    logger.debug('formatting assignment - {}'.format(assignment))
     identifier = assignment.children[0].value
     operator = '='
     value = _format_expression(assignment.children[1])
@@ -38,6 +44,7 @@ def _format_assignment(assignment: Node) -> Any:
 
 def _format_expression(expr: Node) -> Any:
     """Format an expression."""
+    logger.debug('formatting expression - {}'.format(expr))
     metadata = {'type': {'version': '1.0.0', 'types': ['number', 'error']}}
     if expr.kind == 'variable':
         return {'type': 'expression::identifier', 'name': expr.value, 'metadata': metadata}

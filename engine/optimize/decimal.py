@@ -26,6 +26,7 @@ BOOLEAN = {
 class Decimal:
     """Represents a limited-precision decimal."""
     def __init__(self, value: Union[float, str]):
+
         self.value = float(value)
 
     def __str__(self):
