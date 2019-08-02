@@ -85,7 +85,6 @@ number: LITERAL
              | "arcsin"     -> arcsin
              | "arccos"     -> arccos
              | "arctan"     -> arctan
-             | "ln"         -> ln
 
 ?num_binary_op: "+"     -> add
               | "-"     -> sub
@@ -100,10 +99,7 @@ number: LITERAL
               | "=="    -> eq
               | "!="    -> ne
               | "and"   -> and
-              | "nand"  -> nand
               | "or"    -> or
-              | "nor"   -> nor
-              | "xor"   -> xor
 
 ?nexpr: nbin
 

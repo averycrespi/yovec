@@ -20,44 +20,15 @@ class Number:
 
     def unary(self, op: str) -> 'Number':
         """Apply a unary operation to a number."""
-        if op == 'ln':
-            return self._ln()
-        else:
-            clone = deepcopy(self)
-            clone.queue.append((op,))
-            return clone
+        clone = deepcopy(self)
+        clone.queue.append((op,))
+        return clone
 
     def binary(self, op: str, other: 'Number') -> 'Number':
         """Apply a binary operation to a number."""
-        if op == 'nand':
-            return self.binary('and', other).unary('not')
-        elif op == 'nor':
-            return self.binary('or', other).unary('not')
-        elif op == 'xor':
-            left = self.binary('or', other)
-            right = self.binary('and', other).unary('not')
-            return left.binary('and', right)
-        else:
-            clone = deepcopy(self)
-            clone.queue.append((op, other))
-            return clone
-
-    def _ln(self) -> 'Number':
-        """Approximate the natural logarithm of a number."""
-        n = Number(0)
-        for k in range(0, 4):
-            # 2k + 1
-            common = Number(k).binary('mul', Number(2)).binary('add', Number(1))
-            # 1 / (2k + 1)
-            ln = Number(1).binary('div', common)
-            # ((z - 1) / (z + 1))^(2k + 1)
-            numer = self.binary('sub', Number(1))
-            denom = self.binary('add', Number(1))
-            rn = numer.binary('div', denom).binary('exp', common)
-            # add product of terms
-            n = n.binary('add', ln.binary('mul', rn))
-        n = n.binary('mul', Number(2))
-        return n
+        clone = deepcopy(self)
+        clone.queue.append((op, other))
+        return clone
 
     # Resolutions
 

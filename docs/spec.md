@@ -122,12 +122,10 @@ Unary functions operate on a single number:
 - `arcsin A`: calculate the inverse sine of `A` (in degrees)
 - `arccos A`: calculate the inverse cosine of `A` (in degrees)
 - `arctan A`: calculate the inverse tangent of `A` (in degrees)
-- `ln A`: approximate the natural logarithm of `A`
 
 Unary functions may cause [undefined behaviour](#errors):
 
 - `sqrt A` where `A < 0`
-- `ln A` where `A <= 0`
 - Trig. functions where the operand is outside of the domain
 - Any unary function that causes out-of-bounds
 
@@ -147,9 +145,6 @@ Binary functions operate on two numbers:
 - `A != B`: return true if `A` is not equal to `B`, otherwise false
 - `A and B`: return true if `A` is true and `B` is true, otherwise false
 - `A or B`: return true if `A` is true or `B` is true, otherwise false
-- `A nand B`: return false if `A` is true and `B` is true, otherwise true
-- `A nor B`: return false if `A` is true or `B` is true, otherwise true
-- `A xor B`: return true if `A` and `B` have different boolean values, otherwise false
 
 Binary functions may cause [undefined behaviour](#errors):
 

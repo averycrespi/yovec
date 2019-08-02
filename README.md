@@ -59,21 +59,17 @@ Yovec aggressively optimizes your code to make it faster and smaller.
 
 ``` bash
 # Without optimization: 255 characters
-python3 yovec-cli.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
+python3 yovec.py -i programs/axis.yovec --no-elim --no-reduce --no-mangle | wc -c
 255
 
 # With optimization: 105 characters
-python3 yovec-cli.py -i programs/axis.yovec | wc -c
+python3 yovec.py -i programs/axis.yovec | wc -c
 105
 ```
 
 ## How do I get started?
 
-#### Install the guided user interface: Linux only
-
-Download and run the latest [release](https://github.com/averycrespi/yovec/releases/latest).
-
-#### Install the command line interface: Windows, Mac OS, and Linux
+#### Install Yovec
 
 Requires [Git](https://git-scm.com/) and [Python 3.5+](https://www.python.org/).
 
@@ -84,8 +80,8 @@ git clone https://github.com/averycrespi/yovec.git && cd yovec
 # Install dependencies
 pip3 install --user -r requirements.txt
 
-# Run the Yovec CLI
-python3 yovec-cli.py --help
+# Run Yovec
+python3 yovec.py --help
 ```
 
 #### Learn Yovec
@@ -127,12 +123,6 @@ To learn the Yovec language, check out some [example programs](programs/), follo
 **Q**: Why is there no `filter` function?
 
 **A**: `filter` would return a vector of variable length. Variable-length vectors would require conditionals.
-
----
-
-**Q**: Why is the GUI only available for Linux?
-
-**A**: PyInstaller cannot cross-compile executables. For Windows and Mac OS, use the CLI instead.
 
 ## License
 

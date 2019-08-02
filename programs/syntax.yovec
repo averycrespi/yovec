@@ -7,8 +7,8 @@ import longname as short
 import x, y, z
 
 let number A = 0
-let number UNARY = neg not abs sin cos tan arcsin arccos arctan ln 1
-let number BINARY = 0 + 1 - 2 * 3 / 4 % 5 and 6 or 7 nand 8 nor 9 xor 10
+let number UNARY = neg not abs sin cos tan arcsin arccos arctan 0
+let number BINARY = 0 + 1 - 2 * 3 / 4 % 5 and 6 or 7
 
 let vector V = [0, 1, 2]
 let number REDUCE = reduce + V
